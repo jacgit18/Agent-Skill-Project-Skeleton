@@ -1,5 +1,5 @@
 ---
-name: database architecture
+name: database-architecture
 description: A gated decision process for data-architecture choices — where the source of truth for a piece of data should live (database-first, code-first, or contract-first), what the system boundaries and consumers are, and what artifacts get generated from that. Use this skill whenever the user is about to design or change a database schema, an API shape, a domain model, or is asking "should we use Prisma / an ORM / OpenAPI / GraphQL", "how should we model X", "where should the schema live", or proposes an architecture ("I think we should go contract-first") and wants it evaluated. The skill forces the boundary/ownership/source-of-truth questions to be answered — by the user, not by Claude — before any schema or recommendation is produced, then records the outcome as an ADR. It exists to stop architecture from being decided implicitly while 40 files get generated on top of a bad first assumption, so err toward running the gate rather than skipping to a schema.
 ---
 
