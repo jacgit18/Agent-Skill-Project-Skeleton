@@ -70,4 +70,7 @@ Using Git like a senior engineer involves mastering best practices and advanced 
 - Use `git cherry-pick` to apply specific commits from one branch to another when necessary.  
 - Use `git revert` to undo changes while keeping the history intact, which is better than using `git reset` for public branches.  
   
+### 16. **Push Large Change Sets in Batches**  
+- When adding hundreds of files at once, split them into multiple commits/pushes so no single push is huge: `scripts/chunked-push.sh [batch_size] [branch] [msg_prefix]` (defaults: 90 files/batch, current branch). Set `DRY_RUN=1` to preview.  
+
 By mastering these practices and tools, you'll handle Git workflows more effectively, making you feel more like a senior engineer in version control.
