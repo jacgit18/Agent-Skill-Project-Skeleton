@@ -66,11 +66,20 @@ starts numbering at `001`.
 
 ## Not built (yet)
 
-The source discussion also sketched `database` and `api-contract` skills and an
-`implementation` agent. Scope for this pass was the `architecture` skill only. If relational
-modeling detail (normalization, indexes, constraints, migration mechanics) or contract
-authoring (versioning, compatibility, DTO design) start needing their own repeatable process,
-those become sibling skills that this one hands off to after the ADR.
+Relational modeling detail (normalization, indexes, constraints, keys, lifecycle columns) now
+lives in the **`relational-modeling`** sibling skill — this skill hands off to it after the
+ADR exists.
+
+Scaling and distribution (sharding, replication topology, transaction isolation, 2PC/Saga,
+pooling, failover) now live in the **`data-tier-operations`** sibling skill, which reuses this
+skill's `adr-template.md`.
+
+Analytical / dimensional modeling (star/snowflake, fact/dimension, grain, SCD, warehouses/marts)
+now lives in the **`dimensional-modeling`** sibling skill.
+
+Still not built: contract authoring (versioning, compatibility, DTO design). The source
+discussion also sketched an `implementation` agent. Those become sibling skills if they start
+needing their own repeatable process.
 
 
 ## To try 

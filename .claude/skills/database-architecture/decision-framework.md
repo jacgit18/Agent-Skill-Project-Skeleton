@@ -9,8 +9,11 @@ State, in one sentence each:
 - What data this is (the concept, not the table).
 - Every consumer of it: name them. "Our web app", "the mobile client", "the reporting service", "third-party API customers", "an internal admin tool".
 - Which of those consumers you control the release cycle of, and which you don't.
+- Its regulatory class: PII, PHI, financial/PCI, or none — and whether that forces audit trails, retention limits, or residency rules.
 
 A consumer you don't control the release of is a **boundary**. Boundaries are where contracts earn their cost. No such consumer → a contract is likely overhead right now.
+
+A regulated class pushes toward the store enforcing constraints itself (DB-checked `NOT NULL`/`CHECK`, append-only audit tables, retention jobs) rather than trusting application code to — factor it into steps 3 and 5.
 
 ## 2. Decide who owns the store
 
@@ -43,6 +46,8 @@ The usual path is `ORM/query builder → domain clarifies → define a stable co
 ## 5. Name the mapping boundary
 
 Whatever the source of truth, decide explicitly whether the persistence representation is allowed to *be* the public representation. Default answer: **no**. Put a translation step (`DB row → domain model → API DTO`) wherever a boundary exists. That step is where you control field exposure, naming, security, backward compatibility, and API evolution. It is not wasted code.
+
+The translation also runs the other way: it's where you add fields the table doesn't have. Example — a JWT payload carries `is_admin`, computed from a role join, that is never a column on the users table. The mapping layer is where that composition happens, so business logic reads one shape and the schema stays clean.
 
 If there's genuinely no boundary (solo app, internal tool, one consumer you control), it's fine to skip the mapping — say so, don't cargo-cult it.
 

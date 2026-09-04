@@ -17,7 +17,7 @@ Turn "design my data model" into an explicit decision with a recorded rationale.
 ## Out of scope
 
 - **Implementation.** This skill stops at a recommendation and an ADR. It does not write migrations, models, resolvers, DTOs, or wiring. That is a separate step the user starts explicitly after the ADR exists.
-- **Relational modeling detail** — normalization, index choice, constraint design. Note that it is needed; don't do it here.
+- **Data modeling detail** — normalization, index choice, constraint design, key strategy, lifecycle columns. Note that it is needed and hand off after this ADR exists — `relational-modeling` for an OLTP store, `dimensional-modeling` for an analytical/warehouse model; don't do it here.
 - Rewriting or "just getting started on" the schema to be helpful. See the gate below.
 
 ---
@@ -28,8 +28,8 @@ Before producing any schema, recommendation, or ADR, the following must be answe
 
 **Facts you may surface from the repo** (fill these in from `package.json`, config, migrations, existing code — then show them for confirmation):
 
-1. **Persistence** — what database technology is in use or intended.
-2. **Existing contracts / consumers visible in the codebase** — other services, published API specs, client SDKs.
+1. **Persistence** — what database technology is in use or intended. If an existing database or the surrounding system fixes this, surface it for confirmation. If it's genuinely open, it is a **prerequisite decision, not a fact** — see "When persistence isn't decided yet" below and settle it first.
+2. **Existing contracts / consumers visible in the codebase** — other services, published API specs, client SDKs, event/webhook payloads.
 
 **Judgment calls that must come from the user in their own words.** These are the rep. Do not supply them, do not offer a shortlist to pick from, do not infer them from the repo and present them as fact. If any is missing, say plainly what's missing and stop — do not proceed "helpfully":
 
@@ -43,6 +43,21 @@ Before producing any schema, recommendation, or ADR, the following must be answe
 "Design my database" with items 3–8 absent is not valid input. Ask for them and stop.
 
 **Pressure does not open the gate.** A deadline, "I've been going back and forth on this for days", or "just pick one" are reasons the user *wants* the gate skipped, not evidence it's satisfied. Under real time pressure the fastest correct move is to get the user to a one-sentence answer for each of 3–8, not to fill them in yourself.
+
+### When persistence isn't decided yet
+
+Item 1 is normally a fact. When it genuinely isn't — greenfield, or the surrounding system doesn't fix it — **the database paradigm is its own gated decision, and it comes first.** The main framework's vocabulary (migrations, referential integrity, joins) and the source-of-truth options themselves assume you already know whether the store is relational; picking wrong here invalidates everything downstream.
+
+Settle it under the same rules — these come from the user, in their own words, not from you. If any is missing, name it and stop:
+
+- **Data shape** — structured, semi-structured, or unstructured; how uniform one record is to the next. "Unstructured" does not automatically mean NoSQL — landing data raw and projecting structure over it (a search index, an extraction pipeline) while keeping a relational system of record is a valid third option; force the choice, don't assume it.
+- **Consistency** — does this data need strong consistency and multi-row transactions, or is eventual consistency acceptable for parts of it (a CAP leaning: CP or AP).
+- **Access patterns** — read/write ratio, and the query shapes: point lookups, range scans, multi-table joins, graph traversal, time-ordered scans, full-text search.
+- **Scale** — rough volume and growth; is horizontal scale a near-term requirement or a someday.
+- **Regulatory class** — PII, PHI, financial, or none; anything that forces audit trails or retention rules.
+- **Operational capacity** — what the team already runs and knows.
+
+Output: a **paradigm** (relational / document / key-value / wide-column / graph / time-series / ledger / search) and a specific technology leaning, with tradeoffs named — recorded as its own ADR (`NNN-<slug>-persistence.md`) *before* the source-of-truth ADR. Then run the main framework, translating its relational terms where needed (for a document store: "migrations" → schema/index definitions; "referential integrity" → invariants enforced in application code).
 
 ---
 
