@@ -65,6 +65,12 @@ coverage-policy      →  coverage metric / target % / exclusions / CI enforceme
 test-practice-gate   →  the charter you state before Claude writes a test          (gate)
 ```
 
+### Documents — pre-flight checks on files before using them
+
+| Skill | Role |
+|---|---|
+| [`Documents/document-page-check`](.claude/skills/Documents/document-page-check/) | Integrity check for a paginated document (PDF / EPUB) before Claude reads, quotes, or summarizes it — confirms the file is complete and untruncated, flags blank / image-only pages, resolves the printed-vs-physical page-number offset, and spot-checks the citations an answer will lean on. Emits a report, then asks whether to gate or proceed. A mechanical pre-flight, not a reasoning gate. |
+
 ### Prompts — authoring, testing, and session hygiene
 
 | Skill | Role |
