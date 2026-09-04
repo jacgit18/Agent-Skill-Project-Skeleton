@@ -30,6 +30,30 @@ The levels form a **pyramid**: many cheap fast tests at the bottom, few slow exp
 
 **Failure mode.** Skipped because "unit tests cover it" on a surface whose bugs are all integration bugs. Or so heavy (full DB seed per test) that the suite takes 20 minutes and people stop running it.
 
+**Cloud-service emulation as the "real dependency."** For a stack built on managed cloud
+services (Lambda, IAM, Step Functions, DynamoDB, SQS/SNS), a local emulator (LocalStack is
+the common one) fills the same role a test database or local broker fills for other stacks —
+a real-enough dependency without a live cloud account or its cost/latency. Two things to get
+right: (1) emulator state is ephemeral by default and wiped on restart — deliberately choose
+ephemeral-per-run (fine, often preferred, for CI) vs a persisted data directory (needed if a
+test suite depends on state surviving across separate local sessions); don't let "why did my
+data disappear" become a debugging session. (2) An emulated cloud service is still a step
+down from the real one on edge cases (IAM path-constraint enforcement, exact throttling
+behavior, and similar provider-specific details are commonly simplified or unenforced) — this
+tier catches wiring and logic bugs, not a substitute for hitting the real service at least
+once before a first production release of a new integration.
+
+**Layering a poorly-testable artifact (e.g. a Step Functions state machine).** A workflow
+defined as JSON/YAML isn't directly unit-testable as code, but the same three-tier split still
+applies: **unit** — validate the definition's structure itself (required fields present per
+state, every referenced state actually exists, no unreachable/dangling state) without running
+anything; **integration** — deploy the definition to the emulator and execute it against a
+Task's real (or emulator-backed) dependencies, asserting on the execution result and status;
+**system integration / E2E** — the full pipeline against staging. Don't skip the unit tier
+because "it's just config" — a syntactically-valid-but-logically-broken state machine (a typo
+in a `Next` target, a missing `Catch`) is exactly the class of bug a structural check catches
+before a single execution is spent finding it at runtime.
+
 **Runs.** Every PR, usually a separate CI job. Blocks the PR.
 
 ---

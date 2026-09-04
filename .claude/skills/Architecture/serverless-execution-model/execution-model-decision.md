@@ -97,3 +97,49 @@ an answer before it can proceed, it's synchronous, full stop — there's no vers
 faster by going async" that also hands back an immediate real answer. If nothing is waiting,
 default to asynchronous for a single event, or poll-based when the source is inherently a
 queue or stream to be continuously drained rather than a one-off event.
+
+## Choosing what carries an event between steps
+
+Once a step hands off to the next via a message or event rather than a direct call (gate
+item 6), a second, separate decision follows: what actually sits in the middle. This is not
+the same question as the invocation model above — it's what the invocation model (poll-based,
+usually) is polling. Reach for the property actually needed, not whichever of these is
+already deployed elsewhere in the account or feels more "real-time":
+
+| | Queue (SQS) | Pub/sub (SNS) | Stream/log (Kinesis Data Streams, Kafka/MSK) | Ingest-to-destination (Kinesis Data Firehose) |
+|---|---|---|---|---|
+| **Delivery model** | One message goes to exactly one of a pool of competing consumers, then is deleted | One message fans out to every current subscriber (SQS queues, Lambda, HTTP endpoints, email/SMS) | Every consumer reads the same append-only log independently, at its own position | Ingests and buffers, then delivers to a fixed destination (S3, Redshift, OpenSearch) — no custom consumer |
+| **Replay** | No — a message is gone once consumed and deleted | No — a subscriber that wasn't listening when the message was published misses it (unless it also has a durable queue behind it) | Yes, within the retention window (hours to indefinitely, configurable) — a new or restarted consumer can re-read history | N/A — not a consumer-facing store |
+| **Ordering** | Standard: no ordering guarantee. FIFO: strict order *per message group ID*, with a throughput tradeoff | None — fan-out doesn't order across subscribers | Per-shard/per-partition, by a partition key you choose — same key always lands on the same shard, preserving order for that key | N/A |
+| **Multiple independent readers** | No — the pool of consumers competes for each message, they don't each see everything | Yes, by design — that's the point of pub/sub | Yes — each consumer group/application tracks its own read position independently | No |
+| **Delivery guarantee** | At-least-once (never exactly-once) | At-least-once per subscriber | At-least-once (per-shard ordering, not global) | At-least-once, with configurable buffering/batching |
+| **Typical fit** | Work distribution across competing workers — a task queue | Notifying several independent, decoupled systems that something happened | High-throughput ordered event log with multiple analytics/processing consumers, or where replay-on-failure matters | Streaming straight into a data lake/warehouse with no custom processing step |
+
+**Decision rule:**
+
+- **Does one event need to reach several independent consumers**, each of which should see
+  every event (an order placed → analytics, fulfillment, and notifications all react
+  separately)? → pub/sub (SNS), typically fanning out to one SQS queue per consumer so each
+  gets its own competing-worker pool and its own retry/DLQ without one slow consumer blocking
+  another. This SNS-to-multiple-SQS pattern is the default "fan-out with durability" shape —
+  SNS alone has no replay or durable buffering if a subscriber is briefly down.
+- **Does work just need to be spread across a pool of workers, one worker per unit of work,
+  no replay needed**? → a plain queue (SQS). Reach for FIFO only if a specific ordering
+  guarantee is actually required (and accept the throughput ceiling that comes with it) —
+  most task-queue workloads don't need it and standard SQS is simpler and higher-throughput.
+- **Does a consumer need to replay history, or do multiple independent applications need to
+  process the same events at their own pace** (a real-time pipeline plus a batch analytics
+  job both reading the same click-stream)? → a stream/log (Kinesis Data Streams, or Kafka/MSK
+  if the team already operates Kafka or needs its broader ecosystem/tooling). Size shard or
+  partition count, and choose the partition key, from the ordering requirement — a key that's
+  too coarse creates a hot shard; the shard/partition-key choice itself is
+  `data-tier-operations` territory once real numbers exist.
+- **Is the goal just to land streaming data in a data lake or warehouse with no custom
+  processing step in between**? → Kinesis Data Firehose (or an equivalent managed
+  ingest-to-destination service) — simpler than standing up a Data Streams consumer when
+  there's no actual processing logic to run, only buffering and delivery.
+- **Default posture**: don't introduce a new messaging technology because a scenario notes
+  in some manual say it's "for real-time" or "for scale" — a queue moves messages just as
+  fast as a stream for a single competing-consumer workload, and a stream adds real
+  operational cost (shard/partition management, consumer-position tracking) that only pays
+  for itself when replay or multiple independent readers are actually needed.

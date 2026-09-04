@@ -26,6 +26,14 @@ Reference for `SKILL.md` step 4–7. Mechanisms for getting a new version live, 
 
 **Feature flags / dark launch** — decouples *deploy* (code is in prod, dormant) from *release* (turn it on). Enables: gradual cohort exposure, instant kill-switch independent of a deploy, A/B and ring rollouts, testing in production with internal users. The cost is real: each flag doubles the test matrix for the code it guards, and flags left in after rollout are latent bugs (the "off" path bit-rots, someone flips it in an incident, it breaks). Require a removal ticket per flag with an owner and a date. Use flags for individually risky changes; don't wrap every trivial change in one.
 
+### Vendor mechanics — where each pattern lives on ECS vs. Kubernetes (EKS)
+
+The mechanism decided above is a shape; on AWS these two container platforms implement it differently, and naming the wrong tool for the platform is a common "already decided" trap:
+
+- **ECS**: **AWS CodeDeploy** is the deployment provider plugged into CodePipeline's deploy stage — it natively supports rolling, blue-green (two target groups behind an ALB, CodeDeploy flips traffic and can auto-rollback on a CloudWatch alarm), and canary (a defined traffic-shifting schedule, e.g. 10% then wait then 100%). Blue-green and canary are configuration on CodeDeploy, not custom-built.
+- **EKS / Kubernetes**: rolling update is native to a `Deployment` object (`maxSurge`/`maxUnavailable` map directly to the rolling row above) via `kubectl apply` or a Helm upgrade — no extra tooling needed. Blue-green and canary are **not** built into vanilla Kubernetes; they need an add-on — Argo Rollouts or Flagger (both drive a service mesh or ingress controller's traffic split and can wire in the same automated-analysis gate the canary row above requires) — or a hand-rolled second Deployment + Service swap for blue-green.
+- **The tell**: "we're on EKS and want canary" is not fully specified until the add-on is named — plain `kubectl`/Helm alone only gives rolling. Surface this gap explicitly rather than letting "Kubernetes handles it" stand as a rollout decision.
+
 ---
 
 ## Parallel change (expand / contract) for schema and contract evolution

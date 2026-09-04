@@ -3,8 +3,9 @@
 A gated decision for **how one unit of work actually runs** — the compute primitive (FaaS /
 container task / long-running service), the invocation model (sync / async / poll-based),
 whether a multi-step process needs a central orchestrator or tolerates event-driven
-choreography, and the failure contract (retry/backoff, catch routing, DLQ/failure
-destination, idempotency). Not service boundaries or team ownership (that's
+choreography, the messaging technology that carries an event between choreographed steps
+(queue / pub-sub / stream-log), and the failure contract (retry/backoff, catch routing,
+DLQ/failure destination, idempotency). Not service boundaries or team ownership (that's
 `microservices-decision`), not the execution role or network placement (that's
 `cloud-iam-boundary`), not overload/cascade defense on a live path (that's
 `resilience-strategy`), not dollar cost (that's `technical-cost-decision`).
@@ -12,8 +13,16 @@ destination, idempotency). Not service boundaries or team ownership (that's
 Built from the `Architecture/02. Backing Service Options/Cloud/` notes — `Lambda vs
 Fargate.md`, `Microservices vs FaaS.md`, `Lambda Invocation Models.md`, `AWS/AWS Async Vs
 Sync.md`, `AWS/Step function.md`, `AWS/Step Function Extension.md`, `Step Function Catch
-Blocks.md`, `Failure States.md`, `AWS Parallel State.md`, `AWS/DLQ.md`, and `AWS/DLQ
-Drainer.md`.
+Blocks.md`, `Failure States.md`, `AWS Parallel State.md`, `AWS/DLQ.md`, `AWS/DLQ
+Drainer.md`, `AWS/AWS SQS.md`, `AWS/Amazon Kinesis Data Streams vs Amazon Kinesis Data
+Firehose.md`, `Scalable Messaging Architecture.md` (the SNS-fanning-out-to-per-consumer-SQS
+pattern), and `Qsink.md` (the general sink/stream-consumer vocabulary, used to frame Firehose
+as an ingest-to-destination sink with no custom processing step).
+
+Also added `2026-09-04` (second pass, closing a gap noted in `SKILL-BACKLOG.md`): the
+state-to-state data-contract note in `orchestration-and-failure-handling.md`, from `Req and
+RES.md`'s point about JSONPath data flow between Step Functions states being a contract like
+any API boundary.
 
 Note: `Lambda Invocation.md` in the same folder is about generic programming-language lambda
 expressions (Python/JavaScript closures), not AWS Lambda invocation — it was not used as a
@@ -24,7 +33,7 @@ source here despite the name; don't confuse the two when re-reading the vault no
 ```
 microservices-decision     →  how many services, team ownership (assumed given, upstream of this skill)
 capacity-estimation        →  concurrency / volume numbers this skill consumes
-serverless-execution-model →  compute primitive + invocation model + orchestration + failure contract   (this skill)  → ADR
+serverless-execution-model →  compute primitive + invocation model + orchestration + messaging technology + failure contract   (this skill)  → ADR
 cloud-iam-boundary          →  the execution role and network placement this workload needs
 resilience-strategy        →  overload/cascade retry-budget on a live request path (composes with this skill's per-invocation retry contract)
 technical-cost-decision    →  the dollar cost of the chosen primitive/concurrency
@@ -42,21 +51,24 @@ supplies:
   is compared on preference
 - **trigger and response need** — does the caller need to wait
 - **concurrency and burst pattern**, including cold-start tolerance
-- **whether steps need central coordination** or can tolerate independent event reaction
+- **whether steps need central coordination** or can tolerate independent event reaction, and
+  if so what property (competing workers, fan-out, replay, per-key ordering) the handoff
+  between them actually needs
 - **failure semantics** — retry vs park vs drop, and whether the operation is idempotent
 
 Then it rules primitives in/out by hard limits, picks the invocation model from the
 trigger/response need, decides orchestration vs choreography by the coordination need (not by
-default in either direction), assigns per-step Retry/Catch only where something fallible is
-actually called (Task/Parallel/Map, never Choice/Pass/Wait), and designs the DLQ/failure
-destination plus the idempotency requirement it imposes.
+default in either direction), picks the messaging technology from the property actually
+needed rather than whichever is already deployed, assigns per-step Retry/Catch only where
+something fallible is actually called (Task/Parallel/Map, never Choice/Pass/Wait), and
+designs the DLQ/failure destination plus the idempotency requirement it imposes.
 
 ## Files
 
 | File | Role |
 |---|---|
 | `SKILL.md` | Entry point. The gate (items 2–8 from the user), challenge-the-proposal, output contract. |
-| `execution-model-decision.md` | FaaS vs container-task vs long-running-service decision table; the three invocation models (sync, async, poll-based event-source mapping) and each one's built-in retry/error behavior; the cost of synchronous function-to-function chaining. |
+| `execution-model-decision.md` | FaaS vs container-task vs long-running-service decision table; the three invocation models (sync, async, poll-based event-source mapping) and each one's built-in retry/error behavior; the cost of synchronous function-to-function chaining; the messaging-technology decision table (queue vs pub/sub vs stream/log vs ingest-to-destination) for what carries an event between choreographed steps. |
 | `orchestration-and-failure-handling.md` | Orchestration vs choreography tradeoff; Step Functions state types and which can carry Retry/Catch and why; hard vs soft failure classification; Parallel/Map fan-out failure semantics and Distributed Map's tolerated-failure option; DLQ/failure-destination mechanics and the idempotency requirement retries impose. |
 
 ## Output

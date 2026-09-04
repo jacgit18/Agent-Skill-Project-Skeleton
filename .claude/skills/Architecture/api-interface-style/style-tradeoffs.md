@@ -35,6 +35,8 @@ One entry per style: what it is, what it fits, what it costs, which consumers it
 
 **Rules out.** Nothing hard — but a plain client without a GraphQL library is unpleasant. Fine in browsers.
 
+**Managed implementations.** A hosted GraphQL layer (AWS AppSync, Hasura) trades the resolver/query-cost-limiter build-out above for a managed service, and typically throws in subscriptions (real-time push on data change) and offline client sync for free — genuinely useful when the fit is already GraphQL and those two features are wanted, not a reason to pick GraphQL on their own. It doesn't remove the fundamental costs above (caching still moves into the app, query variety is still unbounded) — it just moves who operates the resolver layer.
+
 **Failure mode.** Adopted for one client with fixed screens: you now operate a query planner and cost-limiter for no measurable benefit over REST.
 
 ---

@@ -11,7 +11,10 @@ pipeline (that's `test-strategy`), not the health signal's own design (that's
 Built from the `Architecture/Devops/` notes — `Deployment Strategies.md` (CI/CD, deployment
 patterns), `Release.md` (versioning, code freeze, release process), `Staged Deployment.md`
 (environment progression), `Steps to Release Stage.md`, `Deployment Artifacts.md` — plus the
-12-factor `V Build, release, run.md` and `Database Migrations.md`.
+12-factor `V Build, release, run.md` and `Database Migrations.md`. The ECS-vs-Kubernetes
+vendor-mechanics note in `rollout-patterns.md` was added `2026-09-04` from `Architecture/02.
+Backing Service Options/Cloud/AWS/AWS CI-CD Pipeline.md` (CodeDeploy for ECS,
+kubectl/Helm/Argo Rollouts/Flagger for EKS).
 
 ## Where it sits
 

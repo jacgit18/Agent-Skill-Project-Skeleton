@@ -7,6 +7,9 @@ what gets generated from that — recorded as an ADR.
 Built from `database schema disscusiion.md`, plus `Architecture/02. Backing Service Options/File
 System Storage.md` (the `store-options.md` reference — object / block / DFS storage, blob-vs-row).
 It deliberately does **not** encode "always contract-first"; it encodes the process for deciding.
+The AWS service-name mapping tables in `store-options.md` were added `2026-09-04` from
+`Architecture/02. Backing Service Options/Cloud/AWS/Cloud Storage.md`, `Cloud Databases.md`,
+and `AWS/Cloud Storage & Databases.md`.
 
 
 ADR = Architecture Decision Record (sometimes "Architectural Decision Record").
@@ -33,7 +36,7 @@ In this skill, the ADR is the artifact written to docs/architecture/decisions/ o
 | `SKILL.md` | Entry point. The hard gate, the challenge-the-proposal behavior, the output contract. |
 | `decision-framework.md` | The 7-step process Claude works once the gate is satisfied. |
 | `schema-taxonomy.md` | The "which schema do you mean" reference — DB / domain / API / validation / type. |
-| `store-options.md` | Where large binaries live — object vs block vs distributed-file-system storage, the blob-in-object-storage vs DB-row decision, large-binary patterns, and the controls for regulated data on object storage (HIPAA / GDPR / PCI). |
+| `store-options.md` | Where large binaries live — object vs block vs distributed-file-system storage, the blob-in-object-storage vs DB-row decision, large-binary patterns, the controls for regulated data on object storage (HIPAA / GDPR / PCI), and concrete AWS service-name mappings for both the storage shapes and the eight database paradigms. |
 | `adr-template.md` | The ADR format written to `docs/architecture/decisions/NNN-*.md` on approval. |
 
 ## What it produces

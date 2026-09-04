@@ -1,6 +1,6 @@
 ---
 name: serverless-execution-model
-description: A gated decision for how one unit of work actually runs — the compute primitive (function-as-a-service / a container task / a long-running service), the invocation model (synchronous request-response, asynchronous fire-and-forget, or poll-based event-source consumption of a queue or stream), whether a multi-step process needs a central orchestrator (a state machine) versus event-driven choreography versus a single function, and the failure contract inside that model (per-step retry count and backoff, which errors are caught vs left to fail terminally, the dead-letter queue or failure destination for what's exhausted, and the idempotency requirement retries impose). Use when someone says "should this be a Lambda or a container for this workload", "Lambda vs Fargate for this job", "do we need Step Functions for this", "should these steps be orchestrated or event-driven", "the function times out after 15 minutes", "how do we handle a failed message", "add a dead-letter queue", "should this call be sync or async", "what happens when one branch of a parallel job fails", or hands over a workflow and asks how it should be wired. It forces the user to state the unit of work, its duration and resource profile, its trigger and concurrency pattern, whether it's a single step or needs coordination across several, and the failure semantics it can tolerate, before any primitive or orchestration mechanism is recommended, then records the outcome as an ADR. A bare conceptual comparison with no named workload ("what's the difference between Lambda and Fargate", "how does sync invocation differ from async") is answered directly, no gate — the gate exists for a pending decision on a named unit of work, not for explaining the vocabulary. Not for how many services or team boundaries exist — that is `microservices-decision`, which this skill assumes as given (it decides what runs one already-scoped unit of work, not how work is split across teams). Not for the execution role or account/network placement this workload needs — that is `cloud-iam-boundary`, which this skill hands the permission requirements to. Not for the retry-budget-and-backoff policy that protects a live request path under overload or cascading dependency failure — that is `resilience-strategy`; this skill's retry/DLQ contract is the per-invocation guarantee for one asynchronous unit of work eventually succeeding, being parked, or being dropped, not a defense against traffic spikes — if per-invocation retries are themselves hammering an already-struggling downstream, that's `resilience-strategy`'s concurrency-limit/circuit-breaker territory, run after this skill's contract is set. Not for the dollar cost of Lambda invocations, provisioned concurrency, or Step Functions state transitions, or for "X or Y, which is cheaper" — that is `technical-cost-decision`, which this skill's duration/concurrency numbers feed once the technical fit narrows the choice. Not for DynamoDB/Kinesis partition-key or shard topology when a poll-based consumer is stuck on a hot key — that is `data-tier-operations`; this skill owns the consumer-side retry/skip/redrive contract regardless of cause. Not for an unscoped, not-yet-designed system ("what should the backend for our new admin tool look like") — that is `design-scoping` first, which sequences a named unit of work back here.
+description: A gated decision for how one unit of work actually runs — the compute primitive (function-as-a-service / a container task / a long-running service), the invocation model (synchronous request-response, asynchronous fire-and-forget, or poll-based event-source consumption of a queue or stream), whether a multi-step process needs a central orchestrator (a state machine) versus event-driven choreography versus a single function, the messaging technology that carries an event or message between steps when choreographed (a queue for competing workers, pub/sub for fan-out to independent consumers, a stream/log for replay or per-key ordering), and the failure contract inside that model (per-step retry count and backoff, which errors are caught vs left to fail terminally, the dead-letter queue or failure destination for what's exhausted, and the idempotency requirement retries impose). Use when someone says "should this be a Lambda or a container for this workload", "Lambda vs Fargate for this job", "do we need Step Functions for this", "should these steps be orchestrated or event-driven", "should we use SQS or SNS", "queue vs pub/sub vs stream for this", "Kinesis or Kafka for this", "the function times out after 15 minutes", "how do we handle a failed message", "add a dead-letter queue", "should this call be sync or async", "what happens when one branch of a parallel job fails", or hands over a workflow and asks how it should be wired. It forces the user to state the unit of work, its duration and resource profile, its trigger and concurrency pattern, whether it's a single step or needs coordination across several, and the failure semantics it can tolerate, before any primitive or orchestration mechanism is recommended, then records the outcome as an ADR. A bare conceptual comparison with no named workload ("what's the difference between Lambda and Fargate", "how does sync invocation differ from async") is answered directly, no gate — the gate exists for a pending decision on a named unit of work, not for explaining the vocabulary. Not for how many services or team boundaries exist — that is `microservices-decision`, which this skill assumes as given (it decides what runs one already-scoped unit of work, not how work is split across teams). Not for the execution role or account/network placement this workload needs — that is `cloud-iam-boundary`, which this skill hands the permission requirements to. Not for the retry-budget-and-backoff policy that protects a live request path under overload or cascading dependency failure — that is `resilience-strategy`; this skill's retry/DLQ contract is the per-invocation guarantee for one asynchronous unit of work eventually succeeding, being parked, or being dropped, not a defense against traffic spikes — if per-invocation retries are themselves hammering an already-struggling downstream, that's `resilience-strategy`'s concurrency-limit/circuit-breaker territory, run after this skill's contract is set. Not for the dollar cost of Lambda invocations, provisioned concurrency, or Step Functions state transitions, or for "X or Y, which is cheaper" — that is `technical-cost-decision`, which this skill's duration/concurrency numbers feed once the technical fit narrows the choice. Not for DynamoDB/Kinesis partition-key or shard topology when a poll-based consumer is stuck on a hot key — that is `data-tier-operations`; this skill owns the consumer-side retry/skip/redrive contract regardless of cause. Not for an unscoped, not-yet-designed system ("what should the backend for our new admin tool look like") — that is `design-scoping` first, which sequences a named unit of work back here.
 ---
 
 # Serverless Execution Model
@@ -112,7 +112,14 @@ not design without them. If any is missing, name it and stop:
    #4521 right now" or when there's branching, parallel fan-out, or a wait for an external
    callback/human approval), or is independent, event-triggered reaction between loosely
    coupled steps acceptable — trading a central view for looser coupling and one less piece
-   of shared infrastructure?
+   of shared infrastructure? If steps hand off via an event or message rather than a direct
+   call, what actually carries it matters too: does one step need to notify several
+   independent consumers (fan-out), does work need to be spread across competing workers
+   (a queue), does anything need to replay history or have multiple readers move through the
+   same events at their own pace (a stream/log), and does ordering need to be preserved
+   per-key? See `execution-model-decision.md`'s messaging-technology section — don't default
+   to whatever queue or topic already exists in the account without checking it fits this
+   shape.
 7. **Failure semantics** — if a step fails, must it be retried automatically, parked for a
    human to inspect (a dead-letter queue), or is it safe to drop? Is the operation
    **idempotent** — can it safely run twice with the same input? If not, is idempotency
@@ -175,6 +182,15 @@ then test the specific claim against `execution-model-decision.md` and
   already succeeded and now have to redo work. If branches are independent and partial
   success is meaningful (some items processed, some not), catch failures per-branch or use a
   tolerated-failure-percentage on a Distributed Map instead of accepting all-or-nothing.
+- **"just use SQS for everything" / "let's use Kinesis, it's real-time"** — a queue (SQS)
+  hands each message to exactly one of a pool of competing workers and deletes it once
+  processed; it's the wrong tool the moment a second, independent consumer also needs to see
+  the same event (that's fan-out — SNS, or a stream), or a consumer needs to replay history
+  it missed (a queue's gone once consumed; a stream/log can be re-read). "Real-time" isn't
+  the deciding factor for Kinesis over SQS — ordering-per-key and multiple independent
+  readers are. Ask which of those properties (competing workers vs fan-out vs replay vs
+  per-key ordering) this actually needs before defaulting to whichever one is already
+  familiar or already deployed elsewhere in the account.
 
 Flag the load-bearing assumption as a question, not a correction.
 
@@ -187,7 +203,9 @@ the gate is satisfied. In short: name the unit of work and its duration/resource
 (items 2–3) → rule primitives in or out by the hard limits (duration, custom runtime, local
 state) before comparing on preference → decide the invocation model from the trigger and
 response need (item 4: sync / async / poll-based event-source mapping) → decide whether
-coordination needs a central orchestrator or tolerates choreography (item 6) → if
+coordination needs a central orchestrator or tolerates choreography, and if steps hand off
+via an event or message, which messaging technology actually fits — competing workers,
+fan-out, replay, or per-key ordering (item 6) → if
 orchestrated, assign each step's compute primitive and design its Retry (interval, backoff
 rate, max attempts, which error types) and Catch (which failures route where) individually —
 never on Choice/Pass/Wait/Succeed states, which don't call anything fallible → design the
@@ -201,7 +219,8 @@ Reference files:
   table (duration, statefulness, cold start, concurrency/scaling model, ops burden); the three
   invocation models (synchronous, asynchronous, poll-based event-source mapping) and each
   one's built-in retry and error-handling behavior; the real cost of synchronous
-  function-to-function chaining.
+  function-to-function chaining; the messaging-technology decision (queue vs pub/sub vs
+  stream/log) for what carries an event or message between steps.
 - `orchestration-and-failure-handling.md` — orchestration (state machine) vs choreography
   (event-driven) tradeoffs and when each earns its cost; Step Functions state types and which
   ones can carry `Retry`/`Catch` and why (Task, Parallel, Map — they call something fallible;
@@ -223,6 +242,7 @@ Unit of work:        <the operation from gate item 2, its trigger, and whether i
 Compute primitive:   <FaaS (Lambda) | container task (Fargate/ECS) | long-running service> — ruled in/out by duration & resource profile (item 3)
 Invocation model:    <synchronous | asynchronous | poll-based event-source mapping> — from the trigger & response need (item 4)
 Orchestration:       <state machine, naming the coordination need it serves | event-driven choreography, naming the coupling tradeoff accepted | none — single step>
+Messaging technology: <queue (competing workers) | pub/sub (fan-out) | stream/log (replay, per-key ordering) | ingest-to-destination | n/a — direct call or single step, with which property (fan-out/replay/ordering) drove the pick>
 Retry & catch:       <per step/state: max attempts, backoff, which error types retried vs caught vs left terminal>
 DLQ / failure dest.: <where exhausted attempts go, who's notified, and the idempotency requirement this imposes>
 Concurrency & scaling: <max concurrent executions, cold-start tolerance, provisioned concurrency if needed>

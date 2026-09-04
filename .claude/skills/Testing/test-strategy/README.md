@@ -10,7 +10,11 @@ writes a test plan and an ADR for the contested calls.
 Built from the `Architecture/Testing/` notes — Testing Hierarchy (70/20/10), Testing Stages
 Relationship, Unit / Integration vs System Integration / End to End / Smoke / Acceptance
 family, Functional and Non-functional Testing, Types of Testing Technique (black/white/grey
-box), Data Driven Testing, TDD, BDD, Cucumber vs Gherkin.
+box), Data Driven Testing, TDD, BDD, Cucumber vs Gherkin. The cloud-service-emulation and
+poorly-testable-artifact notes in `test-levels.md`'s Integration section were added
+`2026-09-04` from `Architecture/02. Backing Service Options/Cloud/LocalStack Setup.md`,
+`LocalStack Data Persistence.md`, `Containerizing LocalStack Environment.md`, and `Testing
+Step Functions.md`.
 
 ## Where it sits
 

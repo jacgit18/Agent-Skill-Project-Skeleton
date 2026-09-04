@@ -48,6 +48,8 @@ Dominant line:       <which one, and what share of the total>
 
 **The Surface is added to the answer, not substituted for it.** Guidance that does not depend on the figures — what to build, what is expensive to reverse — is still owed. Answer the question that was asked, and put the Surface in front of it.
 
+**The billing unit is not always "per request."** Get the actual basis before writing the `Compute:` line — a wrong basis produces a Surface that looks precise and is wrong. Example: AWS Step Functions Standard workflows bill per 1,000 **state transitions**, not per execution or per request — every retry, every `Map`/`Parallel` iteration, and every state entered counts as a transition, so a workflow's *state count* is itself a cost lever (collapsing five sequential validation states into one Lambda call cuts transitions, not just latency); Express workflows instead bill per invocation + GB-seconds, closer to Lambda's model. Check the actual pricing page's unit for any service before assuming request-based billing.
+
 ## When a figure is missing
 
 Assume, label, compute, correct. Do not stop for an input you can reasonably estimate:

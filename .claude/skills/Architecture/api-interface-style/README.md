@@ -9,7 +9,9 @@ secondary for a sub-case where needed) and writes an ADR.
 Built from the `Architecture/02. Backing Service Options/API/` notes — API Architecture
 Styles, API Design Basics (the REST / GraphQL / gRPC paradigm comparison), rest & Websockets,
 Designing APIs with WebHooks, Evolution of APIs (data vs service/RPC APIs), API Call
-(frontend vs backend).
+(frontend vs backend). The AppSync "managed implementations" note in `style-tradeoffs.md`'s
+GraphQL section was added `2026-09-04` from `Architecture/02. Backing Service Options/Cloud/
+AWS/AppSync.md`.
 
 ## Where it sits
 

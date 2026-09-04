@@ -47,6 +47,17 @@ isolated API quirk; the actual reason is structural and applies to every non-Tas
 state — none of them invoke anything that can throw. Keep the fallible operation in a Task
 upstream of any Choice, Pass, or Wait that depends on its result.
 
+**The data passed between states is itself a contract, not just the control flow.** Step
+Functions moves data between states via JSONPath (`InputPath`, `ResultPath`, `OutputPath` —
+`$.foo.bar` addressing into the JSON blob), and a state's output shape has to match what the
+next state's `Task` parameters or `Choice` conditions expect. A field renamed, nested one
+level differently, or a type changed (string where a number was expected) doesn't fail loudly
+at the point of the mistake — it produces a runtime `States.Runtime` or a `Choice` silently
+taking the wrong branch, often several states downstream of the actual defect. Treat each
+state's input/output shape as a versioned contract the same way a REST/GraphQL API boundary
+is one: define it, and validate a Task's output against it in that Task's own code before
+returning, rather than discovering the mismatch two states later.
+
 ## Hard failures vs soft failures
 
 - **Hard (terminal) failures** — `States.Timeout`, an unhandled exception, a malformed

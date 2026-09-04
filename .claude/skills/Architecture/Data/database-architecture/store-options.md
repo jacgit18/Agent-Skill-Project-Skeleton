@@ -83,3 +83,41 @@ controls turned on** — the defaults are not enough:
 
 Record which of these the design commits to in the ADR's Consequences section, the same way a
 regulated class pushes DB-enforced constraints in `decision-framework.md` step 3.
+
+---
+
+## Concrete service names — AWS
+
+Useful once the shape or paradigm above is decided and the conversation moves to naming an
+actual product. Not itself a decision aid — picking a service by name before its shape or
+paradigm is settled is the mistake `SKILL.md`'s gate exists to prevent.
+
+**Storage shapes:**
+
+| Shape | AWS service | Note |
+|---|---|---|
+| Block | EBS | Attaches to one EC2 instance; the disk under a self-managed database |
+| Object | S3 | Storage classes (Standard / Standard-IA / One Zone-IA / Glacier tiers) trade retrieval speed for cost — Intelligent-Tiering automates the choice by access pattern; a lifecycle policy is how "move to a colder tier after N days" gets enforced, not application code |
+| DFS | EFS | POSIX filesystem mounted concurrently from many EC2/Lambda/ECS/EKS clients over a VPC; FSx is the equivalent for Windows/Lustre workloads |
+| Hybrid on-prem bridge | AWS Storage Gateway | Not a fourth shape — a way to back an on-prem file/volume/tape workflow with S3 without rearchitecting the on-prem side first |
+| One-time bulk transfer | Snowball / Snowmobile | For an initial migration's data volume too large to move over a network link in the available time; not an ongoing storage tier |
+
+**Database paradigms** (extends the paradigm list in `SKILL.md`'s "When persistence isn't
+decided yet"):
+
+| Paradigm | AWS service |
+|---|---|
+| Relational | Aurora, RDS |
+| Key-value | DynamoDB |
+| In-memory | ElastiCache (Redis / Memcached) — a cache in front of a store, see `caching-strategy`, not itself a system of record |
+| Document | DocumentDB |
+| Wide-column | Keyspaces |
+| Graph | Neptune |
+| Time-series | Timestream |
+| Ledger (append-only, cryptographically verifiable history) | QLDB |
+
+The IaaS-vs-managed axis is orthogonal to the paradigm choice: any of the relational engines
+above can be self-run on an EC2 instance (full control, full operational burden) or consumed
+as the managed service named (AWS owns patching/backups/failover; less control over
+configuration). Reach for self-managed only when a specific requirement the managed tier
+doesn't support forces it — the managed tier is the default, not the exception to justify.
