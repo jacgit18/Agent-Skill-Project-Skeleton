@@ -78,9 +78,12 @@ stated. **Do not invent them.** If any is missing, name it and stop.
 4. **Non-functional numeric targets** — real numbers, or an explicit "not a constraint":
    - **Throughput ceiling** — peak RPS / requests per day the design must survive.
    - **Concurrency** — simultaneous users / connections / sessions.
-   - **Latency budget** — p50 and p99 targets for the key operations.
-   - **Availability** — the uptime target (99.9 / 99.95 / 99.99) and what an hour of
-     downtime costs.
+   - **Latency budget** — p50 and p99 targets for the key operations. A single percentile
+     (just "p95 < 3s") satisfies the gate; note the unstated one as a non-blocking gap.
+   - **Availability** — the uptime target (99.9 / 99.95 / 99.99) and, if known, what an
+     hour of downtime costs. The cost-of-downtime figure is the one sub-item that may be
+     left as "not quantified" without failing the gate — but say so, and characterise the
+     impact qualitatively ("dispatch stalls, revenue-impacting, not safety-critical").
    - **Error budget** — the acceptable error rate for the critical path.
    - **Cost cap** — a monthly infrastructure ceiling, or a unit-economics target
      (cost per user / per request / per GB).
@@ -98,7 +101,9 @@ stated. **Do not invent them.** If any is missing, name it and stop.
 6. **The 1–2 features to design deeply** — of everything in scope, which one or two
    decisions are significant enough (see the significance filter) to design in depth and
    write down now. Everything else is acknowledged and deferred. If the user can't name
-   them, the filter below is the tool to find them — but the user makes the call.
+   them, the filter below is the tool to find them — but the user makes the call. If the
+   user *has* named them, still run the filter over each pick — to confirm it's genuinely
+   deep-dive-worthy and to generate the blast-radius line the scope statement records.
 
 "Design a system for real-time collaborative editing" with items 2–6 absent is not valid
 input. The reply is the list of what's missing, framed as the scope the user needs to
@@ -226,16 +231,27 @@ Then hand off to the first skill in the sequence. Typical order:
 4. `database-architecture` — where the source of truth lives and which store.
 5. `failure-mode-analysis` — the failure surface of the resulting design, before sign-off.
 
-Not every design needs all five; the sequence names the ones the scope statement implies.
+Not every design needs all five, and the sequence is not a closed list — a scope statement
+may also pull in `data-tier-operations` (scaling an existing store), `technical-cost-decision`
+(when the cost cap is tight), or `caching-strategy` where the deep-dive decisions imply
+them. Name the skills this scope actually needs, in dependency order.
+
+When the 1–2 deep-dive decisions are **coupled** (one's output is the other's input — a
+location-ingest design that feeds an assignment engine), say so and order them: design the
+upstream one first.
 
 ---
 
 ## Escape hatch
 
 If the user has genuinely done the scoping — purpose, audience, functional and out-of-scope
-lists, numeric targets, constraints, and the deep-dive picks all stated — and wants the
-scope statement assembled and the sequence planned rather than a Socratic pass, they say so
-and you produce it directly. Opt-in, not the default.
+lists, numeric targets, constraints, and the deep-dive picks all stated — assemble the
+scope statement and plan the sequence directly rather than running a Socratic pass over
+things they already answered. This applies whether they *ask* for direct assembly or simply
+open with a fully-specified message: a complete opening dump is treated as the escape-hatch
+case. Re-interrogating a user who already gave you everything is the failure here, not a
+safeguard. (Still run the significance filter over their named deep-dive picks — that's
+analysis they're owed, not a re-ask.)
 
 ---
 

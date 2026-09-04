@@ -8,12 +8,21 @@ The failure this prevents runs both ways: designing all forty decisions up front
 and most of them will change), or treating a foundational decision as "just an
 implementation detail" and getting boxed in six months later.
 
+When the user has already named their 1–2 picks, run the filter over each one anyway — to
+confirm it's genuinely load-bearing (occasionally a named pick is really mid-level and a
+different decision deserves the slot) and to produce the blast-radius sentence the scope
+statement records. If two picks are coupled — one's design is an input to the other's —
+note it and design the upstream one first.
+
 ---
 
 ## The three tests
 
-Apply all three to each candidate decision. A decision that fails all three is a
-deep-dive-now item; one that passes all three is safe to defer.
+Apply all three to each candidate decision and read the *significance* off them: a decision
+that scores **high on all three** — wide blast radius, an architect's call, a migration to
+undo — is a deep-dive-now item. One that scores **low on all three** — local blast radius,
+a developer's call, trivially reversible — is safe to defer. Mixed results sit in the
+middle: deep-dive only if it's on the critical path for the purpose (gate item 2).
 
 ### 1. Blast radius — "if I change this later, how much breaks?"
 
