@@ -79,10 +79,12 @@ designed against as if it were real.
 4. **Actions per user (or per driver) per day, by type** — how many times a day the average
    user performs each dominant operation. Split writes from reads. "Posts 2 photos, scrolls
    past 300" — not "uses the app a lot".
-5. **Payload sizes, by type** — the bytes of a request, and separately the bytes of what
-   gets *stored* per write (a record, a row, an object) and what gets *returned* per read
-   (one object, a page of N). Include a realistic size, not the text-only size — a "comment"
-   is not 40 bytes once you count IDs, timestamps, and indexes.
+5. **Payload sizes, by type** — the bytes of what gets *stored* per write (a record, a row,
+   an object) and what gets *returned* per read (one object, a page of N). Include a
+   realistic size, not the text-only size — a "comment" is not 40 bytes once you count IDs,
+   timestamps, and indexes. The request (ingress) size is also needed, but it is optional
+   when the read:write ratio is above ~10:1 — ingress is noise next to egress there, so a
+   rough "≈ stored size" is fine and does not hold the gate.
 6. **Read:write ratio** — the whole-system ratio of read operations to write operations.
    Most systems are read-heavy (10:1 to 1000:1); a few (telemetry ingest, logging,
    event capture) are write-heavy. State which, with a number.
@@ -99,6 +101,13 @@ designed against as if it were real.
 
 "Estimate the storage for a chat app" with items 3–9 absent is not valid input. The reply
 is the list of what is missing, phrased as the assumptions the user needs to commit to.
+
+**Partially-missing inputs.** If one dominant operation the user stated is really two for
+sizing purposes (a "post or comment" that stores at different sizes), or a sub-split inside
+a stated number is unspecified, judge by what it feeds: if it only moves a **non-binding**
+quantity, assume a value, flag it inline, and proceed; block only when the missing piece
+feeds a **candidate binding ceiling** (the thing that might turn out to be "what binds
+first"). Don't hold the whole gate for a number that changes nothing that matters.
 
 **Pressure does not open the gate.** "Just give me a rough number", "ballpark it", "I don't
 know the exact figures, guess" are requests to skip the rep. The correct fast path is items

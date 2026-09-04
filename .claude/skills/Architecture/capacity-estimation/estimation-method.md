@@ -30,15 +30,14 @@ checkable and stops zero-counting mistakes.
 | Span | Seconds | Estimation shortcut |
 |---|---|---|
 | 1 hour | 3,600 | — |
-| 1 day | 86,400 | ~10^5 for quick division; **round down to 80,000 if you want the rate biased slightly high (safe)** |
+| 1 day | 86,400 | use as-is; if you must round for mental math, round *down* to 80,000 (biases the rate high — safe) |
 | 1 month (30 d) | 2,592,000 | ~2.5 × 10^6 |
 | 1 year (365 d) | 31,536,000 | ~3 × 10^7 |
 
-Dividing a daily total by a *larger* seconds-per-day gives a *smaller* per-second rate, so
-rounding 86,400 **up** to 100,000 under-states QPS by ~15%. Either use 86,400 as-is, or
-round **down** to 80,000 to bias the rate high. Whichever you pick, size the final capacity
-off the **peak** rate (average × peak factor), so the rounding direction on the average is
-not what the design hangs on. State the shortcut you used.
+Simplest is to divide by 86,400 directly. Rounding it *up* to 100,000 under-states QPS by
+~15%; rounding *down* to 80,000 biases it high. Either way, size the final capacity off the
+**peak** rate (average × peak factor), so the rounding direction on the average is not what
+the design hangs on.
 
 ---
 
@@ -108,7 +107,15 @@ ingress bytes/day  = writes/day × request payload bytes       (bytes entering)
 ```
 
 Egress almost always dominates: the system is read-heavy and a response is larger than a
-write acknowledgement. Convert to a peak line rate in **bits** per second:
+write acknowledgement.
+
+**"Returned bytes per read" is the content / API payload**, not the page weight. For a
+browser-facing system the HTML + JS + CSS + fonts + images on the wire are separate and
+usually 10–100× the API payload — but they are typically immutable and CDN-offloadable, so
+they inflate the *user-facing* egress total, not the *origin* egress. Report both when the
+system serves a web UI: origin egress ≈ `(1 − CDN offload) ×` the full number.
+
+Convert to a peak line rate in **bits** per second:
 
 ```
 peak egress (bps)  = (egress bytes/day ÷ seconds per day) × peak:average ratio × 8
@@ -134,9 +141,16 @@ cache bytes        = hot object count × object size in cache
 reads; cache that 20%. Adjust from the access pattern (a recency-dominated feed might have
 5% hot; a small reference dataset, 100%).
 
-**Estimating "distinct objects served in the window"** when it is not given: bound it by
-recent writes — e.g. "reads concentrate on the last 2 days of content" → distinct hot
-objects ≈ 2 × writes/day. Or by the catalog size for a fixed dataset.
+**Estimating "distinct objects served in the window"** when it is not given, pick the model
+that matches the access pattern:
+
+- **Recency-driven** (feeds, timelines, chat): bound by recent writes — "reads concentrate
+  on the last 2 days" → distinct hot objects ≈ 2 × writes/day.
+- **Structure-driven** (a link aggregator's front page + top-N threads, a storefront's
+  category pages, a leaderboard): size the *structure* — the number of listing pages, top-N
+  entries, or featured objects that actually get served — not a time window. A recency
+  window will land in the right order of magnitude but hands you the wrong mental model.
+- **Fixed dataset** (reference data, a product catalog): the hot fraction of the whole set.
 
 A cache is usually **not** replicated for durability (it is a cache); if it is replicated
 for read throughput or HA, multiply, but say so.
