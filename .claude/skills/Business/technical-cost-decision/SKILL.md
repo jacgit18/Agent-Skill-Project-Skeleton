@@ -1,6 +1,6 @@
 ---
 name: technical-cost-decision
-description: Use when a technical decision carries a recurring price — choosing between infrastructure or managed services, sizing a system against a stated volume (requests/day, users, uploads, events, GB, tokens), planning work to bring down a cloud bill, evaluating build-versus-buy, or when the request mentions a monthly spend, a budget, a runway, or a savings target. Also use when someone proposes spending engineering effort to save money, or asks whether something is going to get expensive. Covers AWS/GCP/Azure bills, egress and data transfer, per-request and per-token API pricing, storage growth, and managed-service premiums.
+description: Use when a technical decision carries a recurring price — choosing between infrastructure or managed services, sizing a system against a stated volume (requests/day, users, uploads, events, GB, tokens), planning work to bring down a cloud bill, evaluating build-versus-buy, or when the request mentions a monthly spend, a budget, a runway, or a savings target. Also use when someone proposes spending engineering effort to save money, or asks whether something is going to get expensive. Covers AWS/GCP/Azure bills, egress and data transfer, per-request and per-token API pricing, storage growth, and managed-service premiums. Sizes the bill and finds the dominant line item; deciding which signals, sampling rates, or retention tiers to change on a telemetry/observability stack to bring its cost down is `observability-strategy`.
 ---
 
 # Technical Cost Decision
