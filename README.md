@@ -80,9 +80,10 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | Skill | Role |
 |---|---|
 | [`learning-gate`](.claude/skills/learning-gate/) | Classifies intent (learning / execution / reference) and sets how much of the thinking Claude may do. |
-| [`problem-solving-gates`](.claude/skills/problem-solving-gates/) | Rubber Duck (debugging), Options Generator (architecture), Knowledge Checker — each requires prior independent effort. |
+| [`problem-solving-gates`](.claude/skills/problem-solving-gates/) | Rubber Duck (debugging), Options Generator (architecture), Knowledge Checker, Optimization (faster/cheaper, bring a profile) — each requires prior independent effort. |
 | [`microservices-decision`](.claude/skills/microservices-decision/) | Whether and how to split services, bounded by the number of people who can own them. |
 | [`api-interface-style`](.claude/skills/api-interface-style/) | Picks the interaction style for one API surface — REST / GraphQL / gRPC / WebSocket / SSE / webhooks / async messaging — from its consumers, interaction shape, and latency / real-time needs. Produces an ADR. |
+| [`observability-strategy`](.claude/skills/Architecture/observability-strategy/) | Decides how a system is instrumented — signal set (metrics / logs / traces / profiling), SLIs & SLOs, sampling & cardinality budget, symptom-based alerting, retention, self-hosted vs managed. Produces an ADR. |
 | [`technical-cost-decision`](.claude/skills/technical-cost-decision/) | Forces the cost arithmetic on any decision that carries a recurring price. |
 | [`ticket-evaluation`](.claude/skills/ticket-evaluation/) | Separates what a ticket says from what it's missing from what can be judged; verdict last. |
 | [`explaining-my-work`](.claude/skills/explaining-my-work/) | One evidence base rendered at three altitudes — plain summary, spoken script, public post. |

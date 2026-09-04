@@ -9,8 +9,8 @@ assistant doesn't quietly do a reasoning rep the user could do themselves. Each 
 written from a note in the `PersonalBrain` Obsidian vault ("DevHiveMind") — the source note is
 named in each entry.
 
-**Count:** 21 skills — 7 top-level, 5 in `Data/`, 3 in `Testing/`, 5 in `Prompts/`, 1 in
-`Git/` (`commit-and-push`).
+**Count:** 22 skills — across `Architecture/` (incl. `Architecture/Data/`), `Business/`,
+`Skill Development/`, `Testing/`, `Prompts/`, and `Git/`.
 
 ---
 
@@ -235,13 +235,15 @@ test-practice-gate   →  the charter you must state before Claude writes a test
   `assistance-levels.md`.
 
 ### `problem-solving-gates`
-- **Does:** Three gated modes — **Rubber Duck** (debugging, bring a hypothesis), **Options
+- **Does:** Four gated modes — **Rubber Duck** (debugging, bring a hypothesis), **Options
   Generator** (architecture decision, bring constraints + a lean), **Knowledge Checker** (bring
-  a first-pass explanation). Each keeps the assistant's contribution deliberately narrow.
-- **Triggers on:** "what's wrong with my code", "what should I do", "am I right that X" —
-  without a shown attempt.
+  a first-pass explanation), **Optimization** (making something faster/cheaper, bring a
+  profile / benchmark of where the time actually goes). Each keeps the assistant's
+  contribution deliberately narrow.
+- **Triggers on:** "what's wrong with my code", "what should I do", "am I right that X", "how
+  do I speed this up" — without a shown attempt (or, for Optimization, a measurement).
 - **Does not apply to:** writing new code from scratch, or reviewing a finished draft.
-- **Companion folder:** `examples/`.
+- **Companion folder:** `examples/` (one per mode).
 
 ### `microservices-decision`
 - **Does:** Whether and how to adopt microservices, split a monolith, or draw service
@@ -275,6 +277,31 @@ test-practice-gate   →  the charter you must state before Claude writes a test
 - **Source notes:** `Architecture/02. Backing Service Options/API/` — API Architecture Styles,
   API Design Basics, rest & Websockets, Designing APIs with WebHooks, Evolution of APIs, API
   Call. Companion files: `selection-framework.md`, `style-tradeoffs.md`, `adr-template.md`.
+
+### `observability-strategy`
+- **Does:** Decides how a service/system is made observable — which signals to invest in
+  (metrics, structured logs, distributed traces, profiling, events), the SLIs that define
+  "working" and whether to set SLOs + an error budget, the instrumentation approach (OTel
+  SDK / auto-instrumentation / vendor agent + collector topology), sampling (head vs tail)
+  and the metric-label / log-field cardinality budget, the alerting policy (symptom / SLO-burn
+  paging vs cause-based tickets), retention tiers per signal, and self-hosted vs managed.
+- **Triggers on:** "we need monitoring / observability", "add Datadog / Grafana / Honeycomb",
+  "set up distributed tracing", "what should we alert on", "we can't tell why prod is slow",
+  "incidents take hours to diagnose", "we're committing to an SLA", or a proposed approach to
+  check ("log everything", "100% trace sampling", "alert on every error").
+- **Gate:** refuses a signal/tool/alert until the user supplies the triggering pressure (a
+  specific incident / named blind spot / SLA / cost problem — not "best practice"), the
+  user-facing SLIs, the architecture shape + request-path hop count, request volume +
+  high-cardinality dimensions, retention/PII constraints, and operational capacity + on-call.
+- **Boundary:** *not* the dollar sizing of the telemetry backend (→ `technical-cost-decision`);
+  *not* diagnosing one slow endpoint now (→ `problem-solving-gates` Rubber Duck / Optimization);
+  *not* whether to split services (→ `microservices-decision`, whose shape it consumes);
+  *not* SIEM / audit logging as a compliance control (future `security-architecture`).
+- **Produces:** a recommendation block, then an ADR reusing `database-architecture`'s template.
+- **Source notes:** `Architecture/` — `Monitoring & Observability.md`, `Distributed Tracking &
+  Monitoring.md`, `OpenTelemetry.md`, `12 Key Metrics for Measuring Service Performance.md`,
+  `Fault Tolerance.md`, `Chaos Engineering.md`. Companion files: `observability-framework.md`,
+  `signals-and-slos.md`.
 
 ### `technical-cost-decision`
 - **Does:** Forces three specific calculations on any technical decision that carries a
@@ -323,7 +350,7 @@ Directions the source notes already sketch. None built yet.
 | **contract-authoring** | API/event contract *authoring* once the style is chosen — versioning scheme, backward/forward compatibility, DTO and error-shape design, deprecation policy. The pieces `api-interface-style` explicitly defers. | `database-architecture` README, "Still not built"; `api-interface-style` "Deferred". |
 | **implementation** | Turning an approved ADR into migrations, models, DTOs, and wiring — the step the Data skills deliberately stop before. | `database schema disscusiion.md`, sketched as an agent. |
 | **Practice Gates** (code / database) | Rep-oriented gating for implementation work — siblings of `problem-solving-gates` and `Testing/test-practice-gate` (the test one, now built), pointed to from `learning-gate` Step 3. | `learning-gate` README, "Not built". |
-| **Architecture Impact / Risk Analysis / Test Generation / Observability / Refactoring agents** | Five agents mapped to system surfaces, run at PR / dev / deploy stages. | `Goals/AI/Agents.md`, "The Five Agents I Would Build". |
+| **Architecture Impact / Risk Analysis / Test Generation / Refactoring agents** | Four of the five agents mapped to system surfaces, run at PR / dev / deploy stages. (The fifth, Observability, is partly served by `observability-strategy` — a decision gate, not a PR-stage agent.) | `Goals/AI/Agents.md`, "The Five Agents I Would Build". |
 
 ---
 

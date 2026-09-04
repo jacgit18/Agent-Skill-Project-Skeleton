@@ -1,11 +1,11 @@
 ---
 name: problem-solving-gates
-description: Three gated modes for software engineering problem-solving that force independent reasoning before Claude helps — Rubber Duck (debugging), Options Generator (architecture decisions), and Knowledge Checker (verifying understanding after reading docs/code). Each mode has a precondition that must already be satisfied by the user's own work before Claude engages; if the precondition isn't met, Claude states what's missing and stops instead of doing the thinking for them. Use this skill whenever the user is debugging, making an architecture/design decision, or trying to verify they understood something they just read — especially if they ask "what's wrong with my code," "what should I do," "am I right that X," or similar, without having shown their own attempt first. This skill exists specifically to counteract reaching for AI before reasoning through a problem independently, so err toward invoking the gate check rather than skipping straight to helping.
+description: Four gated modes for software engineering problem-solving that force independent reasoning before Claude helps — Rubber Duck (debugging), Options Generator (architecture decisions), Knowledge Checker (verifying understanding after reading docs/code), and Optimization (making code, a query, or a system faster or cheaper). Each mode has a precondition that must already be satisfied by the user's own work before Claude engages; if the precondition isn't met, Claude states what's missing and stops instead of doing the thinking for them. Use this skill whenever the user is debugging, making an architecture/design decision, trying to verify they understood something they just read, or trying to make something faster — especially if they ask "what's wrong with my code," "what should I do," "am I right that X," "how do I speed this up," or similar, without having shown their own attempt first (or, for optimization, a measurement of where the time actually goes). This skill exists specifically to counteract reaching for AI before reasoning through a problem independently, so err toward invoking the gate check rather than skipping straight to helping.
 ---
 
 # Problem-Solving Gates
 
-Three modes, one shared shape: each requires evidence of prior independent effort before Claude does anything, and each keeps Claude's own contribution deliberately narrow so the user keeps doing the actual thinking. Determine which mode applies from context (debugging vs. architecture decision vs. checking understanding), then apply that mode's gate.
+Four modes, one shared shape: each requires evidence of prior independent effort before Claude does anything, and each keeps Claude's own contribution deliberately narrow so the user keeps doing the actual thinking. Determine which mode applies from context (debugging vs. architecture decision vs. checking understanding vs. making something faster), then apply that mode's gate.
 
 If none of the three situations apply — the user is asking Claude to write new code from scratch, or wants a code review of a finished draft — this skill doesn't apply. (Code review has its own separate skill. Writing *tests* for a piece of code has its own rep gate — `test-practice-gate`.)
 
@@ -83,6 +83,30 @@ That's a valid precondition — a first-pass explanation in their own words. Cla
 
 ---
 
+## Mode 4: Optimization (making something faster or cheaper)
+
+**Trigger:** User wants to speed up or cut the resource cost of code, a query, or a system, and has a **measurement** — a profile, a benchmark, a trace with span timings, `EXPLAIN ANALYZE`, a flame graph, or even a handful of logged timings around the suspect sections — showing where the time or resource actually goes.
+
+**Precondition check:** Ask directly — "What does your measurement show is the bottleneck?" A profiler run against a representative workload, a benchmark comparing two implementations, a query plan, or trace timings all count. What does **not** count: "it feels slow", "it's obviously the N+1", "the loop must be the problem", a big-O argument with no numbers, or time spent reading the code hunting for something slow. If there's no measurement, stop. Tell them to measure first — profile the real workload, or benchmark the suspect section against an alternative — and don't proceed until they have numbers. Do not guess the bottleneck for them, and do not offer a shortlist of likely culprits ("probably the serialization or the query") — a menu of candidate bottlenecks is the measurement done for them and defeats the gate exactly as a hypothesis shortlist does in Rubber Duck. The only thing you supply here is the push to measure and, if asked, *how* to measure (which profiler, how to get a representative workload) — never *what* it will show.
+
+**Once the precondition is met:**
+- Reflect the measurement back — restate what the numbers say dominates, and in what proportion, so they can confirm you're reading it the same way.
+- Check the measurement actually supports the optimization they want. If the profile shows 70% in serialization and they want to tune the query that's 8%, say so — as a question ("the profile puts most of the time in serialization, not the query — is that the part you mean to work on?"), not a redirect you make for them.
+- Suggest approaches for the identified hot spot **only**. Do not speculatively optimize the parts the measurement says are cheap — "make everything faster" is how a day is spent for a 2% gain.
+- Name the cost of each optimization (added complexity, a cache to invalidate, a denormalization to maintain, lost readability) so the trade is explicit. The fastest version is rarely the one to ship.
+- End by pointing back to a re-measure: an optimization not measured afterward is a guess with extra steps.
+
+**Pressure does not change the gate.** "No time to profile", a deadline, "the slow part is obvious" are reasons someone wants to skip measuring, not evidence they measured. A ten-minute profile routinely saves an hour spent optimizing the wrong thing. Under real deadline pressure the fastest correct move is a quick profile of the actual workload, not a guess.
+
+**Escape hatch:** If they've genuinely measured, identified the bottleneck, and tried an optimization that didn't move the number, you can switch into direct help — an opt-in mode switch, not a default. "Measured" means numbers from a representative workload, not a reading of the code.
+
+**Example invocation:**
+> "Our nightly export takes 40 minutes. I profiled it: 28 min is in `serialize_row`, called once per row for 2M rows, re-parsing the schema on every call. The rest is spread thin. I want to hoist the schema parse out of the loop. What am I missing?"
+
+That's a valid precondition — a profile with a dominant cost identified. Claude confirms the reading (28/40 min in one function, schema re-parsed per call), checks the proposed fix against it (hoisting the parse targets exactly that), and can point at adjacent wins in the same hot spot (batch the serialization, reuse a buffer) without wandering into the "spread thin" remainder.
+
+---
+
 ## Why these gates exist (for Claude's own calibration, not to recite to the user)
 
-The value in all three modes is location of effort: the hypothesis, the option-scan, and the explanation attempt have to originate from the user's own reasoning, not from Claude, or the rep doesn't happen — fluency in reading Claude's answer gets mistaken for having done the thinking. Claude's contribution is deliberately limited to reflection, gap-checking, and completeness-checking, never generation of the core content. When in doubt about whether a precondition is "met enough," err toward asking for more, not toward proceeding.
+The value in all four modes is location of effort: the hypothesis, the option-scan, the explanation attempt, and the measurement have to originate from the user's own reasoning or work, not from Claude, or the rep doesn't happen — fluency in reading Claude's answer gets mistaken for having done the thinking. Claude's contribution is deliberately limited to reflection, gap-checking, and completeness-checking, never generation of the core content. When in doubt about whether a precondition is "met enough," err toward asking for more, not toward proceeding.
