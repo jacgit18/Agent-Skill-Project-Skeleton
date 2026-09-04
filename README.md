@@ -37,11 +37,11 @@ unknown, a settled prior decision) is met, so AI doesn't quietly replace a learn
 
 | Skill | Role |
 |---|---|
-| [`Data/database-architecture`](.claude/skills/Data/database-architecture/) | Decides **where** the source of truth lives (database-first / code-first / contract-first) and **which** store. Produces an ADR. |
-| [`Data/relational-modeling`](.claude/skills/Data/relational-modeling/) | Turns a settled "we're relational" into table design — normal form and exceptions, keys, constraints, index plan, lifecycle columns. |
-| [`Data/data-tier-operations`](.claude/skills/Data/data-tier-operations/) | Scales an existing database — replication topology, partitioning vs sharding, isolation level, distributed-transaction pattern, failover, pooling. |
-| [`Data/dimensional-modeling`](.claude/skills/Data/dimensional-modeling/) | Designs an analytical OLAP model — fact-table grain, conformed / role-playing / degenerate dimensions, SCD strategy, star vs snowflake vs galaxy. |
-| [`Data/caching-strategy`](.claude/skills/Data/caching-strategy/) | Decides whether to cache a read path and how — cache layer, cache-aside / write-through / etc., TTL vs explicit invalidation, eviction policy, stampede / avalanche handling. Produces an ADR. |
+| [`Architecture/Data/database-architecture`](.claude/skills/Architecture/Data/database-architecture/) | Decides **where** the source of truth lives (database-first / code-first / contract-first) and **which** store. Produces an ADR. |
+| [`Architecture/Data/relational-modeling`](.claude/skills/Architecture/Data/relational-modeling/) | Turns a settled "we're relational" into table design — normal form and exceptions, keys, constraints, index plan, lifecycle columns. |
+| [`Architecture/Data/data-tier-operations`](.claude/skills/Architecture/Data/data-tier-operations/) | Scales an existing database — replication topology, partitioning vs sharding, isolation level, distributed-transaction pattern, failover, pooling. |
+| [`Architecture/Data/dimensional-modeling`](.claude/skills/Architecture/Data/dimensional-modeling/) | Designs an analytical OLAP model — fact-table grain, conformed / role-playing / degenerate dimensions, SCD strategy, star vs snowflake vs galaxy. |
+| [`Architecture/Data/caching-strategy`](.claude/skills/Architecture/Data/caching-strategy/) | Decides whether to cache a read path and how — cache layer, cache-aside / write-through / etc., TTL vs explicit invalidation, eviction policy, stampede / avalanche handling. Produces an ADR. |
 
 ```
 database-architecture   →  WHERE the schema lives + WHICH store  (ADR)
@@ -75,21 +75,19 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | [`Prompts/session-handoff`](.claude/skills/Prompts/session-handoff/) | Writes a structured handoff file before a session compacts or work resumes elsewhere. |
 | [`Prompts/skill-interaction-testing`](.claude/skills/Prompts/skill-interaction-testing/) | Tests a new or changed skill against every sibling for stacking, contradiction, silent override, and beneficial chaining. |
 
-### Decision skills (top level)
+### Architecture, Business, Skill Development, Git
 
 | Skill | Role |
 |---|---|
-| [`learning-gate`](.claude/skills/learning-gate/) | Classifies intent (learning / execution / reference) and sets how much of the thinking Claude may do. |
-| [`problem-solving-gates`](.claude/skills/problem-solving-gates/) | Rubber Duck (debugging), Options Generator (architecture), Knowledge Checker, Optimization (faster/cheaper, bring a profile) — each requires prior independent effort. |
-| [`microservices-decision`](.claude/skills/microservices-decision/) | Whether and how to split services, bounded by the number of people who can own them. |
-| [`api-interface-style`](.claude/skills/api-interface-style/) | Picks the interaction style for one API surface — REST / GraphQL / gRPC / WebSocket / SSE / webhooks / async messaging — from its consumers, interaction shape, and latency / real-time needs. Produces an ADR. |
-| [`observability-strategy`](.claude/skills/Architecture/observability-strategy/) | Decides how a system is instrumented — signal set (metrics / logs / traces / profiling), SLIs & SLOs, sampling & cardinality budget, symptom-based alerting, retention, self-hosted vs managed. Produces an ADR. |
-| [`technical-cost-decision`](.claude/skills/technical-cost-decision/) | Forces the cost arithmetic on any decision that carries a recurring price. |
-| [`ticket-evaluation`](.claude/skills/ticket-evaluation/) | Separates what a ticket says from what it's missing from what can be judged; verdict last. |
-| [`explaining-my-work`](.claude/skills/explaining-my-work/) | One evidence base rendered at three altitudes — plain summary, spoken script, public post. |
-| [`commit-and-push`](.claude/skills/commit-and-push/) | Stages, commits, and pushes with a message derived from the actual diff. |
-
-`Git/` is an empty placeholder for future git-workflow skills.
+| [`Skill Development/learning-gate`](.claude/skills/Skill%20Development/learning-gate/) | Classifies intent (learning / execution / reference) and sets how much of the thinking Claude may do. |
+| [`Skill Development/problem-solving-gates`](.claude/skills/Skill%20Development/problem-solving-gates/) | Rubber Duck (debugging), Options Generator (architecture), Knowledge Checker, Optimization (faster/cheaper, bring a profile) — each requires prior independent effort. |
+| [`Architecture/microservices-decision`](.claude/skills/Architecture/microservices-decision/) | Whether and how to split services, bounded by the number of people who can own them. |
+| [`Architecture/api-interface-style`](.claude/skills/Architecture/api-interface-style/) | Picks the interaction style for one API surface — REST / GraphQL / gRPC / WebSocket / SSE / webhooks / async messaging — from its consumers, interaction shape, and latency / real-time needs. Produces an ADR. |
+| [`Architecture/observability-strategy`](.claude/skills/Architecture/observability-strategy/) | Decides how a system is instrumented — signal set (metrics / logs / traces / profiling), SLIs & SLOs, sampling & cardinality budget, symptom-based alerting, retention, self-hosted vs managed. Produces an ADR. |
+| [`Business/technical-cost-decision`](.claude/skills/Business/technical-cost-decision/) | Forces the cost arithmetic on any decision that carries a recurring price. |
+| [`Business/ticket-evaluation`](.claude/skills/Business/ticket-evaluation/) | Separates what a ticket says from what it's missing from what can be judged; verdict last. |
+| [`Business/explaining-my-work`](.claude/skills/Business/explaining-my-work/) | One evidence base rendered at three altitudes — plain summary, spoken script, public post. |
+| [`Git/commit-and-push`](.claude/skills/Git/commit-and-push/) | Stages, commits, and pushes with a message derived from the actual diff. |
 
 ## Prompt logging
 
