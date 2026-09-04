@@ -26,7 +26,7 @@ dimensional-modeling     →  design the OLAP model (star / dimensions / SCD) �
 caching-strategy         →  cache a read path (layer / pattern / freshness) → ADR
 ```
 
-### `Data/database-architecture`
+### `Architecture/Data/database-architecture`
 - **Does:** Decides where a piece of data's source of truth should live — database-first,
   code-first, or contract-first — and which store, given the system boundaries and consumers.
 - **Triggers on:** about to design or change a schema, an API shape, or a domain model; "where
@@ -38,7 +38,7 @@ caching-strategy         →  cache a read path (layer / pattern / freshness) �
 - **Source note:** `database schema disscusiion.md`. Companion files: `decision-framework.md`,
   `schema-taxonomy.md`, `adr-template.md`.
 
-### `Data/relational-modeling`
+### `Architecture/Data/relational-modeling`
 - **Does:** Turns a settled "we're relational" into a table design — normal form and the
   denormalization exceptions, key strategy (surrogate vs natural, int vs UUID), constraint
   placement, an index plan, lifecycle/audit columns, relationship patterns.
@@ -52,7 +52,7 @@ caching-strategy         →  cache a read path (layer / pattern / freshness) �
   Database Table Relationship Types, Self-joining relationships. Companion files:
   `modeling-framework.md`, `normalization-and-keys.md`, `indexing-and-constraints.md`.
 
-### `Data/data-tier-operations`
+### `Architecture/Data/data-tier-operations`
 - **Does:** Scales and distributes an existing database — read replicas and replication
   topology, partitioning vs sharding and the shard-key choice, transaction isolation,
   distributed-transaction pattern (2PC / Saga / outbox / eventual), failover and RPO/RTO,
@@ -69,7 +69,7 @@ caching-strategy         →  cache a read path (layer / pattern / freshness) �
   Database Hosting. Companion files: `operations-framework.md`, `scaling-topologies.md`,
   `consistency-and-transactions.md`.
 
-### `Data/dimensional-modeling`
+### `Architecture/Data/dimensional-modeling`
 - **Does:** Designs an analytical (OLAP) model — the business process and the fact-table grain,
   the dimensions and which are conformed / role-playing / degenerate / junk, additive vs
   semi-additive measures, star vs snowflake vs galaxy, slowly-changing-dimension strategy per
@@ -86,7 +86,7 @@ caching-strategy         →  cache a read path (layer / pattern / freshness) �
   Schema, Materialized Views. Companion files: `modeling-framework.md`, `star-vs-snowflake.md`,
   `dimensions-and-scd.md`.
 
-### `Data/caching-strategy`
+### `Architecture/Data/caching-strategy`
 - **Does:** Decides whether a cache belongs in front of a read path, and if so the layer
   (client/HTTP, CDN, reverse proxy, in-process, distributed Redis/Memcached, DB cache), the
   read/write pattern (cache-aside / read-through / write-through / write-behind / refresh-ahead),
@@ -218,9 +218,9 @@ test-practice-gate   →  the charter you must state before Claude writes a test
 
 ---
 
-## Decision skills (top level)
+## Architecture, Business, Skill Development, Git
 
-### `learning-gate`
+### `Skill Development/learning-gate`
 - **Does:** Classifies intent (reference / execution / learning / ambiguous) and, only for
   genuine learning intent, sets how much of the thinking the assistant may do — a 0–5
   assistance scale — and names the next rep the user should do first.
@@ -234,7 +234,7 @@ test-practice-gate   →  the charter you must state before Claude writes a test
 - **Source note:** `learning Gate.md`. Companion files: `concept-learning.md`,
   `assistance-levels.md`.
 
-### `problem-solving-gates`
+### `Skill Development/problem-solving-gates`
 - **Does:** Four gated modes — **Rubber Duck** (debugging, bring a hypothesis), **Options
   Generator** (architecture decision, bring constraints + a lean), **Knowledge Checker** (bring
   a first-pass explanation), **Optimization** (making something faster/cheaper, bring a
@@ -245,7 +245,7 @@ test-practice-gate   →  the charter you must state before Claude writes a test
 - **Does not apply to:** writing new code from scratch, or reviewing a finished draft.
 - **Companion folder:** `examples/` (one per mode).
 
-### `microservices-decision`
+### `Architecture/microservices-decision`
 - **Does:** Whether and how to adopt microservices, split a monolith, or draw service
   boundaries — forcing the arithmetic of *who can own each service* into the open before any
   boundary is drawn.
@@ -255,7 +255,7 @@ test-practice-gate   →  the charter you must state before Claude writes a test
 - **Boundary:** stops at a decision, a design posture, and an ADR. Not performance triage, not
   database sharding (that's `data-tier-operations`).
 
-### `api-interface-style`
+### `Architecture/api-interface-style`
 - **Does:** Picks the interaction style for **one** API surface — REST / GraphQL / gRPC /
   WebSocket / SSE / webhooks / async messaging — plus sync-vs-async and request-response-vs-push,
   given the surface's consumers, the interaction shape, and its query / latency / real-time
@@ -278,7 +278,7 @@ test-practice-gate   →  the charter you must state before Claude writes a test
   API Design Basics, rest & Websockets, Designing APIs with WebHooks, Evolution of APIs, API
   Call. Companion files: `selection-framework.md`, `style-tradeoffs.md`, `adr-template.md`.
 
-### `observability-strategy`
+### `Architecture/observability-strategy`
 - **Does:** Decides how a service/system is made observable — which signals to invest in
   (metrics, structured logs, distributed traces, profiling, events), the SLIs that define
   "working" and whether to set SLOs + an error budget, the instrumentation approach (OTel
@@ -303,7 +303,7 @@ test-practice-gate   →  the charter you must state before Claude writes a test
   `Fault Tolerance.md`, `Chaos Engineering.md`. Companion files: `observability-framework.md`,
   `signals-and-slos.md`.
 
-### `technical-cost-decision`
+### `Business/technical-cost-decision`
 - **Does:** Forces three specific calculations on any technical decision that carries a
   recurring price — infra vs managed, sizing against a stated volume, build-vs-buy, planning
   work to cut a cloud bill.
@@ -312,7 +312,7 @@ test-practice-gate   →  the charter you must state before Claude writes a test
 - **Discipline:** one significant figure with stated assumptions. `~$3k/month` is an answer;
   `$2,847.61/month` is a lie. A Cost Surface showing $80/month is a valid reason to stop.
 
-### `ticket-evaluation`
+### `Business/ticket-evaluation`
 - **Does:** Separates what a ticket *says* from what it's *missing* from what can *actually be
   judged*, and keeps the verdict (proceed / defer / needs more info / reconsider) at the bottom
   where it can't outrun its caveats.
@@ -320,7 +320,7 @@ test-practice-gate   →  the charter you must state before Claude writes a test
   prioritization, or a go/no-go read; backlog grooming; comparing tickets.
 - **Boundary:** does not rewrite the ticket or design the feature.
 
-### `explaining-my-work`
+### `Business/explaining-my-work`
 - **Does:** Builds one evidence base from the session and the repo, then renders it three times
   — plain-language summary, spoken conversation script, LinkedIn draft — with every claim
   traced to something that actually happened.
@@ -329,7 +329,7 @@ test-practice-gate   →  the charter you must state before Claude writes a test
   preparing for an interview, standup, or recruiter call.
 - **Boundary:** drafts only; never posts. Manufactured metrics are a hard failure.
 
-### `commit-and-push`
+### `Git/commit-and-push`
 - **Does:** Stage → commit → push, with the message built from the actual diff. Matches the
   repo's convention, splits unrelated changes, runs a pre-commit sanity pass (secrets, `.env`,
   large blobs, debug code, merge markers), branches off the default branch when told nothing.
@@ -346,7 +346,7 @@ Directions the source notes already sketch. None built yet.
 
 | Candidate | What it would do | Source |
 |---|---|---|
-| **Git-workflow skills** | Beyond `commit-and-push` — PR authoring, branch strategy, conflict resolution. | Empty `.claude/skills/Git/` placeholder. |
+| **Git-workflow skills** | Beyond `commit-and-push` — PR authoring, branch strategy, conflict resolution. | `.claude/skills/Git/` (currently only `commit-and-push`). |
 | **contract-authoring** | API/event contract *authoring* once the style is chosen — versioning scheme, backward/forward compatibility, DTO and error-shape design, deprecation policy. The pieces `api-interface-style` explicitly defers. | `database-architecture` README, "Still not built"; `api-interface-style` "Deferred". |
 | **implementation** | Turning an approved ADR into migrations, models, DTOs, and wiring — the step the Data skills deliberately stop before. | `database schema disscusiion.md`, sketched as an agent. |
 | **Practice Gates** (code / database) | Rep-oriented gating for implementation work — siblings of `problem-solving-gates` and `Testing/test-practice-gate` (the test one, now built), pointed to from `learning-gate` Step 3. | `learning-gate` README, "Not built". |
