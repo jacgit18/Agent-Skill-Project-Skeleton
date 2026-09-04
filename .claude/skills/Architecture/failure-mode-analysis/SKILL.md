@@ -114,8 +114,15 @@ Pick one, and calibrate each axis *for this system* using input 5 — write down
 
 For every component, go through all nine categories from `nine-categories.md` and ask "what
 does a failure in this category look like *for this component*?" Use the probe questions in
-that file. Record "n/a — <reason>" where a category genuinely doesn't apply, so the walk is
-auditable rather than silently partial.
+that file. Where a category genuinely doesn't apply to a component, record it as `n/a —
+<reason>` so a skipped category is a decision on the record.
+
+In chat, don't write out all `components × 9` cells one by one — that's an unreadable grid.
+Present a **coverage table**: one row per component, the failure-mode IDs found per
+category, and a single `n/a` clause covering the categories that didn't apply and why. The
+full per-cell grid, if wanted, goes in the written register only. What matters in chat is
+that every component was walked against every category and the misses are explained, not
+that 99 "n/a" lines are printed.
 
 ### 4. Walk each interaction × the interaction-heavy categories
 
@@ -163,7 +170,14 @@ Like `document-page-check`, put one choice to the user:
 - **"Register only"** — hand over the ranked list and the handoffs; the user triages.
 - **"Block sign-off"** — the design isn't considered reviewed until every high-severity
   watchlist row and every row above the RPN-must-mitigate threshold has an **owner** and an
-  explicit decision (mitigate now / accept with reason / defer with a trigger).
+  explicit decision. A row is **unblocked** when it carries an owner and *any* of the three
+  decisions — *mitigate now*, *accept with reason + revisit trigger*, or *defer with a
+  trigger*; a deferred or accepted row stays in the acceptance log with its trigger, it is
+  not silently closed. The person who owns the design's sign-off confirms the unblock.
+- **Owners on a small team** — if there aren't enough people to give blocker rows
+  *independent* owners (a two-person team, 20 blockers), assign anyway and record the
+  concentration as its own human/process failure mode (bus factor); "we couldn't staff
+  independent owners" is a finding, not a reason to skip the field.
 
 Default recommendation: for a design review or a pre-ship gate, recommend **block
 sign-off**; for an exploratory "what are we missing" pass, **register only**.

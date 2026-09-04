@@ -36,6 +36,19 @@ Calibrate with SKILL.md input 5 — write the concrete worst case next to "S10 h
 
 Score against *current* conditions and near-term load, not a hypothetical future.
 
+### Scoring standing gaps (no runbook, no DLQ, no success alert, bus factor)
+
+Occurrence and Detection are written for *events with a frequency*. A standing gap — "there
+is no runbook", "the reconciliation job has no success alert", "one person knows this
+component" — is a permanent condition, not an event. Score it like this:
+
+- **Occurrence** = how often the latent gap is *exercised* — i.e. how often an incident
+  occurs that needs the missing runbook / alert / second owner. Not "the gap is always
+  true" (that would make every process row O10 and swamp the register).
+- **Detection** = would anything surface the gap *before* it bites (a game-day, an audit, a
+  dependency check on boot)? Usually no, so D is high — which is the point: standing gaps
+  are dangerous precisely because nothing reveals them until an incident does.
+
 ### Detection (D) — how likely are you to catch it *before* it causes its impact
 
 **Inverted scale: high D = bad (you won't catch it).**
@@ -50,6 +63,20 @@ Score against *current* conditions and near-term load, not a hypothetical future
 
 For a system with **no telemetry yet**, score D against what exists *today* — usually 7–10.
 A high D is not a reason to skip the row; it's a row for `observability-strategy`.
+
+**When detection depends on another component.** If the only thing that catches a mode is a
+reconciliation job, a nightly check, or a single alarm, its D is only valid *while that
+component works*. Note the dependency on the row, and make sure the mode "that detector is
+silently broken" is itself in the register — a mode that disables your detection outranks
+its raw RPN.
+
+### Contested severity
+
+When a mode straddles two severity bands (is a systematic under-charge "money moved
+incorrectly, S9" or "shipped and never paid, S10"?), record the **higher** severity, mark
+the row **contested — confirm at triage**, and put it on the high-severity watchlist
+pending resolution. Don't average the two or quietly pick the lower one; surface the
+disagreement to the person triaging.
 
 ### Acting on RPN
 
@@ -98,6 +125,17 @@ catastrophic-but-rare, currently-well-detected mode scores low and gets buried; 
 is not "won't happen", and detection can regress. The watchlist is reviewed on its own.
 
 ---
+
+## How many rows is a register
+
+A rough anchor so the walk doesn't get cut short or padded: expect on the order of **2–3
+modes per component and 1–2 per interaction** for a real system — so a pipeline of ~10
+components and ~10 interactions lands around **20–35 rows**. Far fewer means the
+nine-category walk was shallow (a whole category or a whole component went unprobed); far
+more usually means near-duplicates that should be merged (tax-API-down and
+shipping-API-down are one row "an enrichment dependency is down" unless their impact
+genuinely differs). Merge on *shared cause and shared mitigation*; split when the impact or
+the handoff differs.
 
 ## Register format
 
