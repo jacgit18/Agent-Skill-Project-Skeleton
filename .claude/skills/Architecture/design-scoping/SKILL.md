@@ -44,6 +44,13 @@ routes the deep work to the specialist skills.
 - **Where the source of truth lives and which store** → `database-architecture`.
 - **The failure surface** — enumerating and ranking every way the design can break →
   `failure-mode-analysis`.
+- **Who/what gets access to a resource, and its network placement** →
+  `cloud-iam-boundary`, once a specific resource and principal exist to grant access to —
+  this skill states the compliance regime (GDPR/HIPAA/PCI) that shapes how strict that
+  skill's gate needs to be, not the grant itself.
+- **What compute primitive runs a given unit of work** — Lambda vs container vs a
+  long-running service, orchestration vs choreography → `serverless-execution-model`, once a
+  specific operation exists to run, not for the system as a whole.
 - **The deep design of the 1–2 chosen features** — this skill *selects* them (via the
   significance filter) and states why they matter; the actual design is the specialist
   skills above, run one at a time.
@@ -229,7 +236,9 @@ Then hand off to the first skill in the sequence. Typical order:
 2. `microservices-decision` — one service or several, and the boundaries.
 3. `api-interface-style` — the surface style for each boundary.
 4. `database-architecture` — where the source of truth lives and which store.
-5. `failure-mode-analysis` — the failure surface of the resulting design, before sign-off.
+5. `serverless-execution-model` — what runs each unit of work, if compute shape isn't already fixed.
+6. `cloud-iam-boundary` — who/what gets access to each resource, and its network placement.
+7. `failure-mode-analysis` — the failure surface of the resulting design, before sign-off.
 
 Not every design needs all five, and the sequence is not a closed list — a scope statement
 may also pull in `data-tier-operations` (scaling an existing store), `technical-cost-decision`

@@ -72,9 +72,11 @@ policy simulator runs).
 - **Feeds `serverless-execution-model`** — the execution role for whatever compute primitive
   that skill chooses is designed here first (or alongside it); this skill states the
   principal and the permission set, that skill states what runs under it.
+  `skill-interaction-testing` confirmed this composes cleanly on a real end-to-end workload —
+  no duplicate questions, each skill reused the other's facts.
 - **Hands off to `resilience-strategy`** — a resource placed on the public internet by this
   skill's network-exposure decision still needs edge defense (WAF, Shield, rate limiting);
-  this skill places it, that skill protects it.
+  this skill places it, that skill protects it. Confirmed clean sequential hand-off under test.
 - **Hands off to `observability-strategy`** — the audit/change-notification requirement
   (item 10) is named here, designed there.
 - **Distinct from `security-review`** — that skill scans code on a diff for vulnerabilities;
@@ -82,7 +84,8 @@ policy simulator runs).
   whether the code itself is safe.
 - **Consumes `design-scoping`** — a stated compliance regime (GDPR/HIPAA/PCI) from that
   skill's constraints section shapes how strict item 8 (network exposure) and item 6
-  (credential lifetime) need to be.
+  (credential lifetime) need to be. Also defers there outright for an unscoped, not-yet-designed
+  system with no named resource yet — reciprocal pointer added both directions.
 - **No skill owns encryption/secrets yet** — name the requirement (KMS, Secrets Manager
   rotation) and defer rather than improvising a design inside this skill's scope.
 

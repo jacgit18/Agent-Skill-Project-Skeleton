@@ -74,27 +74,39 @@ Stops before implementation (the state machine definition, IaC, handler code).
 ## Interaction with sibling skills
 
 - **Assumes `microservices-decision`'s output** — takes one already-scoped unit of work as
-  given; does not decide whether it should be its own service.
+  given; does not decide whether it should be its own service. Reciprocal pointer added
+  there ("what compute primitive runs one already-scoped service").
 - **Hands off to `cloud-iam-boundary`** — this skill names what a Task/function needs to call;
   that skill designs the role and network placement. The two are typically worked together
-  when standing up a new workload.
+  when standing up a new workload; `skill-interaction-testing` confirmed this composes as a
+  clean hand-off with no duplicate questions.
 - **Composes with `resilience-strategy`** — that skill's retry-budget-under-load concern and
   this skill's per-invocation retry/DLQ contract are different questions that share
   vocabulary ("retry with backoff"); an async worker built here can still need a concurrency
-  limit from that skill if its retries are hammering an overwhelmed downstream.
-  Reciprocal boundary note pending — add to `resilience-strategy` and `microservices-decision`
-  when `skill-interaction-testing` runs.
+  limit from that skill if its retries are hammering an overwhelmed downstream. Confirmed
+  clean chaining under test; a disambiguating clause was added to this skill's description so
+  entry point isn't a coin-flip between the two trigger phrasings.
 - **Feeds `technical-cost-decision`** — the chosen primitive and concurrency ceiling are the
-  usage-driver inputs; this skill doesn't price them.
+  usage-driver inputs; this skill doesn't price them. `skill-interaction-testing` found the
+  hand-off worked only because of an exact phrase match ("Lambda vs Fargate"); fixed by
+  widening `technical-cost-decision`'s description to route any bare primitive-cost question
+  through this skill's fit gate first, regardless of phrasing.
 - **Consumes `capacity-estimation`** — concurrency and volume numbers, rather than re-deriving
   them.
 - **Feeds `observability-strategy`** — the DLQ-triage cadence and execution-failure alert
   requirement are named here, designed there.
+- **Hands off to `data-tier-operations`** — a poll-based consumer's poison-pill/redrive
+  handling stays here; only a genuinely hot partition/shard key moves to that skill.
+  Reciprocal pointer added both ways.
+- **Defers to `design-scoping`** for an unscoped, not-yet-designed system.
+- **Absorbed by `deployment-strategy`** for rollout-mechanism questions (canary/blue-green) —
+  confirmed no overlap; this skill has no rollout vocabulary and correctly doesn't fire.
 
-Run `skill-interaction-testing` after any trigger-description change here — the overlap risk
-is with `microservices-decision` (unit-of-work vs service-boundary altitude),
-`resilience-strategy` (retry/backoff vocabulary shared across two different problems), and
-`cloud-iam-boundary` (which skill runs first when standing up a new workload).
+Fixed after `skill-interaction-testing` (2026-09-04, see
+`skill-interaction-cloud-iam-and-serverless-execution.md`): the frontmatter's bare "Lambda vs
+Fargate" trigger phrase risked firing the full gate on a pure conceptual comparison with no
+named workload — qualified the phrase and added an explicit "answered directly, no gate" carve-out
+for bare comparisons.
 
 ## Using it in another repo
 

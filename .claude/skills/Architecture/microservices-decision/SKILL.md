@@ -16,6 +16,7 @@ The number of services an organization can run is bounded by the number of peopl
 - **Release ordering and rollout mechanism once code is merged** — coordinating a release train across repos, canary/blue-green/rolling for a specific deployable unit → `deployment-strategy`. This skill decides how many repos; not how each one ships once merged. (Build/test CI shape — one pipeline running everything vs affected-graph/path-scoped checks per repo — stays *in* scope here; see "Repo layout follows from this" below. `deployment-strategy` explicitly disclaims CI/pipeline mechanics, so don't send that half of the question there.)
 - **CI cost at scale** — build-minute spend, self-hosted-runner vs SaaS-CI tradeoffs, remote-cache hosting cost → `technical-cost-decision`, once the layout below names what's running.
 - **Executing a repo split or merge** — moving code between repos with history, cutting over CI, redirecting collaborators → `migration-cutover`. This skill decides the target layout; that skill sequences getting there safely.
+- **What compute primitive runs one already-scoped service** — Lambda vs a container task vs a long-running process, invocation model, and orchestration vs choreography for that service's own workflow → `serverless-execution-model`, once the service boundary here is settled. This skill decides *how many* services and where the lines are; not what runs inside one of them.
 
 ---
 
