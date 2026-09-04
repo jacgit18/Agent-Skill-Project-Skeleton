@@ -12,6 +12,7 @@ This skill separates **what the ticket says** from **what the ticket is missing*
 ## Out of scope
 
 - **Rewriting the ticket.** Naming a dimension as weak is evaluation. Redrafting the acceptance criteria, splitting the scope, or designing the feature is a different job — offer it after the recommendation, only if asked.
+- **A "ticket" that is just a system name** — "Build the notifications system", "Set up billing" — with no acceptance criteria, requirements, or scale. That is not a sizeable unit of work; it is an under-specified design ask → `design-scoping`. Come back here for the sprint verdict once it has been scoped.
 - **Implementation.** This skill ends at proceed / defer / needs more info / reconsider.
 
 ---

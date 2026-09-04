@@ -62,7 +62,33 @@ Discrete, durable business or security facts ("order shipped", "role granted").
 
 RED for the code you write, USE for the things it runs on. They overlap with the Golden Signals — pick one vocabulary and be consistent.
 
-Related reliability metrics (from `12 Key Metrics for Measuring Service Performance.md`): **MTBF** (mean time between failures — reliability), **MTTR** (mean time to repair — how fast you recover; observability's main lever is driving this down), TTFB, throughput, error rate. The trend matters more than the absolute number.
+---
+
+## Service-metric menu — candidate SLIs
+
+The methods above tell you *which buckets* to fill (rate, errors, duration, saturation). This is
+the menu of concrete measurements that go in them, drawn from
+`12 Key Metrics for Measuring Service Performance.md`. Pick the few that map to something a user
+feels; wire the rest to dashboards only. **The trend matters more than the absolute value** —
+alert on movement, review the level.
+
+| Metric | Measures | Method bucket | SLI use |
+|---|---|---|---|
+| **Time to first byte (TTFB)** | Request sent → first response byte received | Duration / latency | Front-end and CDN-fronted paths; isolates server + network from render time |
+| **Latency** | One-way / round-trip travel time for a request+response | Duration | The raw delay component; report as a distribution, never a mean |
+| **Response time** | Total time to fully service a request, including queue wait | Duration | The number users actually experience; always percentiles (p50/p95/p99), never average |
+| **Throughput** | Successful operations completed per unit time | Traffic / rate | Capacity headroom; pairs with response time to spot saturation (throughput flat, latency rising) |
+| **Request rate** | Incoming requests per unit time (independent of success) | Traffic / rate | Load-shape and trend input; the denominator for error rate; drives autoscaling |
+| **Error rate** | Errored requests ÷ total requests | Errors | Primary reliability SLI on every critical path; count 5xx/timeouts, not 4xx |
+| **Concurrent connections** | Active connections / sessions / in-flight requests at an instant | Saturation | Approaching a pool or file-descriptor ceiling; a leading indicator of saturation collapse |
+| **Cache hit ratio** | Cache hits ÷ cache lookups | Efficiency (feeds latency + load) | Health of a cache tier; a drop explains a latency/DB-load spike → design in `caching-strategy` |
+| **MTBF** (mean time between failures) | Average uptime between incidents | Reliability (long-horizon) | Reliability trend across releases; not a page-able signal |
+| **MTTR** (mean time to repair) | Average time from failure to recovery | Recovery (long-horizon) | The metric observability most directly improves — good signals cut diagnosis time; review per incident |
+| **SLA compliance** | % of a window the service met its contracted targets | Composite | The externally-reported number; keep the internal SLO tighter so you react first (see below) |
+
+Not in scope for this skill: **team-delivery metrics** — velocity, cycle time, lead time,
+test-coverage trend, learning progress. They measure the delivery org, not the running service,
+and belong with engineering-management practice, not observability design.
 
 ---
 

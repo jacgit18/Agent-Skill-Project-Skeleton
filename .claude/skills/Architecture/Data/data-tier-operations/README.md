@@ -7,7 +7,8 @@ distributes an existing store when it hits a wall.
 Built from the `Architecture/02. Backing Service Options/Databases/` notes — Database Sharding,
 Sharding & Pagination, Replication Strategies, Master-Slave Database Architecture, Leaderless
 Architecture, Distributed Transactions, Transaction, Transaction Locking, Connection Pooling,
-Database Points of Failure, Database Hosting.
+Database Points of Failure, Database Hosting — plus `Architecture/SAGA.md` (choreography vs
+orchestration, compensating transactions — in `consistency-and-transactions.md`).
 
 ## Where it sits
 

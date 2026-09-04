@@ -9,6 +9,7 @@ The number of services an organization can run is bounded by the number of peopl
 
 ## Out of scope
 
+- **A greenfield system that has not been scoped yet.** "We're building a new platform from scratch — how do we split it into services" with no stated purpose, functional decomposition, load targets, or headcount context → `design-scoping` first. It produces the scope statement and then sequences the service-split decision back here. This skill needs the system to exist (or be fully scoped) before it can size a split of it.
 - **Performance triage.** If the presenting problem is a slow endpoint, that is a profiling question, not this one.
 - **Implementation.** This skill stops at a decision, a design posture, and an ADR. Contracts, schemas, and saga code are a separate, explicitly-started step.
 - **How the services talk once the boundaries exist** — REST vs GraphQL vs gRPC vs an event broker vs webhooks for inter-service communication → `api-interface-style`, run per surface after this decision. This skill decides *whether and where* to split; not the wire protocol between the pieces.

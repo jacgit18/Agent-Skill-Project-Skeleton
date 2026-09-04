@@ -13,6 +13,7 @@ interrogation. The gate is cheap and it is bounded: it produces at most one ques
 | Situation | What to do |
 |---|---|
 | Reference, lookup, factual question, casual conversation | **Answer.** Skip the rest of this skill. Do not manufacture ambiguity to seem thorough. |
+| The request is clearly to **design, architect, or redesign a system or feature** (intent settled; scope not) | **Hand to `design-scoping`.** It owns the functional / non-functional / scale-target / deep-dive decomposition — don't ask a framing question on top of its gate. (Same precedent as `test-practice-gate`.) |
 | Code, specs, plans, schemas, migrations, written deliverables — anything where a wrong reading means work gets **redone** | Continue to Step 2. |
 
 ## Step 2: Missing information is not ambiguity
