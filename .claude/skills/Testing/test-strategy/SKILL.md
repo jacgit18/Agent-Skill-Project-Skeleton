@@ -22,6 +22,7 @@ Given something that needs testing — one module, one service, one feature that
 - **Framework / tool selection** — Jest vs Vitest, Playwright vs Cypress, k6 vs Gatling, which mocking library. Name that a choice is needed and defer it.
 - **Writing the tests, fixtures, or CI config.** This skill stops at a plan and an ADR.
 - **Whether to split into services** → `microservices-decision`. This skill tests the surfaces that exist.
+- **Which failure modes are worth injecting** — the ranked chaos / fault-injection target list → `failure-mode-analysis`. This skill places and levels the tests for that list (which level each injection sits at, which pipeline stage, CI fit); it does not enumerate the failure surface. If the user wants fault-injection testing and no failure register exists yet, run `failure-mode-analysis` first.
 - **The API protocol / interaction model** → `api-interface-style`. This skill's contract-test decision *consumes* that choice; it doesn't make it.
 - **Cost-sizing the CI/E2E infrastructure against build volume** → `technical-cost-decision`. This skill notes when the plan will drive that.
 - **How a release rolls out and which stages gate promotion** → `deployment-strategy`. This skill decides which test levels run at which pipeline stage; that skill *consumes* that stage list to decide recreate/rolling/blue-green/canary and the smoke check before a traffic flip.

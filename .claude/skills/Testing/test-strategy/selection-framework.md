@@ -74,6 +74,7 @@ From gate item 5. For each of performance, load, security: either a line with a 
 - "Load: nightly k6 run, fail if p95 > 400ms at 50 rps."
 - "Security: PCI self-assessment checklist each release; no automated security tests. Accepted."
 - "Performance micro-benchmarks: out of scope — no latency-sensitive hot path. Accepted."
+- "Fault-injection / chaos: inject the top 6 rows of the `failure-mode-analysis` register (tax-API timeout, poison SQS message, mid-handler crash, ...) in a staging soak, weekly. Accepted for the rest." — the *target list* is `failure-mode-analysis`'s output; this step decides the level, environment, and cadence for it. Without a register, "chaos: out of scope — accepted, run FMEA first" is the honest line.
 
 "Not mentioned" is not an answer; "accepted, not testing" is.
 
