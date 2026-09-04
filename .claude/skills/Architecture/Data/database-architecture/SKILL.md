@@ -60,6 +60,8 @@ Settle it under the same rules — these come from the user, in their own words,
 
 Output: a **paradigm** (relational / document / key-value / wide-column / graph / time-series / ledger / search) and a specific technology leaning, with tradeoffs named — recorded as its own ADR (`NNN-<slug>-persistence.md`) *before* the source-of-truth ADR. Then run the main framework, translating its relational terms where needed (for a document store: "migrations" → schema/index definitions; "referential integrity" → invariants enforced in application code).
 
+If any of the data is **large binaries** — files, media, documents, exports, backups — that is a *separate* store choice from the paradigm above, not a column type. The default is object storage (S3 / GCS / Azure Blob) holding the bytes with a pointer row in the primary store, not a multi-MB blob in a database row. See `store-options.md` for the blob-vs-row decision, block vs object vs distributed-file-system, the large-binary patterns, and the controls that make object storage acceptable for regulated data.
+
 ---
 
 ## Challenge a proposed approach

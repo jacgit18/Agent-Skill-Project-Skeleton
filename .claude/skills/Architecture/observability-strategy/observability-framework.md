@@ -25,6 +25,8 @@ If the only questions are vague ("is it healthy?"), push back to the gate — yo
 
 Measure SLIs where the user experiences them (the edge), not deep in the stack where the number looks better.
 
+For the concrete measurements that fill each method bucket — TTFB vs latency vs response time, throughput, request rate, error rate, concurrent connections, cache hit ratio, MTBF/MTTR, SLA compliance — see the service-metric menu in `signals-and-slos.md`. Pick the few that map to something a user feels; chart the rest.
+
 **SLOs** — set an objective + error budget **only** where gate item 6 gave a real commitment (a customer SLA, an internal target with teeth). Format: "99.9% of charges succeed over a rolling 28 days" → 0.1% monthly error budget → burn-rate alerts. Where nothing depends on a number, skip the SLO and just chart the SLI. Setting SLOs nobody is accountable to trains the team to ignore them.
 
 ## 3. Choose signal investment against the architecture

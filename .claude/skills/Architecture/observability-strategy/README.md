@@ -33,7 +33,7 @@ problem-solving-gates     →  Rubber Duck / Optimization — using the instrume
 |---|---|
 | `SKILL.md` | Entry point. The 7-item gate (items 4–10 from the user), challenge-the-framing, output contract. |
 | `observability-framework.md` | The 10-step process — pressure → SLIs/SLOs → signal investment → instrumentation → sampling/cardinality → alerting → retention → placement. |
-| `signals-and-slos.md` | Each signal type (metrics, logs, traces, profiling, events) — what it answers, costs, failure mode. RED/USE/Golden-Signals. SLI/SLO/error-budget. Symptom-vs-cause alerting. Head-vs-tail sampling. Cardinality budgeting. Self-hosted stack vs managed. |
+| `signals-and-slos.md` | Each signal type (metrics, logs, traces, profiling, events) — what it answers, costs, failure mode. RED/USE/Golden-Signals. The service-metric menu (TTFB, latency, response time, throughput, request rate, error rate, concurrent connections, cache hit ratio, MTBF/MTTR, SLA compliance) as candidate SLIs. SLI/SLO/error-budget. Symptom-vs-cause alerting. Head-vs-tail sampling. Cardinality budgeting. Self-hosted stack vs managed. |
 
 ## What it produces
 

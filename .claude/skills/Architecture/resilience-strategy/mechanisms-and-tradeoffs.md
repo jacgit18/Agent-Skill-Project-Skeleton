@@ -88,6 +88,12 @@ Reference for `SKILL.md` and `resilience-framework.md`. Each mechanism: what it 
 
 ---
 
+## Not here: failover and replication
+
+Automatic **failover** (primary → standby promotion, multi-AZ database HA) and **data replication / backup** are infrastructure-HA controls, not app-request-path protection. They live with the store: `data-tier-operations` owns DB replica topology, failover, and RPO/RTO. This skill's job starts at the app boundary — timeouts and breakers on the *call* to a store or dependency, bulkheads around it, and a degradation plan for when it's gone regardless of whether failover eventually recovers it. `Fault Tolerance.md`'s "isolation / containment" maps to **bulkhead** above; its "monitoring / alerting" is `observability-strategy`.
+
+---
+
 ## Shed vs scale
 
 They solve different halves of the same problem:
