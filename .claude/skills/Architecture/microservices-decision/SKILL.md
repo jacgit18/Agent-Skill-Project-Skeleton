@@ -1,6 +1,6 @@
 ---
 name: microservices-decision
-description: Use when someone is deciding whether to adopt microservices, split a monolith, extract or add another service, or design service boundaries — including when the decision is presented as already made ("our CTO decided", "we've made the call", "don't relitigate it", "just tell me how to split it"), when repos or CI for services are already scaffolded, or when the ask is for a service list, service boundaries, data ownership across services, how many services to have, or a decomposition/migration sequence. Also use when someone proposes a service count and wants it checked. Not for diagnosing why a specific endpoint is slow. Not for database sharding or shard-key choice, or replication/partitioning topology (that is `data-tier-operations`), even when phrased as an already-made decision — "we're sharding, just tell me the key" is a data-tier question, not a service-split one.
+description: Use when someone is deciding whether to adopt microservices, split a monolith, extract or add another service, or design service boundaries — including when the decision is presented as already made ("our CTO decided", "we've made the call", "don't relitigate it", "just tell me how to split it"), when repos or CI for services are already scaffolded, or when the ask is for a service list, service boundaries, data ownership across services, how many services to have, or a decomposition/migration sequence. Also covers repo layout — one repo, repo-per-service, or a hybrid — including monorepo tooling choice (Nx/Turborepo/Bazel), CODEOWNERS, affected-graph CI, and version-skew-vs-dependency-hell, since the layout follows mechanically from the same headcount/ownership/independent-deploy facts this skill already gates on; also use when someone proposes a service count and wants it checked. Not for diagnosing why a specific endpoint is slow. Not for database sharding or shard-key choice, or replication/partitioning topology (that is `data-tier-operations`), even when phrased as an already-made decision — "we're sharding, just tell me the key" is a data-tier question, not a service-split one.
 ---
 
 # Microservices Decision
@@ -13,6 +13,9 @@ The number of services an organization can run is bounded by the number of peopl
 - **Performance triage.** If the presenting problem is a slow endpoint, that is a profiling question, not this one.
 - **Implementation.** This skill stops at a decision, a design posture, and an ADR. Contracts, schemas, and saga code are a separate, explicitly-started step.
 - **How the services talk once the boundaries exist** — REST vs GraphQL vs gRPC vs an event broker vs webhooks for inter-service communication → `api-interface-style`, run per surface after this decision. This skill decides *whether and where* to split; not the wire protocol between the pieces.
+- **Release ordering and rollout mechanism once code is merged** — coordinating a release train across repos, canary/blue-green/rolling for a specific deployable unit → `deployment-strategy`. This skill decides how many repos; not how each one ships once merged. (Build/test CI shape — one pipeline running everything vs affected-graph/path-scoped checks per repo — stays *in* scope here; see "Repo layout follows from this" below. `deployment-strategy` explicitly disclaims CI/pipeline mechanics, so don't send that half of the question there.)
+- **CI cost at scale** — build-minute spend, self-hosted-runner vs SaaS-CI tradeoffs, remote-cache hosting cost → `technical-cost-decision`, once the layout below names what's running.
+- **Executing a repo split or merge** — moving code between repos with history, cutting over CI, redirecting collaborators → `migration-cutover`. This skill decides the target layout; that skill sequences getting there safely.
 
 ---
 
@@ -120,6 +123,29 @@ Once the block is filled, recommend one of: **monolith**, **modular monolith** (
 On the user's approval, write an ADR to `docs/architecture/decisions/NNN-<slug>.md`, numbered as the next integer after the highest existing ADR (start at `001`, create the directory if absent). Carry the Readiness Block into the ADR's Context verbatim — the headcount and ownership facts are what make the decision legible later.
 
 Then stop. Implementation is a separate step.
+
+## Repo layout follows from this
+
+Once the Readiness Block is filled and a boundary recommendation exists, "how many repos" is not a fresh decision — it reads off three fields you already have.
+
+**Services that already exist, no new split proposed.** If the question is purely repo layout for services whose boundaries are already settled — nothing is being extracted, sized, or justified against a cheaper option — `Problem being solved`, `Cheaper option tested`, and `Sunk cost at risk` don't apply to a new decision; write `N/A — layout question, no new service proposed` for each rather than treating them as unanswered. `Owner per service`, `On-call`, and `Independent deploy` still gate: those are exactly the three facts the layout call below reads off.
+
+- **Independent deploy = yes, for a service with its own owner** → that service gets its own repo. It ships on its own schedule; forcing it into a shared repo means every unrelated change on the main branch can block or complicate its release.
+- **Independent deploy = no** (a shared release train), or the recommendation was **monolith** / **modular monolith** → one repo. Splitting repos you deploy together buys nothing and adds the coordination tax described above (multi-repo PR sequences for one logical change).
+- **Mixed** — some services deploy independently, most don't → **hybrid**: one repo for the shared-release-train core, separate repos for the services that genuinely deploy on their own. Don't split a service out "for symmetry" if its `Independent deploy` field says no.
+
+This is a default, not a mandate — a team can accept the coordination tax of full repo-per-service, or the CI/ownership tax of a large monorepo, deliberately. State it as a rejected alternative in the ADR, same as any other tradeoff in this skill's output.
+
+**The trade you're actually making, either direction:**
+
+- **Split further → version skew.** Shared code between repos gets published and versioned (a dependency each consumer bumps on its own clock — drift, "works on repo A, breaks on repo B" bugs) or duplicated (drift a different way, silently). Neither is free; name which one you're accepting.
+- **Stay together → dependency hell's cousin, undifferentiated CI.** A monorepo without path-scoped tooling runs the whole suite on every PR regardless of what changed, and "who owns this" degrades to tribal knowledge. This is fixable, not inherent — see below — but it isn't automatic.
+
+**If the layout is (or stays) one repo, three pieces of tooling make it not hurt** — detail and tool comparison in [repo-layout.md](repo-layout.md):
+
+1. **Affected-graph or path-scoped CI**, so a PR only runs checks for what it touched, not the whole tree.
+2. **`CODEOWNERS`**, mapping the top-level layout to the `Owner per service` field already in the block — this is what actually answers "who owns what," not the repo split.
+3. **A directory layout that matches the service boundaries** from the recommendation above — the affected-graph and ownership tools both key off directory boundaries, so they need to be clean.
 
 ## Escape hatch
 
