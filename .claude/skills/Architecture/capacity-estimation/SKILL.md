@@ -53,6 +53,11 @@ assumptions and defending them is the reasoning rep; the arithmetic is mechanica
   event volumes as an input.
 - **Precise sizing** — the estimate is an order-of-magnitude floor. The real numbers come
   from a load test against a built system. The skill says so and stops.
+- **Scoping a brand-new system that has no scope statement yet** — when the user asks for
+  the sizing half of a system whose purpose, functional boundaries, and constraints are not
+  yet established → `design-scoping` first, which sequences back here as its first
+  specialist step. This skill needs the usage assumptions; `design-scoping` is where the
+  system gets defined enough to state them.
 
 ---
 
