@@ -35,14 +35,14 @@ Before helping, answer for yourself: **what is the next piece of reasoning the u
 |---|---|---|
 | Learning a concept | Explain it back / answer a retrieval question | handled here — see `concept-learning.md` |
 | Debugging | Form a hypothesis | `problem-solving-gates` (Rubber Duck) |
-| Architecture decision | Name constraints + a lean | `problem-solving-gates` (Options Generator), `database-architecture` |
+| Architecture decision | Name constraints + a lean | `problem-solving-gates` (Options Generator), `database-architecture`, `microservices-decision`, `api-interface-style` (API protocol / interaction model), `technical-cost-decision` |
 | Verifying understanding | Explain in own words first | `problem-solving-gates` (Knowledge Checker) |
 | Implementation practice | Attempt the implementation | domain skill, if any |
 | Testing | Name the behavior/risk the test protects | — |
 | Code review | List suspected problems before reading Claude's | `code-review` |
 | Database design | Identify entities, relationships, invariants | `database-architecture` (where truth lives), `relational-modeling` (OLTP tables), `dimensional-modeling` (analytical model), `data-tier-operations` (scaling) |
 
-**When a skill in the "Defer to" column also fires on this request, hand off — don't stack.** That skill runs its own precondition gate (`database-architecture`'s ownership/exposure/source-of-truth questions, `relational-modeling`'s entities/relationships/access-patterns/volume, `dimensional-modeling`'s process/grain/questions, `data-tier-operations`' pressure/numbers/consistency-needs, `problem-solving-gates`' hypothesis or named options). Classify the intent, set the ceiling from Step 4, and let the domain skill own the gate. Asking the learning rep questions *and* the domain skill's gate questions in the same turn is the stacking failure — two walls of preconditions for one request.
+**When a skill in the "Defer to" column also fires on this request, hand off — don't stack.** That skill runs its own precondition gate (`database-architecture`'s ownership/exposure/source-of-truth questions, `relational-modeling`'s entities/relationships/access-patterns/volume, `dimensional-modeling`'s process/grain/questions, `data-tier-operations`' pressure/numbers/consistency-needs, `api-interface-style`'s surface/consumers/interaction-shape questions, `problem-solving-gates`' hypothesis or named options). Classify the intent, set the ceiling from Step 4, and let the domain skill own the gate. Asking the learning rep questions *and* the domain skill's gate questions in the same turn is the stacking failure — two walls of preconditions for one request.
 
 If the user genuinely can't do the next rep yet (missing a prerequisite), that's S0 — teach the prerequisite, don't force a rep they're not equipped for.
 
@@ -69,7 +69,7 @@ Higher is not worse. Level 5 on execution-intent work is correct. Level 5 on lea
 - Treat time spent stuck as a rep. Struggle without a formed hypothesis/attempt doesn't satisfy a gate.
 - Keep asking "what do you think?" after the user has switched to execution, or on reference lookups.
 - Gate routine production work just because the topic is technically learnable.
-- Run this skill's rep gate on top of a domain skill's own gate when both match the request. Classify the intent, then hand off — the domain skill (`database-architecture`, `relational-modeling`, `dimensional-modeling`, `data-tier-operations`, `problem-solving-gates`, `code-review`) owns the precondition questions.
+- Run this skill's rep gate on top of a domain skill's own gate when both match the request. Classify the intent, then hand off — the domain skill (`database-architecture`, `relational-modeling`, `dimensional-modeling`, `data-tier-operations`, `api-interface-style`, `microservices-decision`, `technical-cost-decision`, `problem-solving-gates`, `code-review`) owns the precondition questions.
 
 ## Escape hatch
 
