@@ -7,7 +7,7 @@ description: Three gated modes for software engineering problem-solving that for
 
 Three modes, one shared shape: each requires evidence of prior independent effort before Claude does anything, and each keeps Claude's own contribution deliberately narrow so the user keeps doing the actual thinking. Determine which mode applies from context (debugging vs. architecture decision vs. checking understanding), then apply that mode's gate.
 
-If none of the three situations apply — the user is asking Claude to write new code from scratch, or wants a code review of a finished draft — this skill doesn't apply. (Code review has its own separate skill.)
+If none of the three situations apply — the user is asking Claude to write new code from scratch, or wants a code review of a finished draft — this skill doesn't apply. (Code review has its own separate skill. Writing *tests* for a piece of code has its own rep gate — `test-practice-gate`.)
 
 ## Shared discipline
 
@@ -43,6 +43,8 @@ That's a valid precondition — a named hypothesis with reasoning behind it. Cla
 ## Mode 2: Options Generator (architecture decisions)
 
 **Trigger:** User is making an architecture or design decision and has listed the unknowns/constraints and formed an initial position.
+
+If the decision is specifically a coverage-target / CI-enforcement choice → `coverage-policy`; a test-levels / test-mix choice → `test-strategy`. Those skills own the gate for their decision — hand off rather than also running Options Generator on top.
 
 **Precondition check:** They need (a) unknowns or constraints named, and (b) an initial position — a leaning, even a tentative one. "What should I do?" with neither of these present is not valid input for this mode. If either is missing, ask for it and stop.
 
