@@ -16,6 +16,7 @@ database-architecture   →  WHERE the schema lives + WHICH store            (AD
 relational-modeling      →  designs the tables for a relational store
 data-tier-operations     →  scales / distributes an existing store          (ADR)  ← this skill
 dimensional-modeling     →  star / snowflake / fact / dimension / warehouse  (built)
+caching-strategy         →  cache layer + pattern + freshness + eviction    (ADR)
 ```
 
 ## The shape
@@ -61,6 +62,10 @@ Stops before implementation (replication config, shard router, backfill).
   line items to price.
 - **Defers to `relational-modeling`** for index/key/denormalization work (framework step 2 sends
   query tuning there first) and back to it when sharding forces denormalization.
+- **Defers to `caching-strategy`** for the design of a cache in front of the store — framework
+  step 2 lists caching as a cheaper option than partitioning and hands the layer/pattern/TTL/
+  eviction decision there. `caching-strategy` bounces back here when a cache turns out to be
+  load-bearing because the source lacks capacity.
 - **Defers to `microservices-decision`** on whether services should exist; handles data *across*
   services only once they do.
 - **Defers to `problem-solving-gates`** (Rubber Duck) for debugging one slow query.

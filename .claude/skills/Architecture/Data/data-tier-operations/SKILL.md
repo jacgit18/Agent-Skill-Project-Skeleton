@@ -22,6 +22,7 @@ Take an existing database that is hitting — or is credibly about to hit — a 
 - **Where the source of truth lives** (database-first / code-first / contract-first) and **which database paradigm** (SQL vs NoSQL vs graph vs time-series) → `database-architecture`. If that isn't settled, distribution is premature.
 - **Whether to split the system into services** → `microservices-decision`. This skill handles data across services *once the services exist*; it does not decide that they should.
 - **The dollar cost** of a topology (replica instance-hours, cross-AZ transfer, managed-service premium) → `technical-cost-decision`. This skill names that a topology has a cost and chains to that skill for the number.
+- **The design of a cache in front of the store** — which layer, cache-aside vs write-through, TTL vs explicit invalidation, eviction policy, stampede handling → `caching-strategy`. This skill names caching as one of the cheaper options to try before partitioning (framework step 2) and hands the design there.
 - **Implementation** — replication config, shard router code, migration/backfill scripts. The skill stops at the ADR.
 
 ---
