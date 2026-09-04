@@ -23,6 +23,7 @@ Take one deployable unit — a service, a worker, a batch job, a frontend bundle
 - **The design of the health signal** the rollout watches — which SLIs, how they're measured, sampling, alerting → `observability-strategy`. This skill names that a gated rollout *needs* a health signal and what it must cover (error rate and latency on the changed paths, key business metric); it hands the signal's design there.
 - **The dollar cost** of running two full production stacks for blue-green, or canary's extra capacity → `technical-cost-decision`. This skill names the cost and hands off the sizing.
 - **CI build/pipeline mechanics** — runners, caching, artifact registries, the YAML. This skill decides the *strategy* (mechanism, progression, gating, cadence), not the pipeline implementation.
+- **How many repos, and which repo a pipeline belongs to** — one repo vs repo-per-service vs a hybrid, and the affected-graph/path-scoped CI tooling that follows from it → `microservices-decision`. This skill assumes the repo layout is settled and decides the rollout mechanism *within* a pipeline; it doesn't decide pipeline-per-repo vs one shared pipeline.
 - **Implementation** — the Argo Rollouts / Flagger / Spinnaker config, the Helm values, the migration scripts. The skill stops at the ADR.
 
 ---

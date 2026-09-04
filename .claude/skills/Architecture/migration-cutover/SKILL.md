@@ -23,6 +23,7 @@ Take a live workload that has to move — off a datastore that is reaching EOL, 
 - **The dollar cost** of running both systems in parallel, egress on the data copy, the target's steady-state bill → `technical-cost-decision`. This skill names that a parallel run has a cost and hands off the line items.
 - **The test plan for the target system** — which levels, what to automate → `test-strategy`. This skill defines the *cutover verification* (parity checks, reconciliation), not the target's test suite.
 - **Implementation** — the backfill scripts, the CDC pipeline, the dual-write shim, the reconciliation job. The skill stops at the ADR.
+- **Choosing the target repo layout** — one repo, repo-per-service, or a hybrid → `microservices-decision`. That skill decides the target; when getting there means splitting or merging repos with history, CI, and open PRs to carry over, it hands the **execution** of that move here — same pattern as a store move.
 
 ---
 
