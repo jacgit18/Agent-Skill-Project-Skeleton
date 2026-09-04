@@ -9,8 +9,8 @@ assistant doesn't quietly do a reasoning rep the user could do themselves. Each 
 written from a note in the `PersonalBrain` Obsidian vault ("DevHiveMind") — the source note is
 named in each entry.
 
-**Count:** 25 skills — across `Architecture/` (incl. `Architecture/Data/`), `Business/`,
-`Skill Development/`, `Testing/`, `Prompts/`, and `Git/`.
+**Count:** 26 skills — across `Architecture/` (incl. `Architecture/Data/`), `Business/`,
+`Skill Development/`, `Testing/`, `Documents/`, `Prompts/`, and `Git/`.
 
 ---
 
@@ -170,6 +170,37 @@ test-practice-gate   →  the charter you must state before Claude writes a test
 - **Source notes:** `Architecture/Testing/` — Test Setup, Stubbing, Test Cases Guideline,
   Causes of Test Failure, Data Driven Testing, Testing Lifecycle Hooks, Design patterns in
   testing. Companion file: `charter-guide.md`; `examples/`.
+
+---
+
+## Documents — pre-flight checks on files before using them
+
+One skill so far, and the only one in the library that is **not** a Socratic decision-gate —
+it is a mechanical inspection that runs before a document is trusted.
+
+### `Documents/document-page-check`
+- **Does:** Pre-flight integrity check for a paginated document (PDF / EPUB) before Claude
+  reads, quotes, summarizes, or answers from it. Verifies **completeness** — extracted page
+  count matches the document's declared count, the file isn't truncated (PDF `%%EOF` + xref
+  intact; every EPUB spine item resolves), and each page carries the content it should
+  (flags mid-body blank pages and image-only pages needing OCR) — and **citation
+  resolution** — works out the printed-label-vs-physical-page offset (roman front matter,
+  plate sections) and confirms the TOC / index / "see p. N" references an answer will lean
+  on actually land. Emits a compact page-map + integrity report.
+- **Triggers on:** a PDF/EPUB is attached or referenced and the user says "read this",
+  "summarize this book / report", "what does it say on page 40", "pull the section on X",
+  "check the citations", "is this file complete", "did the whole thing come through", "the
+  page numbers look off", "the TOC doesn't match".
+- **Not a gate:** the only decision it puts to the user is, after the report, **report-only**
+  (proceed) vs **gate** (stop until reviewed) — it recommends gate when `Safe to rely on`
+  is NO or the caveat hits the requested task. Not OCR (flags the need and stops), not
+  fact-checking the document's claims, not re-pagination, not extraction-tooling choice.
+  Non-paginated formats (`.docx`, `.md`, `.html`, `.txt`) have no page numbers — it says so
+  and skips.
+- **Produces:** a report block in chat, then a report-only / gate question. Writes no files.
+- **Source:** authored to a user-set scope (completeness + citation resolution). Companion
+  file: `pagination-mechanics.md` (per-format page-count / truncation / page-label mechanics
+  and failure signatures).
 
 ---
 
