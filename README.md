@@ -41,12 +41,28 @@ unknown, a settled prior decision) is met, so AI doesn't quietly replace a learn
 | [`Data/relational-modeling`](.claude/skills/Data/relational-modeling/) | Turns a settled "we're relational" into table design — normal form and exceptions, keys, constraints, index plan, lifecycle columns. |
 | [`Data/data-tier-operations`](.claude/skills/Data/data-tier-operations/) | Scales an existing database — replication topology, partitioning vs sharding, isolation level, distributed-transaction pattern, failover, pooling. |
 | [`Data/dimensional-modeling`](.claude/skills/Data/dimensional-modeling/) | Designs an analytical OLAP model — fact-table grain, conformed / role-playing / degenerate dimensions, SCD strategy, star vs snowflake vs galaxy. |
+| [`Data/caching-strategy`](.claude/skills/Data/caching-strategy/) | Decides whether to cache a read path and how — cache layer, cache-aside / write-through / etc., TTL vs explicit invalidation, eviction policy, stampede / avalanche handling. Produces an ADR. |
 
 ```
 database-architecture   →  WHERE the schema lives + WHICH store  (ADR)
 relational-modeling      →  tables for a relational store
 data-tier-operations     →  sharding / replication / pooling / txn isolation
 dimensional-modeling     →  star / snowflake / fact / dimension / warehouse
+caching-strategy         →  cache layer / pattern / freshness / eviction
+```
+
+### Testing — deciding how to test, before writing tests
+
+| Skill | Role |
+|---|---|
+| [`Testing/test-strategy`](.claude/skills/Testing/test-strategy/) | Picks the test mix for one surface — which levels (unit / integration / contract / E2E / smoke / acceptance), the effort split, the pipeline stage for each, non-functional scope, and whether TDD or BDD fits. Produces a test plan + ADR. |
+| [`Testing/coverage-policy`](.claude/skills/Testing/coverage-policy/) | Sets one codebase's coverage policy — the metric, the target %, exclusions, and CI enforcement (overall vs new-code vs delta). Produces a policy doc. |
+| [`Testing/test-practice-gate`](.claude/skills/Testing/test-practice-gate/) | Rep gate — the test-domain sibling of `problem-solving-gates`. Makes you state a test charter (behavior protected, failure modes, seam, done condition) before Claude writes a test. |
+
+```
+test-strategy       →  which levels exist, effort split, pipeline stage, TDD/BDD  (plan + ADR)
+coverage-policy      →  coverage metric / target % / exclusions / CI enforcement   (policy doc)
+test-practice-gate   →  the charter you state before Claude writes a test          (gate)
 ```
 
 ### Prompts — authoring, testing, and session hygiene

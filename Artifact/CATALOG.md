@@ -9,20 +9,21 @@ assistant doesn't quietly do a reasoning rep the user could do themselves. Each 
 written from a note in the `PersonalBrain` Obsidian vault ("DevHiveMind") — the source note is
 named in each entry.
 
-**Count:** 17 skills — 8 top-level, 4 in `Data/`, 5 in `Prompts/`. `Git/` is an empty
-placeholder.
+**Count:** 21 skills — 7 top-level, 5 in `Data/`, 3 in `Testing/`, 5 in `Prompts/`, 1 in
+`Git/` (`commit-and-push`).
 
 ---
 
 ## Data — a gated pipeline for data-architecture decisions
 
-The four Data skills chain in sequence. Each stops before implementation and hands off.
+The five Data skills chain in sequence. Each stops before implementation and hands off.
 
 ```
 database-architecture   →  WHERE the source of truth lives + WHICH store   → ADR
 relational-modeling      →  design the OLTP tables (normalized)             → data-model doc
 data-tier-operations     →  scale / distribute an existing store            → ADR
 dimensional-modeling     →  design the OLAP model (star / dimensions / SCD) → data-model doc
+caching-strategy         →  cache a read path (layer / pattern / freshness) → ADR
 ```
 
 ### `Data/database-architecture`
@@ -84,6 +85,91 @@ dimensional-modeling     →  design the OLAP model (star / dimensions / SCD) �
   Data Mart, Star Schema, Snowflake Schema, Fact Table, Dimension Table, Data Grain, Choosing
   Schema, Materialized Views. Companion files: `modeling-framework.md`, `star-vs-snowflake.md`,
   `dimensions-and-scd.md`.
+
+### `Data/caching-strategy`
+- **Does:** Decides whether a cache belongs in front of a read path, and if so the layer
+  (client/HTTP, CDN, reverse proxy, in-process, distributed Redis/Memcached, DB cache), the
+  read/write pattern (cache-aside / read-through / write-through / write-behind / refresh-ahead),
+  the freshness mechanism (explicit invalidation vs TTL vs versioned keys), the eviction policy
+  and sizing, and the failure-mode handling (stampede / penetration / avalanche / cache-down).
+- **Triggers on:** "we should add a cache", "put Redis in front of X", "what TTL", "cache-aside
+  or write-through", "the cache serves stale data", "thundering herd when a hot key expires",
+  "cache it at the CDN". Not for scaling the DB itself, not for cost-sizing the cache tier.
+- **Gate:** refuses a cache design until the user supplies a measured pressure (latency miss /
+  source load / downstream limit), current numbers (read QPS, p95/p99 vs target, payload,
+  source load, key cardinality), per-data-class change rate + writer set + staleness tolerance,
+  and whether the cache is an optimization or load-bearing. Rules out the non-cache fixes
+  (index, replica, pagination, denormalization, HTTP headers) first.
+- **Produces:** a recommendation block, then an ADR reusing `database-architecture`'s template.
+- **Source notes:** `Architecture/Library/Memory/` — `Caches.md` (cache types, strategies,
+  policies, SPOF), `Content Delivery Network.md`. Companion files: `caching-framework.md`,
+  `cache-placement.md`, `patterns-and-policies.md`.
+
+---
+
+## Testing — deciding how to test, before writing tests
+
+Three skills. Two are decision gates that stop before implementation; one is a rep gate over
+the act of writing a test.
+
+```
+test-strategy       →  which test levels exist, effort split, pipeline stage, TDD/BDD   → plan + ADR
+coverage-policy      →  the coverage metric, target %, exclusions, CI enforcement         → policy doc
+test-practice-gate   →  the charter you must state before Claude writes a test            → gate, no artifact
+```
+
+### `Testing/test-strategy`
+- **Does:** Picks the test mix for one surface — which levels (unit / integration / contract
+  / E2E / smoke / acceptance), what share each gets, which pipeline stage each runs in,
+  whether non-functional testing (load / perf / security) is in scope, and whether a TDD or
+  BDD/Gherkin workflow fits.
+- **Triggers on:** "how should we test this service", "do we need E2E here", "unit or
+  integration", "should we do TDD", "is BDD worth it", "tests pass but prod keeps breaking",
+  or a proposed mix to pressure-test ("100% E2E").
+- **Gate:** no mix until the user states the surface and its seams, the cost of failure per
+  area, consumers/contracts, the pipeline stages that actually exist, any non-functional
+  numbers, change rate/lifetime, and who maintains the suite + the CI budget.
+- **Produces:** a recommendation block, a test plan in `docs/testing/<slug>.md`, and an ADR
+  in `docs/architecture/decisions/` for the contested calls only.
+- **Source notes:** `Architecture/Testing/` — Testing Hierarchy (70/20/10), Testing Stages
+  Relationship, Unit / Integration vs System Integration / End to End / Smoke / Acceptance
+  family, Functional & Non-functional Testing, Types of Testing Technique, Data Driven
+  Testing, TDD, BDD, Cucumber vs Gherkin. Companion files: `selection-framework.md`,
+  `test-levels.md`, `adr-template.md`.
+
+### `Testing/coverage-policy`
+- **Does:** Sets one codebase's or module's coverage policy — the metric (statement /
+  branch / function / line), the target number, what's excluded from measurement, and
+  whether CI blocks on it (overall vs new-code vs delta).
+- **Triggers on:** "what coverage should we require", "enforce 80% in CI?", "do we need
+  100%", "the coverage gate is a checklist exercise", "how do we handle coverage on this
+  legacy module", "the build failed on a coverage drop — is that right".
+- **Gate:** no number until the user states what kind of code it is (criticality), its
+  change frequency and lifespan, where coverage is now + what has actually broken, the
+  team's enforcement appetite, and whether a legacy backfill is realistic.
+- **Produces:** a recommendation block, then a policy document in
+  `docs/testing/coverage-policy.md` (ADR optional, only if enforcement was contested).
+- **Source notes:** `Architecture/Testing/` — Code Coverage (the four metrics), Code
+  Coverage Best Practices (no universal ideal, the 60/75/90 band, gate bases, the
+  boy-scout ratchet, the checklist trap, mutation testing), Test Branch Coverage. Companion
+  files: `policy-framework.md`, `coverage-metrics.md`.
+
+### `Testing/test-practice-gate`
+- **Does:** A rep gate — the test-domain sibling of `problem-solving-gates`. Before writing
+  tests for a specific piece of code (when the user is building testing skill, not just
+  producing a suite they already know), makes them state a **test charter**: the behavior
+  each test protects, the failure modes worth covering, the seam (stub vs real), the done
+  condition. Then Claude renders the charter as code and gap-checks it — nothing more.
+- **Triggers on:** "write tests for this function", "help me test this", "what should I test
+  here", "add unit tests for X" — without the user having said what the tests verify.
+- **Does not apply to:** plain execution ("I know what these cover, port them"), the test
+  mix for a surface (`test-strategy`), the coverage % (`coverage-policy`), reviewing
+  existing tests (`code-review`).
+- **Produces:** no artifact — it gates a coding action. Pointed to from `learning-gate`
+  Step 3.
+- **Source notes:** `Architecture/Testing/` — Test Setup, Stubbing, Test Cases Guideline,
+  Causes of Test Failure, Data Driven Testing, Testing Lifecycle Hooks, Design patterns in
+  testing. Companion file: `charter-guide.md`; `examples/`.
 
 ---
 
@@ -236,7 +322,7 @@ Directions the source notes already sketch. None built yet.
 | **Git-workflow skills** | Beyond `commit-and-push` — PR authoring, branch strategy, conflict resolution. | Empty `.claude/skills/Git/` placeholder. |
 | **contract-authoring** | API/event contract *authoring* once the style is chosen — versioning scheme, backward/forward compatibility, DTO and error-shape design, deprecation policy. The pieces `api-interface-style` explicitly defers. | `database-architecture` README, "Still not built"; `api-interface-style` "Deferred". |
 | **implementation** | Turning an approved ADR into migrations, models, DTOs, and wiring — the step the Data skills deliberately stop before. | `database schema disscusiion.md`, sketched as an agent. |
-| **Practice Gates** (code / test / database) | Rep-oriented gating for implementation work — siblings of `problem-solving-gates`, pointed to from `learning-gate` Step 3. | `learning-gate` README, "Not built". |
+| **Practice Gates** (code / database) | Rep-oriented gating for implementation work — siblings of `problem-solving-gates` and `Testing/test-practice-gate` (the test one, now built), pointed to from `learning-gate` Step 3. | `learning-gate` README, "Not built". |
 | **Architecture Impact / Risk Analysis / Test Generation / Observability / Refactoring agents** | Five agents mapped to system surfaces, run at PR / dev / deploy stages. | `Goals/AI/Agents.md`, "The Five Agents I Would Build". |
 
 ---
