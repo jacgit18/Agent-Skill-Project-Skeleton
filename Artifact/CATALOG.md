@@ -9,7 +9,7 @@ assistant doesn't quietly do a reasoning rep the user could do themselves. Each 
 written from a note in the `PersonalBrain` Obsidian vault ("DevHiveMind") — the source note is
 named in each entry.
 
-**Count:** 22 skills — across `Architecture/` (incl. `Architecture/Data/`), `Business/`,
+**Count:** 25 skills — across `Architecture/` (incl. `Architecture/Data/`), `Business/`,
 `Skill Development/`, `Testing/`, `Prompts/`, and `Git/`.
 
 ---
@@ -302,6 +302,78 @@ test-practice-gate   →  the charter you must state before Claude writes a test
   Monitoring.md`, `OpenTelemetry.md`, `12 Key Metrics for Measuring Service Performance.md`,
   `Fault Tolerance.md`, `Chaos Engineering.md`. Companion files: `observability-framework.md`,
   `signals-and-slos.md`.
+
+### `Architecture/resilience-strategy`
+- **Does:** Decides how a service or request path protects itself under overload and
+  dependency failure — priority-aware load shedding, rate limiting (per-client vs global,
+  token-bucket / sliding-window), concurrency limiting and backpressure, circuit breakers on
+  outbound calls, timeout / retry-budget / backoff-with-jitter, bulkhead pool isolation,
+  graceful degradation with fallbacks — plus where each control sits (edge / gateway / mesh /
+  in-process).
+- **Triggers on:** "we need rate limiting", "add a circuit breaker", "the service falls over
+  under load", "a slow dependency took everything down", "one noisy client starved everyone",
+  "how do we degrade gracefully", "we need backpressure", "load shedding", or a proposed
+  mechanism to check ("retry 3× on every failure", "rate-limit everyone to 100 rps").
+- **Gate:** refuses a mechanism until the user supplies the triggering incident or capacity
+  ceiling, what resource binds first (load-tested if unknown), the priority tiers of the
+  traffic, the client model (attributable vs aggregate), the downstream dependencies and
+  their fallbacks, and reject-vs-buffer semantics per class.
+- **Boundary:** *not* detecting or alerting on overload (→ `observability-strategy`, whose
+  SLIs it consumes); *not* scaling the datastore or DB pooling (→ `data-tier-operations`, a
+  complement to the upstream limit); *not* the cache design (→ `caching-strategy`, though
+  stale-serve is a degradation fallback it names); *not* diagnosing one endpoint's failure
+  last night (→ `problem-solving-gates` Rubber Duck).
+- **Produces:** a recommendation block, then an ADR reusing `database-architecture`'s template.
+- **Source notes:** `Architecture/02. Backing Service Options/` — `Load Shedding.md`, `Load
+  Shedding Implementation.md`, `Load Balancer.md`, `Rate Limiting.md`; `Architecture/` —
+  `Fault Tolerance.md`, `Chaos Engineering.md`. Companion files: `resilience-framework.md`,
+  `mechanisms-and-tradeoffs.md`.
+
+### `Architecture/migration-cutover`
+- **Does:** Decides how a live workload moves from one system to another — a datastore
+  replacement, an application replatform, a hosting relocation — covering the cutover pattern
+  (big-bang / phased-by-slice / parallel-run with dual-write + shadow reads / strangler-fig),
+  the data-move mechanic (freeze-and-copy / bulk load + CDC / dual-write + backfill +
+  reconcile), the verification bar that authorises the flip, the rollback window and its
+  point of no return, and the consumer sequence.
+- **Triggers on:** "we're migrating from X to Y", "move off the old system", "cut over to the
+  new database", "replatform this", "lift-and-shift to the cloud", "the legacy system is
+  being retired", "move the data without downtime", or a proposed migration plan to check.
+- **Gate:** refuses a cutover plan until the user supplies the dated driver (EOL / cost /
+  capability gap / compliance / consolidation — not "modernise"), the scope and an explicit
+  out-of-scope list, the data volume × change rate × schema delta, the downtime and RPO
+  budget, the rollback window and point of no return, the consumer coupling, and the
+  verification threshold.
+- **Boundary:** *not* choosing the target store / paradigm (→ `database-architecture`); *not*
+  scaling a store that's staying (→ `data-tier-operations`, which hands the execution of a
+  live move here); *not* a routine version release of an existing unit (→ `deployment-strategy`).
+- **Produces:** a recommendation block, then an ADR reusing `database-architecture`'s template.
+- **Source note:** `Architecture/01. System Design/Migration Plan.md`. Companion files:
+  `cutover-framework.md`, `cutover-patterns.md`.
+
+### `Architecture/deployment-strategy`
+- **Does:** Decides how a new version of one deployable unit reaches production — the rollout
+  mechanism (recreate / rolling / blue-green / canary / feature-flag-gated), the environment
+  progression that actually gates a release, the expand/contract discipline for
+  backward-compatible schema and contract changes, the health signal that aborts a rollout
+  and the auto-rollback trigger, and the release cadence.
+- **Triggers on:** "we need zero-downtime deploys", "blue-green or canary", "our deploys
+  cause an outage", "rollbacks take too long", "releases are scary so we batch them", "set up
+  a staging pipeline", or a proposed rollout approach to check.
+- **Gate:** refuses a mechanism until the user supplies what's wrong with releases today
+  (measured downtime / a blast-radius incident / slow rollback / the batching doom-loop), the
+  unit and its class, the downtime tolerance and traffic shape, the rollback speed needed,
+  the state and contract coupling, the progressive-delivery infrastructure that exists, the
+  environments that actually gate, and the cadence.
+- **Boundary:** *not* moving a workload to a different system (→ `migration-cutover`); *not*
+  which test levels run in the pipeline (→ `test-strategy`, whose stage list it consumes);
+  *not* the health signal's own design (→ `observability-strategy`); *not* the cost of a
+  second stack (→ `technical-cost-decision`).
+- **Produces:** a recommendation block, then an ADR reusing `database-architecture`'s template.
+- **Source notes:** `Architecture/Devops/` — `Deployment Strategies.md`, `Release.md`, `Staged
+  Deployment.md`, `Steps to Release Stage.md`, `Deployment Artifacts.md`; 12-factor `V Build,
+  release, run.md`; `Database Migrations.md`. Companion files: `deployment-framework.md`,
+  `rollout-patterns.md`.
 
 ### `Business/technical-cost-decision`
 - **Does:** Forces three specific calculations on any technical decision that carries a
