@@ -21,6 +21,9 @@ decision or the rep it needs, and produces an ADR / model / handoff doc from the
 | [`.claude/settings.json`](.claude/settings.json) | Wires the `UserPromptSubmit` prompt-logging hook. |
 | [`.claude/_Prompts/logs/`](.claude/_Prompts/logs/) | Dated logs of every prompt submitted in the repo. |
 | [`Architecture/`](Architecture/) | System-design notes: system design, backing services, web-server architecture, design patterns, devops, networking, security, testing, 12-factor. Source material for the skills. |
+| [`Communication/Companies Worked At/`](Communication/Companies%20Worked%20At/) | BSA/agile process notes. Source material for the `Business/` and `Prompts/` group's BSA-derived skills. |
+| [`Business Venture/`](Business%20Venture/) | Startup/business-acquisition notes. Source material for the `Finance/` group. |
+| [`Finance/`](Finance/) | Personal error-log templates — `Error Log/Language Error.md` is the template `problem-journal`'s Capture mode writes into. |
 | [`Goals/`](Goals/) | Personal learning roadmap and AI-engineering framework notes. |
 | [`Books/`](Books/) | Business and tech book notes. |
 | [`scripts/`](scripts/) | `hooks/log-prompt.sh`, `git/batch-git-push.sh`. |
@@ -70,6 +73,12 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | Skill | Role |
 |---|---|
 | [`Documents/document-page-check`](.claude/skills/Documents/document-page-check/) | Integrity check for a paginated document (PDF / EPUB) before Claude reads, quotes, or summarizes it — confirms the file is complete and untruncated, flags blank / image-only pages, resolves the printed-vs-physical page-number offset, and spot-checks the citations an answer will lean on. Emits a report, then asks whether to gate or proceed. A mechanical pre-flight, not a reasoning gate. |
+
+### Finance — personal/business-finance decisions
+
+| Skill | Role |
+|---|---|
+| [`Finance/seller-financing-evaluation`](.claude/skills/Finance/seller-financing-evaluation/) | Evaluates a seller-financed (owner-financed) business purchase — computes the amortized monthly payment rather than trusting a stated figure, benchmarks down payment / rate / term against real market ranges, checks it against the business's cash flow, and runs the "7 Ds" seller-motivation diagnostic before any fairness verdict. Not a substitute for an attorney, accountant, or appraiser. |
 
 ### Prompts — authoring, testing, and session hygiene
 
