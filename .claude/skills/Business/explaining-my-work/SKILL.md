@@ -13,6 +13,7 @@ The fix is not to write three things. It is to build **one evidence base** and r
 
 - **Publishing.** This skill drafts. It never posts, sends, or submits anything anywhere. The draft goes to the user; distribution is their call.
 - **Self-understanding / psychology framing.** A different concern with a different standard.
+- **Personal-brand voice and career-wide honesty constraints.** This skill's Evidence Block is scoped to *this piece of work* — it has no notion of the user's total years of experience, which environments were pre-prod vs. production, or a fixed brand device. When the LinkedIn Draft or resume line is going out under the user's personal brand, run it through `software-carpentier-brand` afterward for the voice pass and those career-wide checks.
 
 ---
 
