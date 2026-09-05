@@ -19,6 +19,9 @@ Limiting.md`, `Fault Tolerance.md`, and `Chaos Engineering.md`.
 ```
 microservices-decision   →  how many services, where the boundaries are
 observability-strategy    →  the SLIs that define "critical traffic healthy" + alerting
+reliability-math          →  quantifies a pressure from live telemetry (utilization vs. the
+                             collapse curve, a Little's Law concurrency figure) — this
+                             skill's item-5 "what binds first," when it's already computed
 resilience-strategy       →  what the path DOES under load — shed / limit / break / degrade   (this skill)  → ADR
 data-tier-operations      →  scaling the store behind it (replicas, sharding, DB pooling)
 caching-strategy          →  the cache a degraded path falls back to
