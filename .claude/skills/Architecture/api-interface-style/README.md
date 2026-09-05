@@ -22,6 +22,9 @@ api-interface-style       →  how one surface talks: REST / GraphQL / gRPC / WS
 database-architecture     →  where the authoritative definition lives: contract-first vs
                              code-first; OpenAPI / GraphQL schema / protobuf as source of truth
 technical-cost-decision   →  managed gateway vs self-hosted, cost at request/event volume
+bff-gateway-placement     →  whether a shared gateway / BFF sits in front of multiple
+                             services or client types at all (this skill's protocol choice
+                             applies to that layer's own surface, once its topology is picked)
 ```
 
 `api-interface-style` and `database-architecture` are the two halves of "design the API" and
@@ -54,8 +57,10 @@ Stops before the contract, handlers, resolvers, and SDKs.
 - Cost-sizing against volume, managed-vs-self-hosted gateway → `technical-cost-decision`.
 - Schema / table design behind the API → `relational-modeling` / `dimensional-modeling`.
 - Replication, sharding, pooling, transaction patterns → `data-tier-operations`.
-- Versioning mechanics, auth-scheme selection, gateway/BFF placement — the skill *names*
-  that each is needed and defers it.
+- Versioning mechanics, auth-scheme selection — the skill *names* that each is needed and
+  defers it.
+- Whether a shared gateway or BFF sits in front of multiple services/clients at all →
+  `bff-gateway-placement`.
 - Implementation of any kind.
 
 ## Using it in another repo
@@ -78,3 +83,6 @@ boundaries to hold:
   concept. If the real question is "should these be separate services", that runs first.
 - **vs `technical-cost-decision`** — anything volume- or bill-driven (gateway cost, egress,
   per-request pricing) hands off; this skill only notes the trigger.
+- **vs `bff-gateway-placement`** — that skill decides *whether* a gateway/BFF exists at all
+  in front of multiple services or client types; this skill decides the protocol for one
+  surface, including that layer's own client-facing surface once its topology is settled.

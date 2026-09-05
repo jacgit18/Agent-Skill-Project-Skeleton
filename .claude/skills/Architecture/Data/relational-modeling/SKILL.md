@@ -19,6 +19,7 @@ Given a relational database that is already the chosen store, design the tables:
 - **Sharding, replication, connection pooling, transaction isolation levels, distributed-transaction patterns (2PC / Saga)** → `data-tier-operations`. Note when the design will need them; don't design them here.
 - **Analytical / OLAP modeling** — star and snowflake schemas, fact and dimension tables, data grain, warehouses and marts, materialized views for reporting → `dimensional-modeling`. A different discipline with the opposite default (denormalize, not normalize); this skill is for the transactional (OLTP) store.
 - **ORM / query-builder selection**, migration tooling, and writing the migrations themselves. This skill stops at the design.
+- **The authorization model itself** — role/permission structure (flat vs hierarchical RBAC, ABAC, ACL, ReBAC), permission granularity (type/instance/field), multi-tenancy isolation shape, and enforcement layer → `access-control-modeling`. If the entities on the table are `users`/`roles`/`permissions` or similar and that decision hasn't been made yet (no named model, granularity, or tenancy shape), stop and send the user there first; model the schema only once it hands back a named entity list, same as the `database-architecture` prerequisite above.
 
 ---
 
@@ -29,6 +30,7 @@ Lighter than `database-architecture`'s, but it is still a gate. Do not produce t
 **Prerequisite (check first):**
 
 - **The store is relational and settled.** Point to the ADR or get the user to state it. If the persistence decision is open, stop — this is `database-architecture`'s job, not this skill's.
+- **If the entities are `users`/`roles`/`permissions` or similar, the authorization model is settled.** A user handing over "users have many roles, roles have many permissions" has named entities and cardinality, which satisfies gate items 1–2 on their face — but if no one has decided flat-vs-hierarchical RBAC, ABAC, ACL, granularity (type/instance/field), tenancy isolation, or the enforcement layer, that's `access-control-modeling`'s gate, unopened. Ask whether that decision has been made before designing the junction tables; do not infer a flat-RBAC shape from entity names alone.
 
 **From the user, in their own words** (do not invent these, do not model without them):
 

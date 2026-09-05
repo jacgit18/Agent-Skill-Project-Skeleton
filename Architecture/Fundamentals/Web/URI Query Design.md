@@ -9,9 +9,9 @@ author:
   - chatgpt
 Purpose: This documentation discusses URI a super-set of  URL, talking about query design.
 Status: Done
-Started: 
+Started:
 EditDate: 2024-01-30
-Relates: "[[Structuring URL]]"
+Relates: "[[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/Structuring URL]]"
 Peer Reviewed: 0
 dg-publish: false
 ---

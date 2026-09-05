@@ -9,9 +9,9 @@ author:
   - chatgpt
 Purpose: This documentation discusses backend  server and proxy server.
 Status: Refinement
-Started: 
+Started:
 EditDate: 2024-03-06
-Relates: "[[Proxy]]"
+Relates: "[[Architecture/Fundamentals/Web/Proxy]]"
 Peer Reviewed: 0
 dg-publish:
 ---

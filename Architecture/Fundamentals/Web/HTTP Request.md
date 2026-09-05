@@ -14,7 +14,7 @@ Relates:
 Peer Reviewed: 0
 dg-publish: true
 ---
-![[Http Request Method.gif]]
+![[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/_Infographic/Http Request Method.gif]]
 
 The process of navigating to a website involves a request from the application layer, which may traverse the transport and session layers before reaching the DNS.
 
@@ -30,11 +30,11 @@ HTTP Request can be resolved(accepted) or rejected and you may create test case 
 
 Message bodies can be single-resource or multiple-resource, distinguished by headers like Content-Type and Content-Length. Request.redirect property defines the redirect handling mode with values like follow, error, or manual.
 
-Debugging involves using `res.text`, and HTTP rules dictate proper usage of methods like [[GET]], [[POST]], HEAD,  [[PUT]], [[PATCH]]  [[DELETE]],  and [[Other Methods]],  emphasizing adherence to design principles and avoiding misuse.
+Debugging involves using `res.text`, and HTTP rules dictate proper usage of methods like [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/HTTP Requests/GET]], [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/HTTP Requests/POST]], HEAD,  [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/HTTP Requests/PUT]], [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/HTTP Requests/PATCH]]  [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/HTTP Requests/DELETE]],  and [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/HTTP Requests/Other Methods]],  emphasizing adherence to design principles and avoiding misuse.
 
 The client sends CRUD requests, receives responses, and handles data in variables. Requests can be resolved or rejected, with test cases used to control data/code flow.
 
-The HEAD method is similar to GET but excludes the message-body in the response, useful for obtaining metadata without transferring the entity-body. The response to a HEAD request may be [cacheable](https://developer.mozilla.org/en-US/docs/Glossary/cacheable), updating cached entities based on field values like Content-Length or ETag. HEAD is also [[Idempotent]].
+The HEAD method is similar to GET but excludes the message-body in the response, useful for obtaining metadata without transferring the entity-body. The response to a HEAD request may be [cacheable](https://developer.mozilla.org/en-US/docs/Glossary/cacheable), updating cached entities based on field values like Content-Length or ETag. HEAD is also [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/Idempotent]].
 
 ## HTTP Rules
 
@@ -49,7 +49,7 @@ Rule: POST must be used to execute controllers 
 Tunneling refers to any abuse of HTTP that masks or misrepresents a message’s intent and undermines the protocol’s transparency. A REST API must not compromise its design by misusing HTTP’s request methods in an effort to accommodate clients with limited HTTP vocabulary. Always make proper use of the HTTP methods as specified by the rules in this section.
 
 ## HTTP Request Structure
-![[Request Structure.png]]
+![[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/_Infographic/Request Structure.png]]
 
 The `fetch()` method is used to make network requests, resolving to a `Response` object once the server responds with headers. It defaults to a GET request but can be configured for other methods like POST. The promise does not reject on HTTP errors; you need to check `Response.ok` or `Response.status` in a `then()` handler.
 

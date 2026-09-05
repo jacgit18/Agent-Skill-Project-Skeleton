@@ -23,6 +23,8 @@ resilience-strategy       →  what the path DOES under load — shed / limit / 
 data-tier-operations      →  scaling the store behind it (replicas, sharding, DB pooling)
 caching-strategy          →  the cache a degraded path falls back to
 technical-cost-decision   →  the dollar cost of capacity headroom
+service-mesh-adoption      →  whether a service mesh exists at all (this skill assumes that
+                             answer as given when it lists "service mesh" as a placement)
 ```
 
 `resilience-strategy` **consumes** the SLIs from `observability-strategy` (they define what

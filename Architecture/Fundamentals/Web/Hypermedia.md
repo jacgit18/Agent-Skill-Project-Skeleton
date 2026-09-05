@@ -12,7 +12,7 @@ Relates:
 Peer Reviewed: 0
 dg-publish: false
 ---
-![[Hypertext vs Hypermedia.png]]
+![[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/_Infographic/Hypertext vs Hypermedia.png]]
 
 **What is Hypermedia?**
 Hypermedia is an evolved form of hypertext that incorporates diverse media types, including text, graphics, audio, and video sequences. Unlike hypertext, hypermedia isn't limited to textual elements; it expands the concept by introducing clickable links within web pages, creating a network of interconnected, non-linear information. This approach allows users to access and interact with multimedia content, enhancing their overall experience. Image links, commonly connected to other web pages, represent a prevalent form of hypermedia. Its applications span diverse fields, from problem-solving and qualitative research to electronic learning and advanced educational tools.

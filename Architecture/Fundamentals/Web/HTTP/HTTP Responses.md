@@ -13,7 +13,7 @@ Relates:
 Peer Reviewed: 0
 dg-publish: false
 ---
-![[Status Codes.jpg]]
+![[Architecture/Fundamentals/Web/_Infographic/Status Codes.jpg]]
 
 In HTTP responses, the status line includes the HTTP version number, the status code (ranging from 1xx to 5xx), and a reason phrase. HTTP headers, categorized as general, response, and entity headers, provide additional information. They assist the client in understanding the response, caching, and making future requests. An empty line (CRLF) separates headers from the message body.
 

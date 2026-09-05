@@ -25,7 +25,7 @@ As modern websites and applications are like busy beehives, we use a variety of 
 ## [[Architecture/Delivery/Load Balancer]]: traffic cop
 - Directs traffic evenly across servers, preventing bottlenecks  
 - Essential for popular websites with heavy traffic and high demand.  
-## [[Proxy |Reverse Proxy]]: change identity  
+## [[Architecture/Fundamentals/Web/Proxy|Reverse Proxy]]: change identity  
 - Fetching data secretly, keeping servers hidden. 
 - Perfect for shielding sensitive websites from cyber-attacks and prying eyes.  
   

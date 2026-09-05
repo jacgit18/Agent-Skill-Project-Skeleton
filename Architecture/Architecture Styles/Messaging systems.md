@@ -48,13 +48,13 @@ Further, specific messaging system categories and examples include:
 
 1. **Publish-Subscribe Systems:** These distribute messages to multiple subscribers based on topics or channels. MQTT and Apache Pulsar are noteworthy examples.
 
-2. **[[WebSockets]]:** Enabling real-time, bidirectional communication in web applications.
+2. **[[Architecture/Fundamentals/Web/WebSockets]]:** Enabling real-time, bidirectional communication in web applications.
 
 3. **HTTP/REST APIs:** While not traditional messaging systems, they are widely used for web application and web service communication.
 
 4. **Socket.io:** Facilitating real-time, bidirectional communication in web applications and games.
 
-5. **[[gRPC]]:** A high-performance, language-agnostic framework for building remote procedure call (RPC) systems, often used for microservices communication.
+5. **[[Architecture/Fundamentals/Web/gRPC]]:** A high-performance, language-agnostic framework for building remote procedure call (RPC) systems, often used for microservices communication.
 
 6. **AMQP (Advanced Message Queuing Protocol):** An open standard for message-oriented middleware, used in message queuing and publish-subscribe scenarios.
 

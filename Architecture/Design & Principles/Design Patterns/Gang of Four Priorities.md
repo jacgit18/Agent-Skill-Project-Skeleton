@@ -46,10 +46,10 @@ Here’s a prioritized list of top Gang of Four (GoF) design patterns to focus o
 Clean up
 #todo/High/Dev 
 - [ ] [[Design Patterns Elements of Reusable Object Oriented Software .pdf]]
-- [ ] [[Architecture/Design & Principles/Design Patterns/Design Patterns]]
-- [ ] [[Architecture/Design & Principles/Design Patterns/Design Patterns & Gang of 4]]
+- [ ] [[Architecture/Application Structure/Design & Principles/Design Patterns/Design Patterns]]
+- [ ] [[Architecture/Application Structure/Design & Principles/Design Patterns/Design Patterns & Gang of 4]]
 - [ ] [[Design Patterns Layers.pdf]]
-- [ ] [[Architecture/Design & Principles/Design Patterns/When to use pattern]]
+- [ ] [[Architecture/Application Structure/Design & Principles/Design Patterns/When to use pattern]]
 [ChatGPT - Decision Framework for GoF Patterns](https://chatgpt.com/share/69be451a-78cc-800d-8910-fbc4432f9c04)
 ### **Behavioral Patterns** (Focus on object interaction and communication)
 
@@ -73,14 +73,14 @@ Clean up
     - **Common Use Cases**: Finite state machines, workflow management.
     - **Why Prioritize**: Simplifies state-dependent logic.
 
-5. [[Architecture/Design & Principles/Design Patterns/Circuit breaker pattern relationship with fault tolerance]]
+5. [[Architecture/Application Structure/Design & Principles/Design Patterns/Circuit breaker pattern relationship with fault tolerance]]
 
 
 ---
 
 ### **Creational Patterns** (Focus on object creation)
 
-1. **[[Architecture/Design & Principles/Design Patterns/Factory Pattern]] Method**
+1. **[[Architecture/Application Structure/Design & Principles/Design Patterns/Factory Pattern]] Method**
     - **Purpose**: Delegates the instantiation logic to subclasses, promoting loose coupling.
     - **Common Use Cases**: Framework development, creating objects without specifying the exact class.
     - **Why Prioritize**: Simplifies object creation and promotes scalability.
@@ -95,7 +95,7 @@ Clean up
     - **Common Use Cases**: Creating objects with many optional parameters or configurations.
     - **Why Prioritize**: Addresses the "telescoping constructor" problem effectively.
 
-4. [[Architecture/Design & Principles/Design Patterns/Dependency Injection Pattern]]
+4. [[Architecture/Application Structure/Design & Principles/Design Patterns/Dependency Injection Pattern]]
 
 
 ---

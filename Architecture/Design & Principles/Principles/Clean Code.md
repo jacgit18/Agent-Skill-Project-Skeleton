@@ -60,11 +60,11 @@ Clean code principles lead to highly modular source code easier to read and test
 - or over the long term like learning all the different Java versions in-depth or at least in breath over time in small chunks 
 
 
-## [[Architecture/Design & Principles/Principles/Naming Conventions]]
+## [[Architecture/Application Structure/Design & Principles/Principles/Naming Conventions]]
 High level description
 
 
-## [[Architecture/Design & Principles/Principles/Functions rules]]
+## [[Architecture/Application Structure/Design & Principles/Principles/Functions rules]]
 High level description
 
 
@@ -205,7 +205,7 @@ In conclusion, prefer initializing variables at the point of declaration to leve
 - Independent.
 - Repeatable.
 
-# Code smells(relates to[[Architecture/Design & Principles/Principles/GRASP Design Principles| Grasp]])
+# Code smells(relates to[[Architecture/Application Structure/Design & Principles/Principles/GRASP Design Principles| Grasp]])
 
 Code Smells are a great term for when reading code, the code may be valid, it may work, but there is something about it that just doesn’t smell right.
 

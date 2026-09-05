@@ -49,7 +49,7 @@ server.listen(PORT, () => {
 ```
 
 This example uses the `http-proxy` library to create a simple HTTP proxy server. Requests to the proxy server are forwarded to `http://example.com`. You can modify the target URL or add more advanced features based on your specific use case.
-![[Proxy.jpeg]]
+![[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/_Infographic/Proxy.jpeg]]
 
 ## 1.1 Forward Proxy
 

@@ -12,21 +12,21 @@ Purpose: This documentation discusses explains URI structure and best practices.
 Status: Refinement
 Started:
 EditDate: 2024-01-30
-Relates: "[[Architecture/Design & Principles/Principles/Naming Conventions]]"
+Relates: "[[Architecture/Application Structure/Design & Principles/Principles/Naming Conventions]]"
 Peer Reviewed: 0
 dg-publish: false
 ---
-![[URL Structure.jpeg]]
+![[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/_Infographic/URL Structure.jpeg]]
 
-A URI, or Universal Resource Identifier, is a concise character sequence identifying an abstract or physical resource. It serves as a versatile method for naming and locating web resources. Official examples highlight that any character sequence identifying a resource is considered a URI. The whole thing is considered the URI so `scheme/protocol` to the`Anchor/Fragment` which is optional this identifies something specific as a function of the [[Structuring URL#Document |document]]. ^9e3d3d
+A URI, or Universal Resource Identifier, is a concise character sequence identifying an abstract or physical resource. It serves as a versatile method for naming and locating web resources. Official examples highlight that any character sequence identifying a resource is considered a URI. The whole thing is considered the URI so `scheme/protocol` to the`Anchor/Fragment` which is optional this identifies something specific as a function of the [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/Structuring URL#Document|document]]. ^9e3d3d
 
-URL(Universal Resource Locator), a subset or URI that is used to find resources on the internet starts at  the`scheme/protocol` common ones are `HTTP` or `HTTPS`,  URL  ends at query `parameter` which consist of query string separator `?` and [[URI Query Design |Query String]] parameter. The URL also details access methods like HTTP or FTP.
+URL(Universal Resource Locator), a subset or URI that is used to find resources on the internet starts at  the`scheme/protocol` common ones are `HTTP` or `HTTPS`,  URL  ends at query `parameter` which consist of query string separator `?` and [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/URI Query Design|Query String]] parameter. The URL also details access methods like HTTP or FTP.
 
 A URN(Universal Resource Name), as another subset, functions as a distinctive name identifier, akin to a person's name. Notably, a URN holds persistent significance, ensuring that the owner can reliably anticipate that others or programs will consistently locate the associated resource. URN Start at the domain so after something  like`www` and goes all the way to the end at the Anchor/Fragment.
 
 For example, a URN like `oasis:names:specification:docbook` differs from a resource name such as `linkedin.com/learning/instructors/morten-rand-hendrikson`. It's important to note that a URN can also function as a URL, but this is not mandatory. In the realm of REST APIs, the inclusive term URI is frequently employed, encompassing URLs, URNs, or a combination of both, offering flexibility in code implementations.
 
-![[Url Process.gif]]
+![[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/_Infographic/Url Process.gif]]
 
 > A side note on hostnames: A hostname is a composition of the subdomain, domain, and top-level domain (TLD). For instance, examples like www.youtube.com or mail.gmail.com illustrate this combination. The top-level domain represents the most generic domain in the Internet's hierarchical DNS (Domain Name System), including familiar endings like `com`, `org`, and various others.
 # URI Path Design Guidelines for REST APIs:

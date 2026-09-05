@@ -15,7 +15,7 @@ Relates:
 Peer Reviewed: 0
 dg-publish: true
 ---
-![[Polling vs Webhooks.png]]
+![[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/_Infographic/Polling vs Webhooks.png]]
 
 ### Polling vs. Webhooks: Models of Communication
 

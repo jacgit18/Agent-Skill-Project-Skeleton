@@ -18,18 +18,18 @@ An IP (Internet Protocol) address is a numerical label assigned to each device c
 There are two versions of IP addresses in use today: IPv4 and IPv6.
 
 
-![[IPv4 Structure.png]]
+![[Architecture/Fundamentals/Web/_Infographic/IPv4 Structure.png]]
 **IPv4 (Internet Protocol version 4):**
 
 IPv4 is the fourth version of the Internet Protocol and the most widely used. It consists of a 32-bit address, expressed as four sets of numbers separated by periods. IPv4 has a limited address space, providing approximately 4.3 billion unique addresses. The growth of the Internet and the increasing number of connected devices led to the exhaustion of available IPv4 addresses, prompting the need for a new protocol.
 
-![[IPV6 Structure.png]]
+![[Architecture/Fundamentals/Web/_Infographic/IPV6 Structure.png]]
 
 **IPv6 (Internet Protocol version 6):**
 
 IPv6 is the latest version of the Internet Protocol, designed to address the limitations of IPv4 and accommodate the growing number of devices connected to the Internet. IPv6 uses a 128-bit address, expressed in hexadecimal notation. This significantly expands the number of available unique addresses to an astronomical amount, ensuring sustainable growth for the Internet. IPv6 adoption is gradually increasing to support the evolving requirements of a connected world.
 
-![[IPV6 vs IPV4.jpeg]]
+![[Architecture/Fundamentals/Web/_Infographic/IPV6 vs IPV4.jpeg]]
 
 ![[ipv4viPV6.gif]]
 

@@ -8,8 +8,8 @@ author:
 Purpose: This documentation discusses DNS resolver implementation.
 Status: Done
 Started: 2024-02-01
-EditDate: 
-Relates: "[[DNS(Domain Name System)]]"
+EditDate:
+Relates: "[[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/DNS(Domain Name System)]]"
 Peer Reviewed: 0
 dg-publish: false
 ---

@@ -22,11 +22,11 @@ dg-publish:
 
 merging data with interfaces and integrating business logic backed by requirements probably codebase 
 
-- [[Architecture/Design & Principles/Principles/_S_ingle Responsibility Principle]]
-- [[Architecture/Design & Principles/Principles/_O_pen Closed Design Principle]]
-- [[Architecture/Design & Principles/Principles/_L_iskov Substitution Principle]]
-- [[Architecture/Design & Principles/Principles/_I_nterface Segregation Principle]]
-- [[Architecture/Design & Principles/Principles/_D_ependency Inversion]]
+- [[Architecture/Application Structure/Design & Principles/Principles/_S_ingle Responsibility Principle]]
+- [[Architecture/Application Structure/Design & Principles/Principles/_O_pen Closed Design Principle]]
+- [[Architecture/Application Structure/Design & Principles/Principles/_L_iskov Substitution Principle]]
+- [[Architecture/Application Structure/Design & Principles/Principles/_I_nterface Segregation Principle]]
+- [[Architecture/Application Structure/Design & Principles/Principles/_D_ependency Inversion]]
 
 The SOLID principles are a set of five principles aimed at making software designs more understandable, flexible, and maintainable. Here's an example of TypeScript code that incorporates all the SOLID principles:
 

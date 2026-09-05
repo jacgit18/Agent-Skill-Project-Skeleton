@@ -17,7 +17,7 @@ Relates:
 Peer Reviewed: 0
 dg-publish: true
 ---
-An API pass-through, often referred to as an [[API Gateway]] or [[Proxy |reverse proxy]] , serves several purposes in the context of software architecture and API management:  
+An API pass-through, often referred to as an [[API Gateway]] or [[Architecture/Fundamentals/Web/Proxy|reverse proxy]] , serves several purposes in the context of software architecture and API management:  
   
 1. **Routing and Forwarding Requests:**  
 	- An API pass-through acts as an intermediary between clients and multiple backend services. It can route and forward incoming API requests to the appropriate backend service based on the request path, headers, or other criteria.  

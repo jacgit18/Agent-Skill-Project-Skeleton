@@ -12,7 +12,7 @@ dg-publish:
 ---
 Several technologies and techniques are commonly used for implementing load shedding in distributed systems, cloud computing environments, and network infrastructure. Here are some of them:
 
-1. **Traffic Management Systems**: Traffic management systems such as [[Architecture/Delivery/Load Balancer]] and [[Proxy |reverse proxies]] play a crucial role in load shedding by distributing incoming requests across multiple servers or services based on predefined rules. These systems can implement various load shedding strategies, such as request throttling, [[Rate Limiting]], and prioritization, to manage system load effectively.
+1. **Traffic Management Systems**: Traffic management systems such as [[Architecture/Delivery/Load Balancer]] and [[Architecture/Fundamentals/Web/Proxy|reverse proxies]] play a crucial role in load shedding by distributing incoming requests across multiple servers or services based on predefined rules. These systems can implement various load shedding strategies, such as request throttling, [[Rate Limiting]], and prioritization, to manage system load effectively.
 
 2. **[[API Gateway]]**: API gateways provide a centralized entry point for accessing backend services and APIs. They often include features for request routing, load balancing, and traffic shaping, allowing administrators to implement load shedding policies based on factors like request volume, latency, or resource utilization.
 

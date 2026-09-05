@@ -44,7 +44,7 @@ memory of the conversation understands the situation.>
 - Contract source-of-truth (contract-first vs code-first) → `database-architecture`
 - Versioning strategy → <needed; owner / when>
 - Auth scheme → <needed; owner / when>
-- Gateway / BFF → <`microservices-decision` or `technical-cost-decision`, or "not needed">
+- Gateway / BFF → <`bff-gateway-placement`, or "not needed">
 
 **Revisit when**
 - <the condition that would reopen this — e.g. "a second frontend appears with a different query shape", "this internal call becomes a public API", "the event rate crosses the point where a broker is cheaper than webhook fan-out", "browser support becomes a requirement">

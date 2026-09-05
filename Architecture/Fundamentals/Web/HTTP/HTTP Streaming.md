@@ -13,7 +13,7 @@ Relates:
 Peer Reviewed: 0
 dg-publish: false
 ---
-![[HTTP Streaming.png]]
+![[Architecture/Fundamentals/Web/_Infographic/HTTP Streaming.png]]
 
 **HTTP Streaming and Data Transmission:**
 

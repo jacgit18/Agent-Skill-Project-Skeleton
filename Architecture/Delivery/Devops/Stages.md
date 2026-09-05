@@ -33,7 +33,7 @@ A feedback loop is exemplified when unit tests within the pipeline identify issu
 A robust pipeline involves compiling and testing code ([[Architecture/Delivery/Devops/Continuous Integration]]), producing a [[Architecture/Delivery/Devops/Deployment Artifacts|deployable artifact]] (Continuous Delivery), and automatic application deployment (Continuous Deployment).
 
 **Automated Trigger:**
-The best pipelines automatically trigger upon code commits, either through [[Webhooks vs Polling |Polling or Webhooks]], ensuring seamless and consistent execution.
+The best pipelines automatically trigger upon code commits, either through [[Architecture/Fundamentals/Web/Webhooks vs Polling|Polling or Webhooks]], ensuring seamless and consistent execution.
 
 **Code Checkout:**
 The CI server checks out code from the source repository based on the triggered commit, initiating the pipeline.

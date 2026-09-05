@@ -16,7 +16,7 @@ dg-publish:
 In programming, "dry" stands for "Don't Repeat Yourself." It's a principle that encourages developers to avoid duplicating code. Instead, they should strive to use abstractions, functions, or modules to reduce redundancy. The goal is to have a single, authoritative source for a particular piece of knowledge or logic, making the code more maintainable and less error-prone. Following the DRY principle helps improve code readability and facilitates easier updates in the future.
 
 
-The concept of "Duplicate Work" in the "[[Architecture/Design & Principles/Principles/BUD]]" acronym (Bottlenecks, Unnecessary Work, Duplicate Work) aligns with the "DRY" (Don't Repeat Yourself) principle in software development. Both emphasize the importance of avoiding redundancy and promoting efficiency in codebases.  
+The concept of "Duplicate Work" in the "[[Architecture/Application Structure/Design & Principles/Principles/BUD]]" acronym (Bottlenecks, Unnecessary Work, Duplicate Work) aligns with the "DRY" (Don't Repeat Yourself) principle in software development. Both emphasize the importance of avoiding redundancy and promoting efficiency in codebases.  
   
 Here's how they relate:  
   

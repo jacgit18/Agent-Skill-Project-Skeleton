@@ -242,8 +242,14 @@ Then hand off to the first skill in the sequence. Typical order:
 
 Not every design needs all five, and the sequence is not a closed list — a scope statement
 may also pull in `data-tier-operations` (scaling an existing store), `technical-cost-decision`
-(when the cost cap is tight), or `caching-strategy` where the deep-dive decisions imply
-them. Name the skills this scope actually needs, in dependency order.
+(when the cost cap is tight), `caching-strategy`, `access-control-modeling` (when one of the
+deep-dive picks is the permission/authorization model — who may do what to which resource), or
+`bff-gateway-placement` (when the audience names more than one client type — web, mobile,
+partners — and what sits between them and the services from step 2 is itself a deep-dive pick),
+or `service-mesh-adoption` (when the service split from step 2 produces enough services calling
+each other that encryption, discovery, or uniform resilience between them is itself a deep-dive
+pick) where the deep-dive decisions imply them. Name the skills this scope actually needs, in
+dependency order.
 
 When the 1–2 deep-dive decisions are **coupled** (one's output is the other's input — a
 location-ingest design that feeds an assignment engine), say so and order them: design the

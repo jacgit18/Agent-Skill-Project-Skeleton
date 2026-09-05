@@ -22,7 +22,7 @@ dg-publish:
 - Use descriptive names.
 - Prefer fewer arguments.
 - Have no side effects.
-- Don't use [[Architecture/Design & Principles/Principles/Flag Arguments]]. Split method into several independent methods that can be called from the client without the flag.  flag would be some boolean value you use as a arg in a function and use it within your conditional logic 
+- Don't use [[Architecture/Application Structure/Design & Principles/Principles/Flag Arguments]]. Split method into several independent methods that can be called from the client without the flag.  flag would be some boolean value you use as a arg in a function and use it within your conditional logic 
 - So, another way to know that a function is doing more than “one thing” is if you can extract another function from it with a name that is not merely a restatement of its implementation.
 
 

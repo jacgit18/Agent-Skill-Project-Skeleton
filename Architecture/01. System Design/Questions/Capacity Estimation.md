@@ -37,7 +37,7 @@ You should be concerned with writes here only because we need to know how much d
 | 3,600 seconds * 24 hours | 86,400 seconds per day use 80,000         | Daily   |
 | 86,400 seconds * 30 days | 2,592,000 seconds per month use 2,400,000 | Seconds |
 
-After developing schema you can define general feature like below following a rough [[Structuring URL#URI Path Design Guidelines for REST APIs |endpoints naming convention]].
+After developing schema you can define general feature like below following a rough [[Architecture/Fundamentals/Web/Structuring URL#URI Path Design Guidelines for REST APIs|endpoints naming convention]].
 
 maybe consider defining some microservices here and weather they are following CQRS pattern meaning if you have services that exclusively handling reads and others handling just writes.
 ##### Writes
@@ -153,7 +153,7 @@ OutGoing Data per sec(Read) = 0.25(read per sec) * 300 bytes(arbitrary storage a
 ### App Server Estimations
 Might be asked how many app service do you need
 
-You should consider if the request is CPU bound, memory bound or I/O bound this relates to [[Request Resource Bound]]. 
+You should consider if the request is CPU bound, memory bound or I/O bound this relates to [[Architecture/Fundamentals/Web/Request Resource Bound]]. 
 
 If CPU bound the number of request per second for a single server would both depend on the server's hardware capabilities and the time it takes to process each single request.
 

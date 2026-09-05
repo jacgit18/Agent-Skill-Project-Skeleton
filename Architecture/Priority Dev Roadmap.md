@@ -44,8 +44,8 @@ Build project that people can interact with should avoid general login feature p
 #todo/Med/Dev 
 - [ ] Use Wireshark to look at things up close for different protocols like tcp, web sockets , HTTP
 - [ ] Which protocol are you most likely to work with nowadays http, tcp, or web sockets
-- [ ] [[Gang of Four Priorities]]
-- [ ] Finish [[Clean Code]] documentation and review revisit when refactoring code  
+- [ ] [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Design & Principles/Design Patterns/Gang of Four Priorities]]
+- [ ] Finish [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Design & Principles/Principles/Clean Code]] documentation and review revisit when refactoring code  
 - [ ] Rebuild projects to learn better
 	- [ ] Use AI for low level folder structure file name, Classes, function, variable names also data model structure including interfaces etc...
 	- [ ] Create a codebase level mind map around decisions being made at the Code base level include things like asynchronized and synchronize code  
@@ -73,7 +73,7 @@ Build project that people can interact with should avoid general login feature p
 
 ## On The Job
 #todo/BAU/dev 
-- [ ] [[Domain-driven design]] 
+- [ ] [[_Repos/Agent-Skill-Project-Skeleton/Architecture/Design & Principles/Principles/Domain Driven Design/Domain-driven design]] 
 	- [ ] Depends on domain which may vary identify the domain of interest and learn more about that domain and look for companies or company departments that align.   
 
 

@@ -10,7 +10,7 @@ Relates:
 Peer Reviewed: 0
 dg-publish: true
 ---
-![[Search Engines .gif]]
+![[_Repos/Agent-Skill-Project-Skeleton/Architecture/Web/_Infographic/Search Engines .gif]]
 
 ▶️ Step 1 - Crawling  
 Web Crawlers scan the internet for web pages. They follow the URL links from one page to another and store URLs in the URL store. The crawlers discover new content, including web pages, images, videos, and files.  

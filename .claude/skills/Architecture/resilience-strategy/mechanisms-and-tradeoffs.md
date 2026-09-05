@@ -110,6 +110,8 @@ Shedding is the floor that keeps tier-1 alive no matter what. Autoscaling is how
 
 ## Placement table
 
+The "Service mesh" column only applies if one exists — whether to adopt one at all is `service-mesh-adoption`'s decision, not this file's. If there's no mesh, that column's controls fall to API gateway or in-process instead.
+
 | Control | Edge / CDN / L7 LB | API gateway | Service mesh | In-process |
 |---|---|---|---|---|
 | Global rate limit | ✔ (crude) | ✔ | | ✔ (cost-aware) |

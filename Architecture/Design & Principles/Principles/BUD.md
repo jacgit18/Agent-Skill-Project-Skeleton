@@ -19,7 +19,7 @@ dg-publish: false
 ---
 ![[Architecture/Fundamentals/Language Overlap/Algorithms & Data Structures/_Gif/Bud.gif]]
 
-"Bud" is more of a metaphorical term used informally to describe a small, suboptimal part of code that could be improved. While it captures the idea of identifying and addressing small issues in the codebase, it's not a formalized or widely adopted principle like [[Architecture/Design & Principles/Principles/DRY]], KISS, and[[Architecture/Design & Principles/SOLID Design Principles| SOLID]] in software engineering.
+"Bud" is more of a metaphorical term used informally to describe a small, suboptimal part of code that could be improved. While it captures the idea of identifying and addressing small issues in the codebase, it's not a formalized or widely adopted principle like [[Architecture/Application Structure/Design & Principles/Principles/DRY]], KISS, and[[Architecture/Application Structure/Design & Principles/SOLID Design Principles| SOLID]] in software engineering.
 
 ## Bottlenecks 
 

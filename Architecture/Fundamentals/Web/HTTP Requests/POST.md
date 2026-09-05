@@ -23,7 +23,7 @@ The POST method is used to send data to the server. The Content-Type header indi
   - Create a new resource.
   - Modify resources via a controller resource.
   - Run queries with large inputs.
-  - Perform unsafe or [[Idempotent#^43c387 |nonidempotent]] operations when other HTTP methods are not suitable.
+  - Perform unsafe or [[Architecture/Fundamentals/Web/Idempotent#^43c387|nonidempotent]] operations when other HTTP methods are not suitable.
   - POST is generally unsafe and not idempotent.
 
 ## How to Implement Asynchronous Tasks with POST

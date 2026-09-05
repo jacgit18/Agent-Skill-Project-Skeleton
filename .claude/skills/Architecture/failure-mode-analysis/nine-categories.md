@@ -165,7 +165,10 @@ Probe:
 - Misconfigured env var / secret / connection string in one environment.
 - A bad feature-flag rollout or a flag left in the wrong state.
 - Wrong IAM / RBAC policy — the app can't reach a resource it needs, or can reach one it
-  shouldn't.
+  shouldn't. For an application-authorization system specifically, walk this against
+  `access-control-modeling`'s granularity/tenancy vocabulary: a role granting resource-*type*
+  access where only per-*instance* was intended, a shared-schema tenant filter forgotten on one
+  query path, a role hierarchy that lets a lower role inherit an unintended action.
 - A failed or half-applied database migration; a migration that locks a table.
 - A deploy that succeeds (process healthy) but the app is broken (can't read a bucket,
   wrong region).
