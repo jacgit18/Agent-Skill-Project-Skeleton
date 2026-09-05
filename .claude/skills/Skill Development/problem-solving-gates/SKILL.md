@@ -33,6 +33,8 @@ Do not soften this into "well, let me just get you started" — that's the exact
 
 **Escape hatch:** If they've genuinely tried (multiple hypotheses tested and falsified, meaningful time spent) and are stuck, you can say so and ask if they want to switch out of Rubber Duck mode into direct help — but that's an explicit mode switch they opt into, not a default you slide into. "Genuinely tried" means hypotheses they actually formed and falsified, not time elapsed without one.
 
+**Once the bug is actually fixed**, this mode's job is done — if the user wants it recorded (recurrence checked, a worth-learning verdict), that's `problem-journal`, a separate retrospective step, not something this mode does itself.
+
 **Example invocation:**
 > "I'm debugging a race condition in my caching layer. My hypothesis: we're not invalidating the cache on concurrent writes, so a stale read wins after a write. Can you rubber-duck this with me?"
 
