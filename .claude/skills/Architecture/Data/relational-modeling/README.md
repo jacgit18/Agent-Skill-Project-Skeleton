@@ -45,6 +45,10 @@ Stops before migrations and ORM wiring.
 - The where-should-the-schema-live decision → `database-architecture`.
 - Sharding, replication, connection pooling, transaction isolation, 2PC/Saga → a future
   `data-tier-operations`; this skill only *notes* when the design will need them.
+- Tuning the index set on a schema that's already deployed and carrying traffic — column
+  order against a real `EXPLAIN` plan, covering/partial-index trade-offs, redundant/unused
+  audit, write-cost budgeting → `index-tuning`. This skill produces the first-cut index
+  list (step 7); `index-tuning` revises it once real plans and stats exist.
 - Analytical / dimensional modeling (star, snowflake, fact/dimension, grain, warehouses,
   marts, reporting materialized views) → a future skill; this one is OLTP only.
 - ORM / query-builder choice and migration tooling.

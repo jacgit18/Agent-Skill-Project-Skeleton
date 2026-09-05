@@ -17,7 +17,7 @@ If item 5 (numbers) is absent, the deliverable is "go measure these five things"
 Distribution is the last resort, not the first. Walk these in order and record which are already done, which would help, and which are ruled out with a reason:
 
 1. **Vertical scale** — is the instance near the top of its class? One size up buys time and zero architectural debt. Cheap first move unless already maxed.
-2. **Query and index tuning** — is the bottleneck a handful of bad queries or missing indexes? Send to `relational-modeling` (index plan) or `problem-solving-gates` (one slow query). A single missing index has been mistaken for "we need to shard" many times.
+2. **Query and index tuning** — is the bottleneck a handful of bad queries or missing/wrong indexes? Send to `index-tuning` (revise/add/audit indexes on the live schema against a real `EXPLAIN` plan and write profile) or `problem-solving-gates` (whether one slow query is even the bottleneck). A single missing or badly-ordered index has been mistaken for "we need to shard" many times.
 3. **Caching** — are the hot reads cacheable (read-mostly, tolerate short staleness)? An application or edge cache in front of the DB removes read load without touching the tier. If this is the lever, hand the design (layer, pattern, TTL vs invalidation, eviction, stampede handling) to `caching-strategy`.
 4. **Connection pooling** — if the wall is connection count, a pooler (PgBouncer, RDS Proxy) is the fix, not more database. See `consistency-and-transactions.md`.
 5. **Read replicas** — if reads dominate and tolerate lag, replicas are the standard next step and far simpler than sharding. This is step 3 below.

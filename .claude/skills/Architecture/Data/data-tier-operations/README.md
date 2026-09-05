@@ -61,8 +61,12 @@ Stops before implementation (replication config, shard router, backfill).
 - **Chains to `technical-cost-decision`** — every topology has a recurring price (replica
   instance-hours, cross-AZ transfer, managed-proxy fees); the recommendation block hands off the
   line items to price.
-- **Defers to `relational-modeling`** for index/key/denormalization work (framework step 2 sends
-  query tuning there first) and back to it when sharding forces denormalization.
+- **Defers to `relational-modeling`** for key/denormalization work and the first-cut index list,
+  and back to it when sharding forces denormalization.
+- **Defers to `index-tuning`** for tuning or auditing the index set on a deployed, populated
+  schema — composite column order against a real `EXPLAIN` plan, covering/partial-index
+  trade-offs, redundant/unused-index cleanup, the write-cost budget (framework step 2 sends
+  index-shaped query tuning there before any topology change).
 - **Defers to `caching-strategy`** for the design of a cache in front of the store — framework
   step 2 lists caching as a cheaper option than partitioning and hands the layer/pattern/TTL/
   eviction decision there. `caching-strategy` bounces back here when a cache turns out to be

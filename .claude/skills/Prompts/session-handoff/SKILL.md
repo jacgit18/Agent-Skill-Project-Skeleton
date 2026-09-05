@@ -30,6 +30,8 @@ Before writing, pull together — from the conversation, not from guessing:
 
 If any of these is genuinely unclear or missing (e.g., you don't know if a change is finished or half-done), ask rather than guessing — a wrong guess here is worse than a short pause, since the whole point is accuracy for someone with zero other context.
 
+If a `spec-drift-gate` spec document already exists for this build, **link to it** for items 1 and 5 (Goal, Open decisions / constraints) rather than re-deriving them from the conversation — the spec is the source of truth for problem framing and scope; duplicating it here risks the copy drifting from the original.
+
 ## Output format
 
 Write to a markdown file. Use this structure:

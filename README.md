@@ -41,14 +41,16 @@ unknown, a settled prior decision) is met, so AI doesn't quietly replace a learn
 | Skill | Role |
 |---|---|
 | [`Architecture/Data/database-architecture`](.claude/skills/Architecture/Data/database-architecture/) | Decides **where** the source of truth lives (database-first / code-first / contract-first) and **which** store. Produces an ADR. |
-| [`Architecture/Data/relational-modeling`](.claude/skills/Architecture/Data/relational-modeling/) | Turns a settled "we're relational" into table design — normal form and exceptions, keys, constraints, index plan, lifecycle columns. |
+| [`Architecture/Data/relational-modeling`](.claude/skills/Architecture/Data/relational-modeling/) | Turns a settled "we're relational" into table design — normal form and exceptions, keys, constraints, first-cut index plan, lifecycle columns. |
+| [`Architecture/Data/index-tuning`](.claude/skills/Architecture/Data/index-tuning/) | Revises, adds, or audits indexes on a **deployed, populated** schema — composite column order against a real `EXPLAIN` plan, covering / partial / expression indexes, a selectivity check, a redundant/unused-index audit, and a write-cost budget. Procedure, not a gate. |
 | [`Architecture/Data/data-tier-operations`](.claude/skills/Architecture/Data/data-tier-operations/) | Scales an existing database — replication topology, partitioning vs sharding, isolation level, distributed-transaction pattern, failover, pooling. |
 | [`Architecture/Data/dimensional-modeling`](.claude/skills/Architecture/Data/dimensional-modeling/) | Designs an analytical OLAP model — fact-table grain, conformed / role-playing / degenerate dimensions, SCD strategy, star vs snowflake vs galaxy. |
 | [`Architecture/Data/caching-strategy`](.claude/skills/Architecture/Data/caching-strategy/) | Decides whether to cache a read path and how — cache layer, cache-aside / write-through / etc., TTL vs explicit invalidation, eviction policy, stampede / avalanche handling. Produces an ADR. |
 
 ```
 database-architecture   →  WHERE the schema lives + WHICH store  (ADR)
-relational-modeling      →  tables for a relational store
+relational-modeling      →  tables for a relational store + first-cut index plan
+index-tuning             →  revise / add / audit indexes on a deployed, populated schema
 data-tier-operations     →  sharding / replication / pooling / txn isolation
 dimensional-modeling     →  star / snowflake / fact / dimension / warehouse
 caching-strategy         →  cache layer / pattern / freshness / eviction
@@ -80,6 +82,12 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 |---|---|
 | [`Finance/seller-financing-evaluation`](.claude/skills/Finance/seller-financing-evaluation/) | Evaluates a seller-financed (owner-financed) business purchase — computes the amortized monthly payment rather than trusting a stated figure, benchmarks down payment / rate / term against real market ranges, checks it against the business's cash flow, and runs the "7 Ds" seller-motivation diagnostic before any fairness verdict. Not a substitute for an attorney, accountant, or appraiser. |
 
+### AI Engineering — building with LLMs, not just about them
+
+| Skill | Role |
+|---|---|
+| [`AI Engineering/model-routing-decision`](.claude/skills/AI%20Engineering/model-routing-decision/) | Places a "route between models" request in the right bucket first (cost-tiering / cross-provider / agentic task-type routing are this skill's; failover, ops triage, and multi-agent labor division are not), gates on real inputs (task categories, volume, latency, cost sensitivity, auditability) before recommending build-your-own vs. a proxy, and hands pricing off to `technical-cost-decision` rather than computing it. |
+
 ### Prompts — authoring, testing, and session hygiene
 
 | Skill | Role |
@@ -97,6 +105,7 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 |---|---|
 | [`Skill Development/learning-gate`](.claude/skills/Skill%20Development/learning-gate/) | Classifies intent (learning / execution / reference) and sets how much of the thinking Claude may do. |
 | [`Skill Development/problem-solving-gates`](.claude/skills/Skill%20Development/problem-solving-gates/) | Rubber Duck (debugging), Options Generator (architecture), Knowledge Checker, Optimization (faster/cheaper, bring a profile) — each requires prior independent effort. |
+| [`Skill Development/spec-drift-gate`](.claude/skills/Skill%20Development/spec-drift-gate/) | Refuses to start a multi-file/multi-session AI-assisted build until a written spec exists (problem framing, tradeoffs actually weighed, explicit in/out scope, an optional controlled-experiment slice), then at later checkpoints diffs the work against that spec and forces an explicit amend-or-pull-back decision instead of letting scope silently drift. |
 | [`Architecture/design-scoping`](.claude/skills/Architecture/design-scoping/) | **Front-door gate** for a system-design effort — refuses to design until purpose + audience, functional + explicit out-of-scope, the six non-functional numeric targets, constraints (incl. compliance), and the 1–2 deep-dive decisions are stated. Output: a scope statement that sequences into `capacity-estimation` → `microservices-decision` → `api-interface-style` → `database-architecture` → `failure-mode-analysis`. Defers to `ambiguity-gate` for "what does this request even mean". |
 | [`Architecture/microservices-decision`](.claude/skills/Architecture/microservices-decision/) | Whether and how to split services, bounded by the number of people who can own them. |
 | [`Architecture/capacity-estimation`](.claude/skills/Architecture/capacity-estimation/) | A-priori back-of-the-envelope for a system that doesn't exist yet — gated on stated assumptions (DAU, actions/user, payload sizes, R:W, peak:avg, retention + growth, replication), walks storage → traffic → cache → servers, and names **what binds first**. Feeds `technical-cost-decision` (dollars), `data-tier-operations` (topology), `resilience-strategy` (defense). |

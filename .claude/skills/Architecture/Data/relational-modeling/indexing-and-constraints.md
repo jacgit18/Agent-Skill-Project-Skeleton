@@ -50,6 +50,8 @@ On each FK, choose what happens when the parent row is deleted or its key change
 
 Indexes make reads fast and every write slower; each one is storage plus maintenance on every `INSERT`/`UPDATE`/`DELETE` touching its columns. Build the plan from the access patterns, then stop.
 
+This is the *first-cut* plan, built from access patterns stated in the abstract. Once the schema is deployed and populated — real `EXPLAIN` plans, real column cardinalities, a measured write rate, an existing index set — revising it (composite column order against an actual plan, covering/partial-index trade-offs, redundant/unused-index cleanup, the write-cost budget on a hot table) is `index-tuning`, a separate procedure skill. Don't try to do deployed-schema tuning here on assumed numbers.
+
 ### What to index
 
 - **Foreign key columns** used in joins or filters — almost always. (The database does *not* auto-index FK columns in most engines; the constraint and the index are separate.)
