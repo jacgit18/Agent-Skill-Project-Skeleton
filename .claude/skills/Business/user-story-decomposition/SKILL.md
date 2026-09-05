@@ -222,8 +222,10 @@ Post-conditions:      <state after>
 Quality bar:          <pass, or named gaps>
 Definition of Ready:   <pass, or named gaps>
 Handoffs:             <specialist Architecture skill, if a story surfaced a load-bearing
-                       decision> · `ticket-evaluation` once these are real tickets and
-                       someone needs a sprint-worthiness verdict
+                       decision> · `technical-cost-decision` if a story's acceptance criteria
+                       implies a real recurring cost (a stated volume, a per-unit third-party
+                       charge) · `ticket-evaluation` once these are real tickets and someone
+                       needs a sprint-worthiness verdict
 ```
 
 ---

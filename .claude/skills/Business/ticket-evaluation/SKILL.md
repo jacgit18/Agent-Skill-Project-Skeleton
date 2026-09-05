@@ -13,6 +13,11 @@ This skill separates **what the ticket says** from **what the ticket is missing*
 
 - **Rewriting the ticket.** Naming a dimension as weak is evaluation. Redrafting the acceptance criteria, splitting the scope, or designing the feature is a different job — offer it after the recommendation, only if asked.
 - **A "ticket" that is just a system name** — "Build the notifications system", "Set up billing" — with no acceptance criteria, requirements, or scale. That is not a sizeable unit of work; it is an under-specified design ask → `design-scoping`. Come back here for the sprint verdict once it has been scoped.
+
+- **A "ticket" that is a bare feature name with no description, acceptance criteria, or actor**
+  — "Add notification preferences" — isn't a system to scope but also isn't yet a story to
+  judge → `user-story-decomposition`. Come back here for the sprint verdict once it has an
+  actor, an action, and acceptance criteria.
 - **Implementation.** This skill ends at proceed / defer / needs more info / reconsider.
 
 ---

@@ -101,6 +101,7 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | [`Business/technical-cost-decision`](.claude/skills/Business/technical-cost-decision/) | Forces the cost arithmetic on any decision that carries a recurring price. |
 | [`Business/ticket-evaluation`](.claude/skills/Business/ticket-evaluation/) | Separates what a ticket says from what it's missing from what can be judged; verdict last. |
 | [`Business/explaining-my-work`](.claude/skills/Business/explaining-my-work/) | One evidence base rendered at three altitudes — plain summary, spoken script, public post. |
+| [`Business/user-story-decomposition`](.claude/skills/Business/user-story-decomposition/) | Decides use-case vs. user-story format, then walks epic → user story → acceptance criteria against an INVEST-style quality bar and a Definition-of-Ready checklist. Downstream of `design-scoping`'s functional list, upstream of `ticket-evaluation`'s sprint verdict. |
 | [`Git/commit-and-push`](.claude/skills/Git/commit-and-push/) | Stages, commits, and pushes with a message derived from the actual diff. |
 
 ## Prompt logging
