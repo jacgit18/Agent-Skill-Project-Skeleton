@@ -291,8 +291,11 @@ back into chat on top of the output block already shown.
 ## Portability
 
 Repo-agnostic, but assumes `.claude/_Prompts/logs/` (`prompt-archive`'s automatic hook) and a
-`Finance/Error Log/` folder with the `Language Error.md` template — without the latter,
-Capture mode has nowhere to write and should say so rather than inventing a different
-location. Copy the `problem-journal/` directory into another repo's `.claude/skills/` to use
-it there, alongside `prompt-archive`; bring the `Language Error.md` template along too, or
-point the skill at wherever that repo's equivalent error-log convention lives.
+`Finance/Error Log/` folder with the `Language Error.md` template. A backup copy of that
+template lives in this skill's own `references/Language Error.md` — if
+`Finance/Error Log/Language Error.md` is ever missing (e.g. the vault folder got deleted and
+recreated), recreate it there from the backup copy before proceeding with Capture mode,
+rather than inventing a different location or a different template. Copy the
+`problem-journal/` directory into another repo's `.claude/skills/` to use it there, alongside
+`prompt-archive`; the bundled `references/Language Error.md` travels with it, or point the
+skill at wherever that repo's equivalent error-log convention lives.
