@@ -1,0 +1,97 @@
+ projects/financial-dashboard/backend/.env.example  |  6 ++++++
+ projects/financial-dashboard/backend/.gitignore    | 23 ++++++++++++++++++++++
+ .../financial-dashboard/backend/app/__init__.py    |  1 +
+ projects/financial-dashboard/backend/app/main.py   |  7 +++++++
+ projects/financial-dashboard/backend/main.py       |  5 +++++
+ .../financial-dashboard/backend/requirements.txt   | 11 +++++++++++
+ 6 files changed, 53 insertions(+)
+e3c0798 init: financial dashboard backend project structure
+diff --git a/projects/financial-dashboard/backend/.env.example b/projects/financial-dashboard/backend/.env.example
+new file mode 100644
+index 0000000..498598c
+--- /dev/null
++++ b/projects/financial-dashboard/backend/.env.example
+@@ -0,0 +1,6 @@
++DATABASE_URL=postgresql://user:password@localhost/financial_db
++DATABASE_URL_TEST=sqlite:///./test.db
++SECRET_KEY=your-secret-key-change-this-in-production
++ALGORITHM=HS256
++ACCESS_TOKEN_EXPIRE_MINUTES=30
++DEBUG=True
+diff --git a/projects/financial-dashboard/backend/.gitignore b/projects/financial-dashboard/backend/.gitignore
+new file mode 100644
+index 0000000..ddcd7ab
+--- /dev/null
++++ b/projects/financial-dashboard/backend/.gitignore
+@@ -0,0 +1,23 @@
++__pycache__/
++*.py[cod]
++*$py.class
++*.so
++.Python
++env/
++venv/
++.venv
++*.egg-info/
++dist/
++build/
++.pytest_cache/
++.coverage
++htmlcov/
++.env
++.env.local
++*.db
++*.sqlite
++*.sqlite3
++.DS_Store
++.idea/
++.vscode/
++*.log
+diff --git a/projects/financial-dashboard/backend/app/__init__.py b/projects/financial-dashboard/backend/app/__init__.py
+new file mode 100644
+index 0000000..ec81bda
+--- /dev/null
++++ b/projects/financial-dashboard/backend/app/__init__.py
+@@ -0,0 +1 @@
++# Financial Dashboard Backend
+diff --git a/projects/financial-dashboard/backend/app/main.py b/projects/financial-dashboard/backend/app/main.py
+new file mode 100644
+index 0000000..58a8d34
+--- /dev/null
++++ b/projects/financial-dashboard/backend/app/main.py
+@@ -0,0 +1,7 @@
++from fastapi import FastAPI
++
++app = FastAPI(title="Financial Dashboard API")
++
++@app.get("/health")
++async def health_check():
++    return {"status": "healthy"}
+diff --git a/projects/financial-dashboard/backend/main.py b/projects/financial-dashboard/backend/main.py
+new file mode 100644
+index 0000000..5a65bda
+--- /dev/null
++++ b/projects/financial-dashboard/backend/main.py
+@@ -0,0 +1,5 @@
++from app.main import app
++
++if __name__ == "__main__":
++    import uvicorn
++    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+diff --git a/projects/financial-dashboard/backend/requirements.txt b/projects/financial-dashboard/backend/requirements.txt
+new file mode 100644
+index 0000000..b9cbec4
+--- /dev/null
++++ b/projects/financial-dashboard/backend/requirements.txt
+@@ -0,0 +1,11 @@
++fastapi==0.104.1
++uvicorn==0.24.0
++sqlalchemy==2.0.23
++psycopg2-binary==2.9.9
++python-jose[cryptography]==3.3.0
++passlib[bcrypt]==1.7.4
++pydantic==2.5.0
++pydantic-settings==2.1.0
++pytest==7.4.3
++pytest-asyncio==0.21.1
++httpx==0.25.2

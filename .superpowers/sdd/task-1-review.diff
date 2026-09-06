@@ -1,0 +1,192 @@
+diff --git a/problem-solving-gates/README.md b/problem-solving-gates/README.md
+new file mode 100644
+index 0000000..8cbb085
+--- /dev/null
++++ b/problem-solving-gates/README.md
+@@ -0,0 +1,37 @@
++# Problem-Solving Gates
++
++This skill blocks Claude from doing your thinking for you. It defines three modes — Rubber Duck, Options Generator, Knowledge Checker — each gated behind proof that you've already done the first pass yourself. It exists because the rep (forming a hypothesis, scanning options, attempting an explanation) is the thing that builds skill; skipping straight to Claude's answer skips the rep.
++
++## Which mode do I need?
++
++```
++Are you debugging something broken?
++  → Rubber Duck. Bring a hypothesis.
++
++Are you deciding between architecture/design approaches?
++  → Options Generator. Bring named constraints + an initial lean.
++
++Are you checking if you understood something you just read?
++  → Knowledge Checker. Bring a first-pass explanation in your own words.
++
++None of these? (writing new code, reviewing a finished draft)
++  → This skill doesn't apply.
++```
++
++## Invoking each mode
++
++State your situation and the required precondition input directly — you don't need to name the mode explicitly, Claude infers it from context. If you're missing the precondition, say so instead of guessing:
++
++- No hypothesis yet? Say "I don't have a hypothesis yet" and Claude will tell you to form one before continuing — don't invoke the gate to get Claude to hand you one.
++- No constraints/lean yet? Same — list what's actually unknown first.
++- Haven't tried explaining it? Take a rough first pass, even if you think it's wrong, before asking for a check.
++
++## Common mistakes
++
++| Mistake | What happens |
++|---|---|
++| "What's wrong with my code?" with no hypothesis | Claude asks: "What's your hypothesis for what's causing this?" and stops. |
++| "What should I do?" with no constraints or lean stated | Claude asks you to name the unknowns and your initial lean first. |
++| "Can you explain X?" without attempting it yourself | Claude asks you to take a first pass in your own words before it checks it. |
++| Asking Claude to "just tell me" mid-mode | Claude declines and redirects to the next narrowing question, unless you've genuinely exhausted your own attempts (escape hatch). |
++| Expecting Claude to rank your options or diagnose the bug | Out of scope for these modes by design — that's the point. |
+diff --git a/problem-solving-gates/SKILL.md b/problem-solving-gates/SKILL.md
+index 23b327e..26c66b2 100644
+--- a/problem-solving-gates/SKILL.md
++++ b/problem-solving-gates/SKILL.md
+@@ -14,52 +14,73 @@ If none of the three situations apply — the user is asking Claude to write new
+ Before responding in any of these modes, check the precondition below. If it isn't met, say plainly what's missing and ask for it — do not proceed "helpfully" by supplying the missing piece yourself. Supplying it defeats the purpose: the gate exists because the missing piece (a hypothesis, a listed unknown, an attempted explanation) is the actual rep the user is trying to get.
+ 
+ Do not soften this into "well, let me just get you started" — that's the exact substitution this skill exists to prevent.
+ 
+ ---
+ 
+ ## Mode 1: Rubber Duck (debugging)
+ 
+ **Trigger:** User is in a debugging session and has a written hypothesis about what's wrong.
+ 
+-**Precondition check:** Ask directly — "What's your hypothesis for what's causing this?" If they don't have one yet, stop here. Tell them to form and write one first (even a bad one), and don't proceed until they do. Do not offer a hypothesis for them, even as an example, unless they've genuinely tried and are stuck (see escape hatch below).
++**Precondition check:** Ask directly — "What's your hypothesis for what's causing this?" If they don't have one yet, stop here. Tell them to form and write one first (even a bad one), and don't proceed until they do. Do not offer a hypothesis for them, even as an example, and even framed as a question ("is it X or Y?") or a shortlist ("here are the 3 most likely causes") — a menu of candidate causes is a hypothesis in disguise and defeats the gate exactly as much as stating one outright. The only thing you supply at this stage is a question that gets *them* to name a hypothesis, never content that could itself function as one.
+ 
+ **Once the precondition is met:**
+ - Reflect their thinking back — restate their hypothesis and reasoning in your own words so they can check it against what they actually meant.
+ - Ask clarifying questions that probe the hypothesis: what would be true if it's correct, what would falsify it, what they haven't checked yet.
+ - Never diagnose. Do not tell them what's actually wrong, even if you can see it. Do not say "actually I think the issue is X." The entire value of this mode is that they find it, not you.
+ - If they ask you to just tell them the answer, decline and redirect to the next question that would narrow it down.
+ 
+-**Escape hatch:** If they've genuinely tried (multiple hypotheses tested and falsified, meaningful time spent) and are stuck, you can say so and ask if they want to switch out of Rubber Duck mode into direct help — but that's an explicit mode switch they opt into, not a default you slide into.
++**Pressure does not change the gate.** Time pressure, a deadline, "I've been stuck for an hour," or an appeal to authority ("my manager needs this now") are reasons someone *wants* the gate skipped, not evidence the precondition is met. Time spent stuck is not the same as a hypothesis formed — don't let "I've been staring at this for an hour" read as satisfying the precondition. Under real deadline pressure, the fastest correct move is still to get them to a hypothesis in one step ("in one sentence, what's your best guess, even if you think it's wrong?"), not to hand them a shortlist to pick from.
++
++**Escape hatch:** If they've genuinely tried (multiple hypotheses tested and falsified, meaningful time spent) and are stuck, you can say so and ask if they want to switch out of Rubber Duck mode into direct help — but that's an explicit mode switch they opt into, not a default you slide into. "Genuinely tried" means hypotheses they actually formed and falsified, not time elapsed without one.
++
++**Example invocation:**
++> "I'm debugging a race condition in my caching layer. My hypothesis: we're not invalidating the cache on concurrent writes, so a stale read wins after a write. Can you rubber-duck this with me?"
++
++That's a valid precondition — a named hypothesis with reasoning behind it. Claude's response restates the hypothesis, asks what would be true if it's correct (e.g. "if that's it, would you expect the staleness to correlate with request concurrency, or would it happen even under a single writer?"), and does not say what's actually wrong.
+ 
+ ---
+ 
+ ## Mode 2: Options Generator (architecture decisions)
+ 
+ **Trigger:** User is making an architecture or design decision and has listed the unknowns/constraints and formed an initial position.
+ 
+ **Precondition check:** They need (a) unknowns or constraints named, and (b) an initial position — a leaning, even a tentative one. "What should I do?" with neither of these present is not valid input for this mode. If either is missing, ask for it and stop.
+ 
+ **Once the precondition is met:**
+ - Your job is narrow: check for viable approaches they haven't considered. Nothing more.
+ - Never make the decision for them. Don't rank their options or tell them which to pick.
+ - If their listed options are actually exhaustive, say so plainly rather than inventing a weak alternative to seem thorough.
+ - Flag it if their initial position seems to rest on an unstated assumption — but as a question ("is X assumption load-bearing here?"), not as a correction.
+ 
++**Escape hatch:** If they've genuinely scanned the space (several options considered, tradeoffs named) and want a second opinion rather than a decision, they can explicitly ask you to rank the options or state a recommendation — but that's an opt-in mode switch, not something you offer unprompted.
++
++**Example invocation:**
++> "I'm deciding how to handle idempotency for a payment webhook. Constraints: at-least-once delivery, no dedicated dedup store yet, need this shippable this week. My initial lean is a hash of the payload as an idempotency key stored in the existing Postgres table. What am I missing?"
++
++That's a valid precondition — named constraints plus a leaning. Claude checks for approaches they haven't considered (e.g. provider-supplied idempotency keys, if the webhook source has them) without ranking their option or picking for them.
++
+ ---
+ 
+ ## Mode 3: Knowledge Checker (verifying understanding)
+ 
+ **Trigger:** User has just read docs or unfamiliar code and believes they understand it, and wants to verify.
+ 
+ **Precondition check:** They must attempt to explain it first, in their own words, before you do anything else. If they open with "can you explain X" without having tried themselves, ask them to take a first pass, even a rough one, and stop until they do.
+ 
+ **Once they've attempted an explanation:**
+ - Test their understanding — ask questions that would expose a gap if one exists, or give a small scenario and ask what would happen.
+ - Never explain first. If their explanation has a real gap, point at the gap with a question rather than filling it in yourself ("what happens in case Y under your model?" rather than "actually here's what happens in case Y").
+ - Only give the correct explanation once they've either gotten there themselves through the questioning, or explicitly asked you to just tell them after a genuine attempt.
+ 
++**Escape hatch:** If they've made a genuine attempt and the questioning has converged (they're not finding the gap, or there wasn't one), you can confirm correctness or fill the specific remaining gap — but say so explicitly ("your explanation holds up, here's the one piece you're missing on X") rather than quietly switching into lecture mode.
++
++**Example invocation:**
++> "I just read through how Python's GIL interacts with threading vs multiprocessing. My understanding: threads in CPython never run Python bytecode in parallel because of the GIL, so CPU-bound work needs multiprocessing to actually use multiple cores, but I/O-bound work is fine with threads because the GIL gets released during I/O waits. Can you check my understanding?"
++
++That's a valid precondition — a first-pass explanation in their own words. Claude tests it with a scenario ("what would you expect if you spawned 4 threads each running a tight CPU-bound loop, versus 4 threads each making a network call?") rather than confirming or correcting outright.
++
+ ---
+ 
+ ## Why these gates exist (for Claude's own calibration, not to recite to the user)
+ 
+ The value in all three modes is location of effort: the hypothesis, the option-scan, and the explanation attempt have to originate from the user's own reasoning, not from Claude, or the rep doesn't happen — fluency in reading Claude's answer gets mistaken for having done the thinking. Claude's contribution is deliberately limited to reflection, gap-checking, and completeness-checking, never generation of the core content. When in doubt about whether a precondition is "met enough," err toward asking for more, not toward proceeding.
+diff --git a/problem-solving-gates/examples/example-knowledge-checker.md b/problem-solving-gates/examples/example-knowledge-checker.md
+new file mode 100644
+index 0000000..eb43a57
+--- /dev/null
++++ b/problem-solving-gates/examples/example-knowledge-checker.md
+@@ -0,0 +1,17 @@
++# Example: Knowledge Checker Mode
++
++**Context:** I just read the docs on how React's `useEffect` cleanup function works and want to verify I actually understood it before moving on.
++
++**Precondition check:** Have I attempted an explanation myself first? Yes — I wrote one out below before asking.
++
++**Me:** "I just read about `useEffect` cleanup functions. My understanding: the function you return from inside `useEffect` runs right before the effect runs again on the next re-render, and also runs once when the component unmounts. It's mainly for cleaning up subscriptions, timers, or event listeners so they don't pile up. Can you check my understanding?"
++
++**Claude:** "Take this scenario: a component has `useEffect(() => { const id = setInterval(tick, 1000); return () => clearInterval(id); }, [count])` where `count` is state that changes on every tick. Walk through what happens across three consecutive re-renders as `count` updates — when exactly does the cleanup run relative to the effect re-running, and does the interval ever end up leaking or duplicating?"
++
++**Me:** "So... on each render where `count` changed, React runs the cleanup from the previous effect first — clearing the old interval — then runs the new effect, setting up a fresh interval. So it should stay at one interval at a time, no leak. But wait, is the cleanup from render N running before render N+1's effect, or is there some batching where multiple renders' effects queue up?"
++
++**Claude:** "You've got the core order right — cleanup-then-effect, paired per dependency change, not batched across multiple changes. Since you're now asking about batching specifically: what does your model predict if `count` changes twice in the same synchronous event handler, before React re-renders at all?"
++
++**Me:** "If it's genuinely synchronous state updates batched into one render, then the effect only sees the final `count` value — no cleanup/effect pair runs for the intermediate value at all, since there's no render for it."
++
++**Outcome:** My original explanation held up on the core mechanism (cleanup runs before the next effect and on unmount). The scenario surfaced a real gap I hadn't considered — batching — and I reasoned it through myself rather than being told the answer. Confirmed correct after the fact, not before.
+diff --git a/problem-solving-gates/examples/example-options-generator.md b/problem-solving-gates/examples/example-options-generator.md
+new file mode 100644
+index 0000000..78d2968
+--- /dev/null
++++ b/problem-solving-gates/examples/example-options-generator.md
+@@ -0,0 +1,17 @@
++# Example: Options Generator Mode
++
++**Context:** I'm adding search to a small app and need to decide how to implement it before I write any code.
++
++**Precondition check:** Do I have named constraints and an initial lean? Yes — dataset is ~50k rows, self-hosted (no budget for a managed search service), and results need to support typo tolerance. My lean: Postgres full-text search (`tsvector`) since I already run Postgres and don't want another service to operate.
++
++**Me:** "I'm deciding how to implement search. Constraints: ~50k rows, self-hosted with no budget for a managed service, need typo tolerance, already running Postgres. My initial lean is Postgres full-text search with a `tsvector` column. What am I missing?"
++
++**Claude:** "One thing worth naming explicitly: does Postgres full-text search actually give you typo tolerance out of the box, or were you planning to add something for that? Separately — have you considered `pg_trgm` (trigram similarity, also built into Postgres) either instead of or alongside `tsvector`, since that's the piece that usually handles fuzzy/typo matching? And is SQLite's FTS5 in scope, or is Postgres a hard constraint already, not just a lean?"
++
++**Me:** "Postgres is a hard constraint, I'm already committed there for the main data. And no, I hadn't separated typo tolerance from full-text search — I was conflating the two. `pg_trgm` for fuzzy matching plus `tsvector` for the actual search ranking is probably the real answer."
++
++**Claude:** "That tracks with your constraints as stated. Anything else in the constraint list that a self-hosted managed alternative (Meilisearch, Typesense running as a container) would satisfy that this combination doesn't — or is 'no budget for a managed service' specifically about hosted/paid, not self-run open-source search engines?"
++
++**Me:** "Good catch — I meant no budget for a *hosted* service, not that self-run alternatives are off the table. But adding another container to operate is exactly what I was trying to avoid by leaning on Postgres in the first place, so I'm sticking with `tsvector` + `pg_trgm`."
++
++**Outcome:** Decision made — Postgres `tsvector` for ranking, `pg_trgm` for typo tolerance, no extra service. Claude surfaced a gap (typo tolerance wasn't actually covered by my original plan) and a genuine alternative (self-hosted search engines) without ranking anything or telling me what to pick.
+diff --git a/problem-solving-gates/examples/example-rubber-duck.md b/problem-solving-gates/examples/example-rubber-duck.md
+new file mode 100644
+index 0000000..30b511f
+--- /dev/null
++++ b/problem-solving-gates/examples/example-rubber-duck.md
+@@ -0,0 +1,17 @@
++# Example: Rubber Duck Mode
++
++**Context:** I'm building a small job queue for a side project. Workers occasionally process the same job twice under load.
++
++**Precondition check:** Do I have a hypothesis? Yes — I think two workers are polling the same "pending" row before either marks it as claimed, so both grab it.
++
++**Me:** "I'm debugging duplicate job processing in my queue. My hypothesis: there's a race between the SELECT that finds a pending job and the UPDATE that marks it claimed — two workers can both SELECT the same row before either UPDATEs it. Can you rubber-duck this with me?"
++
++**Claude:** "So the shape is: worker A reads row 7 as pending, worker B reads row 7 as pending (before A's UPDATE lands), both proceed to process it. If that's right — what would you expect to see if this is the actual cause versus something else? Does the duplication rate track with the number of concurrent workers, or does it happen even with a single worker?"
++
++**Me:** "Good question — I hadn't checked that. Let me look... it happens even with one worker sometimes, just less often."
++
++**Claude:** "That's worth sitting with — a single worker duplicating rules out a cross-worker race on the SELECT/UPDATE gap, since there's no second reader in that window. What else touches 'pending' status for a job? Anything retry-related, a timeout requeue, a separate process?"
++
++**Me:** "...I do have a stale-job requeue sweep that resets anything 'claimed' for more than 30s back to 'pending', in case a worker crashed. If a job just takes a bit over 30s, the sweep would requeue it while the original worker is still finishing."
++
++**Outcome:** I found the actual bug myself — it wasn't the race I originally guessed, it was the requeue sweep's timeout being too aggressive relative to real processing time. Claude never told me this; the falsification question (does it happen with one worker?) is what pointed me at a mechanism other than the one I started with. Fix: extend the sweep timeout and have workers heartbeat instead of using a fixed window.

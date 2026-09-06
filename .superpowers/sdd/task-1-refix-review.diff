@@ -1,0 +1,146 @@
+diff --git a/problem-solving-gates/README.md b/problem-solving-gates/README.md
+index 8cbb085..9f5b84d 100644
+--- a/problem-solving-gates/README.md
++++ b/problem-solving-gates/README.md
+@@ -1,37 +1,30 @@
+ # Problem-Solving Gates
+ 
+-This skill blocks Claude from doing your thinking for you. It defines three modes — Rubber Duck, Options Generator, Knowledge Checker — each gated behind proof that you've already done the first pass yourself. It exists because the rep (forming a hypothesis, scanning options, attempting an explanation) is the thing that builds skill; skipping straight to Claude's answer skips the rep.
++This skill blocks Claude from doing your thinking for you. It defines three modes — Rubber Duck, Options Generator, Knowledge Checker — each gated behind proof you've done the first pass yourself. The gate exists because forming the hypothesis, scanning the options, or attempting the explanation is what builds skill; skipping to Claude's answer skips the rep.
+ 
+ ## Which mode do I need?
+ 
+ ```
+-Are you debugging something broken?
+-  → Rubber Duck. Bring a hypothesis.
+-
+-Are you deciding between architecture/design approaches?
+-  → Options Generator. Bring named constraints + an initial lean.
+-
+-Are you checking if you understood something you just read?
+-  → Knowledge Checker. Bring a first-pass explanation in your own words.
+-
+-None of these? (writing new code, reviewing a finished draft)
+-  → This skill doesn't apply.
++Debugging something broken? → Rubber Duck. Bring a hypothesis.
++Deciding between approaches? → Options Generator. Bring constraints + a lean.
++Checking you understood something? → Knowledge Checker. Bring a first-pass explanation.
++Writing new code or reviewing a finished draft? → This skill doesn't apply.
+ ```
+ 
+ ## Invoking each mode
+ 
+-State your situation and the required precondition input directly — you don't need to name the mode explicitly, Claude infers it from context. If you're missing the precondition, say so instead of guessing:
++State your situation plus the precondition input directly — Claude infers the mode from context. Missing the precondition? Say so instead of guessing:
+ 
+-- No hypothesis yet? Say "I don't have a hypothesis yet" and Claude will tell you to form one before continuing — don't invoke the gate to get Claude to hand you one.
+-- No constraints/lean yet? Same — list what's actually unknown first.
+-- Haven't tried explaining it? Take a rough first pass, even if you think it's wrong, before asking for a check.
++- No hypothesis yet? Say so; form one, even a bad one, before asking.
++- No constraints/lean yet? List what's unknown first.
++- Haven't tried explaining it? Take a rough first pass before asking for a check.
+ 
+ ## Common mistakes
+ 
+ | Mistake | What happens |
+ |---|---|
+-| "What's wrong with my code?" with no hypothesis | Claude asks: "What's your hypothesis for what's causing this?" and stops. |
+-| "What should I do?" with no constraints or lean stated | Claude asks you to name the unknowns and your initial lean first. |
+-| "Can you explain X?" without attempting it yourself | Claude asks you to take a first pass in your own words before it checks it. |
+-| Asking Claude to "just tell me" mid-mode | Claude declines and redirects to the next narrowing question, unless you've genuinely exhausted your own attempts (escape hatch). |
+-| Expecting Claude to rank your options or diagnose the bug | Out of scope for these modes by design — that's the point. |
++| "What's wrong with my code?", no hypothesis | Claude asks for your hypothesis and stops. |
++| "What should I do?", no constraints/lean | Claude asks you to name unknowns and a lean first. |
++| "Explain X?" without attempting it | Claude asks for your first-pass explanation first. |
++| "Just tell me" mid-mode | Claude declines, redirects to the next narrowing question (unless the escape hatch applies). |
++| Expecting Claude to rank options or diagnose | Out of scope by design — that's the point. |
+diff --git a/problem-solving-gates/examples/example-knowledge-checker.md b/problem-solving-gates/examples/example-knowledge-checker.md
+index eb43a57..bafdb42 100644
+--- a/problem-solving-gates/examples/example-knowledge-checker.md
++++ b/problem-solving-gates/examples/example-knowledge-checker.md
+@@ -1,17 +1,17 @@
+ # Example: Knowledge Checker Mode
+ 
+-**Context:** I just read the docs on how React's `useEffect` cleanup function works and want to verify I actually understood it before moving on.
++**Context:** I just read how React's `useEffect` cleanup function works and want to verify I understood it.
+ 
+-**Precondition check:** Have I attempted an explanation myself first? Yes — I wrote one out below before asking.
++**Precondition check:** Have I attempted an explanation first? Yes — written below before asking.
+ 
+-**Me:** "I just read about `useEffect` cleanup functions. My understanding: the function you return from inside `useEffect` runs right before the effect runs again on the next re-render, and also runs once when the component unmounts. It's mainly for cleaning up subscriptions, timers, or event listeners so they don't pile up. Can you check my understanding?"
++**Me:** "My understanding: the function you return from `useEffect` runs right before the effect re-runs on the next render, and once on unmount. It's for cleaning up subscriptions, timers, or listeners so they don't pile up. Can you check this?"
+ 
+-**Claude:** "Take this scenario: a component has `useEffect(() => { const id = setInterval(tick, 1000); return () => clearInterval(id); }, [count])` where `count` is state that changes on every tick. Walk through what happens across three consecutive re-renders as `count` updates — when exactly does the cleanup run relative to the effect re-running, and does the interval ever end up leaking or duplicating?"
++**Claude:** "Take this: `useEffect(() => { const id = setInterval(tick, 1000); return () => clearInterval(id); }, [count])`, where `count` changes every tick. Walk through three consecutive re-renders — when does cleanup run relative to the effect re-running, and does the interval ever leak or duplicate?"
+ 
+-**Me:** "So... on each render where `count` changed, React runs the cleanup from the previous effect first — clearing the old interval — then runs the new effect, setting up a fresh interval. So it should stay at one interval at a time, no leak. But wait, is the cleanup from render N running before render N+1's effect, or is there some batching where multiple renders' effects queue up?"
++**Me:** "On each render where `count` changed, React runs the previous cleanup first, clearing the old interval, then the new effect sets up a fresh one. One interval at a time, no leak. But is cleanup from render N running before render N+1's effect, or could effects batch?"
+ 
+-**Claude:** "You've got the core order right — cleanup-then-effect, paired per dependency change, not batched across multiple changes. Since you're now asking about batching specifically: what does your model predict if `count` changes twice in the same synchronous event handler, before React re-renders at all?"
++**Claude:** "Order's right — cleanup then effect, paired per change, not batched across changes. Since you're asking about batching: what does your model predict if `count` changes twice in the same synchronous handler, before React re-renders at all?"
+ 
+-**Me:** "If it's genuinely synchronous state updates batched into one render, then the effect only sees the final `count` value — no cleanup/effect pair runs for the intermediate value at all, since there's no render for it."
++**Me:** "If updates batch into one render, the effect only sees the final value — no cleanup/effect pair runs for the intermediate value, since there's no render for it."
+ 
+-**Outcome:** My original explanation held up on the core mechanism (cleanup runs before the next effect and on unmount). The scenario surfaced a real gap I hadn't considered — batching — and I reasoned it through myself rather than being told the answer. Confirmed correct after the fact, not before.
++**Outcome:** My core explanation held up. The scenario surfaced a real gap I hadn't considered — batching — and I reasoned it through myself. Confirmed correct after the fact, not before.
+diff --git a/problem-solving-gates/examples/example-options-generator.md b/problem-solving-gates/examples/example-options-generator.md
+index 78d2968..bd51a3c 100644
+--- a/problem-solving-gates/examples/example-options-generator.md
++++ b/problem-solving-gates/examples/example-options-generator.md
+@@ -1,17 +1,17 @@
+ # Example: Options Generator Mode
+ 
+-**Context:** I'm adding search to a small app and need to decide how to implement it before I write any code.
++**Context:** I'm adding search to a small app and need to decide how before writing code.
+ 
+-**Precondition check:** Do I have named constraints and an initial lean? Yes — dataset is ~50k rows, self-hosted (no budget for a managed search service), and results need to support typo tolerance. My lean: Postgres full-text search (`tsvector`) since I already run Postgres and don't want another service to operate.
++**Precondition check:** Do I have named constraints and an initial lean? Yes — ~50k rows, self-hosted with no budget for a managed service, needs typo tolerance. My lean: Postgres full-text search (`tsvector`), since I already run Postgres.
+ 
+-**Me:** "I'm deciding how to implement search. Constraints: ~50k rows, self-hosted with no budget for a managed service, need typo tolerance, already running Postgres. My initial lean is Postgres full-text search with a `tsvector` column. What am I missing?"
++**Me:** "I'm deciding how to implement search. Constraints: ~50k rows, self-hosted, no budget for a managed service, need typo tolerance, already running Postgres. My lean is `tsvector`. What am I missing?"
+ 
+-**Claude:** "One thing worth naming explicitly: does Postgres full-text search actually give you typo tolerance out of the box, or were you planning to add something for that? Separately — have you considered `pg_trgm` (trigram similarity, also built into Postgres) either instead of or alongside `tsvector`, since that's the piece that usually handles fuzzy/typo matching? And is SQLite's FTS5 in scope, or is Postgres a hard constraint already, not just a lean?"
++**Claude:** "Does full-text search actually give you typo tolerance, or were you planning to add something for that? Have you considered `pg_trgm` — trigram similarity, also built into Postgres — instead of or alongside `tsvector`? And is Postgres a hard constraint, or just a lean?"
+ 
+-**Me:** "Postgres is a hard constraint, I'm already committed there for the main data. And no, I hadn't separated typo tolerance from full-text search — I was conflating the two. `pg_trgm` for fuzzy matching plus `tsvector` for the actual search ranking is probably the real answer."
++**Me:** "Postgres is a hard constraint. And no, I hadn't separated typo tolerance from full-text search — I was conflating the two. `pg_trgm` for fuzzy matching plus `tsvector` for ranking is probably the real answer."
+ 
+-**Claude:** "That tracks with your constraints as stated. Anything else in the constraint list that a self-hosted managed alternative (Meilisearch, Typesense running as a container) would satisfy that this combination doesn't — or is 'no budget for a managed service' specifically about hosted/paid, not self-run open-source search engines?"
++**Claude:** "That tracks. Anything in your constraints that a self-hosted alternative like Meilisearch or Typesense would satisfy that this combination doesn't — or is 'no budget' specifically about hosted/paid services?"
+ 
+-**Me:** "Good catch — I meant no budget for a *hosted* service, not that self-run alternatives are off the table. But adding another container to operate is exactly what I was trying to avoid by leaning on Postgres in the first place, so I'm sticking with `tsvector` + `pg_trgm`."
++**Me:** "I meant no budget for a *hosted* service. But operating another container is exactly what I was avoiding by leaning on Postgres, so I'm sticking with `tsvector` + `pg_trgm`."
+ 
+-**Outcome:** Decision made — Postgres `tsvector` for ranking, `pg_trgm` for typo tolerance, no extra service. Claude surfaced a gap (typo tolerance wasn't actually covered by my original plan) and a genuine alternative (self-hosted search engines) without ranking anything or telling me what to pick.
++**Outcome:** Decision made — `tsvector` for ranking, `pg_trgm` for typo tolerance, no extra service. Claude surfaced a gap (typo tolerance wasn't actually covered) and a real alternative, without ranking anything or picking for me.
+diff --git a/problem-solving-gates/examples/example-rubber-duck.md b/problem-solving-gates/examples/example-rubber-duck.md
+index 30b511f..77b816a 100644
+--- a/problem-solving-gates/examples/example-rubber-duck.md
++++ b/problem-solving-gates/examples/example-rubber-duck.md
+@@ -1,17 +1,17 @@
+ # Example: Rubber Duck Mode
+ 
+-**Context:** I'm building a small job queue for a side project. Workers occasionally process the same job twice under load.
++**Context:** I'm building a small job queue. Workers occasionally process the same job twice under load.
+ 
+-**Precondition check:** Do I have a hypothesis? Yes — I think two workers are polling the same "pending" row before either marks it as claimed, so both grab it.
++**Precondition check:** Do I have a hypothesis? Yes — I think two workers poll the same "pending" row before either marks it claimed, so both grab it.
+ 
+-**Me:** "I'm debugging duplicate job processing in my queue. My hypothesis: there's a race between the SELECT that finds a pending job and the UPDATE that marks it claimed — two workers can both SELECT the same row before either UPDATEs it. Can you rubber-duck this with me?"
++**Me:** "I'm debugging duplicate job processing. My hypothesis: there's a race between the SELECT that finds a pending job and the UPDATE that marks it claimed — two workers can both SELECT the same row before either UPDATEs it. Can you rubber-duck this with me?"
+ 
+-**Claude:** "So the shape is: worker A reads row 7 as pending, worker B reads row 7 as pending (before A's UPDATE lands), both proceed to process it. If that's right — what would you expect to see if this is the actual cause versus something else? Does the duplication rate track with the number of concurrent workers, or does it happen even with a single worker?"
++**Claude:** "So worker A reads row 7 as pending, worker B reads it as pending too before A's UPDATE lands, and both process it. If that's right — does the duplication rate track with the number of concurrent workers, or does it happen even with a single worker?"
+ 
+-**Me:** "Good question — I hadn't checked that. Let me look... it happens even with one worker sometimes, just less often."
++**Me:** "Good question. It happens even with one worker sometimes, just less often."
+ 
+-**Claude:** "That's worth sitting with — a single worker duplicating rules out a cross-worker race on the SELECT/UPDATE gap, since there's no second reader in that window. What else touches 'pending' status for a job? Anything retry-related, a timeout requeue, a separate process?"
++**Claude:** "A single worker duplicating rules out a cross-worker race — there's no second reader in that window. What else touches 'pending' status? Anything retry-related, a timeout requeue?"
+ 
+-**Me:** "...I do have a stale-job requeue sweep that resets anything 'claimed' for more than 30s back to 'pending', in case a worker crashed. If a job just takes a bit over 30s, the sweep would requeue it while the original worker is still finishing."
++**Me:** "...I do have a stale-job sweep that resets anything 'claimed' for over 30s back to 'pending', in case a worker crashed. If a job takes just over 30s, the sweep requeues it while the original worker is still finishing."
+ 
+-**Outcome:** I found the actual bug myself — it wasn't the race I originally guessed, it was the requeue sweep's timeout being too aggressive relative to real processing time. Claude never told me this; the falsification question (does it happen with one worker?) is what pointed me at a mechanism other than the one I started with. Fix: extend the sweep timeout and have workers heartbeat instead of using a fixed window.
++**Outcome:** I found the actual bug myself — not the race I guessed, but the sweep's timeout being too aggressive. Claude never told me this; the falsification question (does it happen with one worker?) pointed me at a different mechanism. Fix: extend the timeout, have workers heartbeat instead of using a fixed window.
