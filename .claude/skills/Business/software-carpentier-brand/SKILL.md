@@ -24,6 +24,10 @@ wrong by default).
   skill governs how something is *said*, not what to *do*.
 - **Technical writing that isn't self-representing.** A design doc, a PR description, a Slack
   update to a teammate — no brand voice needed there.
+- **De-AI-ing prose.** "Make it sound less like AI" on an existing draft (a LinkedIn post
+  included) is `delete-ai-words`, not this skill. The "check my brand consistency" pass here only
+  checks identity, proof points, and the honesty calibration — run `delete-ai-words` for the
+  prose, then add these checks after only if the draft also makes career claims.
 
 ---
 
