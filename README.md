@@ -81,6 +81,13 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | Skill | Role |
 |---|---|
 | [`Finance/seller-financing-evaluation`](.claude/skills/Finance/seller-financing-evaluation/) | Evaluates a seller-financed (owner-financed) business purchase — computes the amortized monthly payment rather than trusting a stated figure, benchmarks down payment / rate / term against real market ranges, checks it against the business's cash flow, and runs the "7 Ds" seller-motivation diagnostic before any fairness verdict. Not a substitute for an attorney, accountant, or appraiser. |
+| [`Finance/equity-trade-decision`](.claude/skills/Finance/equity-trade-decision/) | Forces a pre-trade checklist, an evidence-backed economic-cycle-stage call, and a position size computed as risk-budget ÷ per-share-risk (kept separate from money actually spent) before sizing or entering a real stock trade. |
+
+### Health — musculoskeletal recovery decisions
+
+| Skill | Role |
+|---|---|
+| [`Health/return-to-play-progression`](.claude/skills/Health/return-to-play-progression/) | Criteria-based 4-phase return-to-activity gate for a self-manageable injury — no phase advances on elapsed time alone, only on stated symptoms/ROM/function clearing a bar — with an immediate red-flag screen to a doctor and a next-morning-pain-vs-during-exercise-pain rule most self-assessments skip. |
 
 ### AI Engineering — building with LLMs, not just about them
 
@@ -98,6 +105,7 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | [`Prompts/prompt-tester`](.claude/skills/Prompts/prompt-tester/) | Runs a prompt against a few examples and reports whether it does what it claims. |
 | [`Prompts/session-handoff`](.claude/skills/Prompts/session-handoff/) | Writes a structured handoff file before a session compacts or work resumes elsewhere. |
 | [`Prompts/skill-interaction-testing`](.claude/skills/Prompts/skill-interaction-testing/) | Tests a new or changed skill against every sibling for stacking, contradiction, silent override, and beneficial chaining. |
+| [`Prompts/catalog-drift-audit`](.claude/skills/Prompts/catalog-drift-audit/) | Periodic whole-catalog hygiene pass (not per-skill, unlike `skill-interaction-testing`) — stale `SKILL-BACKLOG.md` markers, skills missing from this README, dead cross-references, untested old skill pairs, and skills nobody else's description points to. |
 
 ### Architecture, Business, Skill Development, Git
 
@@ -118,11 +126,27 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | [`Architecture/deployment-strategy`](.claude/skills/Architecture/deployment-strategy/) | Decides how a new version of one deployable unit reaches production — rollout mechanism (recreate / rolling / blue-green / canary / feature-flag), environment progression, expand/contract schema discipline, the health signal that aborts a rollout, cadence. Produces an ADR. |
 | [`Architecture/cloud-iam-boundary`](.claude/skills/Architecture/cloud-iam-boundary/) | Decides who/what gets access to a cloud resource and its network placement — principal, least-privilege permission set, trust boundary & credential lifetime (STS-assumed role vs long-lived keys), permissions-boundary/SCP ceiling, public vs private subnet. Produces an ADR. |
 | [`Architecture/serverless-execution-model`](.claude/skills/Architecture/serverless-execution-model/) | Decides how one unit of work runs — compute primitive (FaaS / container task / long-running service), invocation model (sync / async / poll-based), orchestration vs choreography, and the per-invocation failure contract (Retry/Catch, DLQ, idempotency). Produces an ADR. |
+| [`Architecture/access-control-modeling`](.claude/skills/Architecture/access-control-modeling/) | Decides how an application authorizes who may do what to which resource — authorization model (flat/hierarchical RBAC, ABAC, ACL, ReBAC), the actors/resources/actions, permission granularity, and tenant isolation. Produces an ADR. |
+| [`Architecture/bff-gateway-placement`](.claude/skills/Architecture/bff-gateway-placement/) | Decides what sits between client applications and backend services — no intermediary, a shared API gateway, or a Backend-for-Frontend per client type — from client-type count, backend-surface count, and per-client divergence. Produces an ADR. |
+| [`Architecture/service-mesh-adoption`](.claude/skills/Architecture/service-mesh-adoption/) | Decides whether a service mesh (Istio/Linkerd/Consul Connect) earns its operational cost versus a lighter alternative (orchestrator-native discovery, in-process resilience libraries), from service count, platform, and the specific mesh capability actually needed. Produces an ADR. |
+| [`Architecture/config-and-secrets-management`](.claude/skills/Architecture/config-and-secrets-management/) | Decides where a config value or secret lives and how it reaches a running process — plain env vars, orchestrator-native secrets, or a dedicated secrets manager — and its rotation policy. Produces an ADR. |
+| [`Architecture/change-surface-audit`](.claude/skills/Architecture/change-surface-audit/) | Pre-flight procedure (not a gate) for one proposed add/modify/remove change, or a "silent" change (dependency upgrade, config, infra) — walks six blast-radius surfaces (API, data, state, performance, security, observability), requires expand-contract for a breaking modify, and audits hidden dependents before a removal. |
 | [`Business/technical-cost-decision`](.claude/skills/Business/technical-cost-decision/) | Forces the cost arithmetic on any decision that carries a recurring price. |
 | [`Business/ticket-evaluation`](.claude/skills/Business/ticket-evaluation/) | Separates what a ticket says from what it's missing from what can be judged; verdict last. |
 | [`Business/explaining-my-work`](.claude/skills/Business/explaining-my-work/) | One evidence base rendered at three altitudes — plain summary, spoken script, public post. |
 | [`Business/user-story-decomposition`](.claude/skills/Business/user-story-decomposition/) | Decides use-case vs. user-story format, then walks epic → user story → acceptance criteria against an INVEST-style quality bar and a Definition-of-Ready checklist. Downstream of `design-scoping`'s functional list, upstream of `ticket-evaluation`'s sprint verdict. |
+| [`Business/software-carpentier-brand`](.claude/skills/Business/software-carpentier-brand/) | Represents the user professionally under their personal brand — LinkedIn copy, resume bullets, cover letters, elevator pitches, interview self-intros — holding to a career-honesty checklist so copy doesn't overstate what actually happened. |
+| [`Business/system-design-communication`](.claude/skills/Business/system-design-communication/) | Live coaching, not a decision gate — practice explaining a design (Design Walkthrough), a simulated system-design interview (Mock Interview), or defending one architectural choice over another under "what if?" pressure (Tradeoff Defense). Never supplies the "right" answer; exposes gaps and pressure-tests reasoning instead. |
 | [`Git/commit-and-push`](.claude/skills/Git/commit-and-push/) | Stages, commits, and pushes with a message derived from the actual diff. |
+
+## Agents
+
+Skills are procedures inside one foreground conversation. Two pieces of actual unattended-agent infrastructure sit alongside them:
+
+| What | Where | Does what |
+|---|---|---|
+| `spec-executor` subagent | [`.claude/agents/spec-executor.md`](.claude/agents/spec-executor.md) | Executes one slice of an already-approved `spec-drift-gate` spec in an isolated worktree — briefed with the spec, the precision instruction, and nothing else. Doesn't decide scope, doesn't merge or push; reports back what it did and what it flagged as outside the spec, for a human (or the calling session) to run through `spec-drift-gate`'s own Step 4 before anything lands. |
+| Weekly Catalog Drift Audit | [`claude.ai/code/routines`](https://claude.ai/code/routines) (cloud, not local) | A scheduled cloud routine (Monday 9am America/New_York) that runs `catalog-drift-audit`'s procedure against `main`, fixes mechanical drift on a branch, and opens a PR — it does not push to `main` directly. Its durable audit trail lives in `.claude/_Prompts/catalog-audit-log.md` (created on first real finding), which each run reads first so it never re-flags something already resolved. |
 
 ## Prompt logging
 
