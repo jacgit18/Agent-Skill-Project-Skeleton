@@ -41,5 +41,11 @@ Step 2 if revisited.
 to both. `reddit-researcher` is pointed at by nothing but shares no collision surface with any
 gate (it's a standalone tool) — not a real starvation finding.
 
-**Applied:** all Step 1/2/3/5 mechanical fixes directly. **Flagged:** the `session-handoff`
-untested-pair (Step 4).
+**Applied:** all Step 1/2/3/5 mechanical fixes directly.
+
+**Step 4 backfill (done same day):** ran `skill-interaction-testing` on `session-handoff` (1
+worktree agent, 6 scenarios vs `spec-drift-gate` / `prompt-archive` / `problem-journal` /
+`ambiguity-gate` + 2 controls). 5 clean; 1 fix — `session-handoff` triggers on
+"recap" / "before I forget" and could pre-empt `problem-journal` Journal mode on a post-fix
+bug write-up. One-line scope-narrowing clause added to `session-handoff`'s description pointing
+resolved-bug post-mortems to `problem-journal`. Memory: `skill-interaction-session-handoff.md`.
