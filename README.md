@@ -100,6 +100,7 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | Skill | Role |
 |---|---|
 | [`Prompts/ambiguity-gate`](.claude/skills/Prompts/ambiguity-gate/) | Asks before acting when a request could reasonably be read more than one way. |
+| [`Prompts/prompt-authoring`](.claude/skills/Prompts/prompt-authoring/) | Turns a rough idea or a weak draft into one finished, copy-paste-and-send prompt — no placeholders, content baked in or a self-gathering step included. The authoring end of the pipeline: `prompt-authoring` → `prompt-tester` → `prompt-archive`. |
 | [`Prompts/prompt-archive`](.claude/skills/Prompts/prompt-archive/) | Archives a keeper prompt into `.claude/_Prompts/`, or logs the current session's prompts. |
 | [`Prompts/problem-journal`](.claude/skills/Prompts/problem-journal/) | Two modes: **Capture** — the moment an error appears, save it verbatim as its own file in `Finance/Error Log/` (the vault's existing template), no judgment attached. **Journal** — after a fix, a curated entry with a recurrence count grepped from both `Finance/Error Log/` and prompt-archive's logs, and a worth-learning verdict that must name the count behind it. Hands teaching back to `learning-gate`/`problem-solving-gates` rather than doing it inline. |
 | [`Prompts/prompt-tester`](.claude/skills/Prompts/prompt-tester/) | Runs a prompt against a few examples and reports whether it does what it claims. |
@@ -107,13 +108,19 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | [`Prompts/skill-interaction-testing`](.claude/skills/Prompts/skill-interaction-testing/) | Tests a new or changed skill against every sibling for stacking, contradiction, silent override, and beneficial chaining. |
 | [`Prompts/catalog-drift-audit`](.claude/skills/Prompts/catalog-drift-audit/) | Periodic whole-catalog hygiene pass (not per-skill, unlike `skill-interaction-testing`) — stale `SKILL-BACKLOG.md` markers, skills missing from this README, dead cross-references, untested old skill pairs, and skills nobody else's description points to. |
 
+### Research — current-awareness lookups
+
+| Skill | Role |
+|---|---|
+| [`Research/reddit-researcher`](.claude/skills/Research/reddit-researcher/) | Current-awareness research across three free sources — Reddit (public JSON + a `site:reddit.com` fallback), Hacker News (Algolia API), and the open web — for roughly the last 30 days. Relevance filtering, dedup, cross-source signal detection, anti-hallucination guardrails. A standalone tool, not a decision gate; no paid APIs or MCP servers. |
+
 ### Architecture, Business, Skill Development, Git
 
 | Skill | Role |
 |---|---|
-| [`Skill Development/learning-gate`](.claude/skills/Skill%20Development/learning-gate/) | Classifies intent (learning / execution / reference) and sets how much of the thinking Claude may do. |
+| [`Skill Development/learning-gate`](.claude/skills/Skill%20Development/learning-gate/) | Classifies intent (learning / execution / reference) and sets how much of the thinking Claude may do. For a multi-step task the user will carry out themselves, sets the one-step-at-a-time walkthrough (`guided-walkthrough.md`). |
 | [`Skill Development/problem-solving-gates`](.claude/skills/Skill%20Development/problem-solving-gates/) | Rubber Duck (debugging), Options Generator (architecture), Knowledge Checker, Optimization (faster/cheaper, bring a profile) — each requires prior independent effort. |
-| [`Skill Development/spec-drift-gate`](.claude/skills/Skill%20Development/spec-drift-gate/) | Refuses to start a multi-file/multi-session AI-assisted build until a written spec exists (problem framing, tradeoffs actually weighed, explicit in/out scope, an optional controlled-experiment slice), then at later checkpoints diffs the work against that spec and forces an explicit amend-or-pull-back decision instead of letting scope silently drift. |
+| [`Skill Development/spec-drift-gate`](.claude/skills/Skill%20Development/spec-drift-gate/) | Refuses to start a multi-file/multi-session AI-assisted build until a written spec exists (problem framing, tradeoffs actually weighed, explicit in/out scope, an optional controlled-experiment slice), then at later checkpoints diffs the work against that spec and forces an explicit amend-or-pull-back decision instead of letting scope silently drift. Runs a scoped extraction interview (Step 2a) when the request is a one-liner with no spec to draft from. |
 | [`Architecture/design-scoping`](.claude/skills/Architecture/design-scoping/) | **Front-door gate** for a system-design effort — refuses to design until purpose + audience, functional + explicit out-of-scope, the six non-functional numeric targets, constraints (incl. compliance), and the 1–2 deep-dive decisions are stated. Output: a scope statement that sequences into `capacity-estimation` → `microservices-decision` → `api-interface-style` → `database-architecture` → `failure-mode-analysis`. Defers to `ambiguity-gate` for "what does this request even mean". |
 | [`Architecture/microservices-decision`](.claude/skills/Architecture/microservices-decision/) | Whether and how to split services, bounded by the number of people who can own them. |
 | [`Architecture/capacity-estimation`](.claude/skills/Architecture/capacity-estimation/) | A-priori back-of-the-envelope for a system that doesn't exist yet — gated on stated assumptions (DAU, actions/user, payload sizes, R:W, peak:avg, retention + growth, replication), walks storage → traffic → cache → servers, and names **what binds first**. Feeds `technical-cost-decision` (dollars), `data-tier-operations` (topology), `resilience-strategy` (defense). |
@@ -135,8 +142,9 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | [`Business/ticket-evaluation`](.claude/skills/Business/ticket-evaluation/) | Separates what a ticket says from what it's missing from what can be judged; verdict last. |
 | [`Business/explaining-my-work`](.claude/skills/Business/explaining-my-work/) | One evidence base rendered at three altitudes — plain summary, spoken script, public post. |
 | [`Business/user-story-decomposition`](.claude/skills/Business/user-story-decomposition/) | Decides use-case vs. user-story format, then walks epic → user story → acceptance criteria against an INVEST-style quality bar and a Definition-of-Ready checklist. Downstream of `design-scoping`'s functional list, upstream of `ticket-evaluation`'s sprint verdict. |
-| [`Business/software-carpentier-brand`](.claude/skills/Business/software-carpentier-brand/) | Represents the user professionally under their personal brand — LinkedIn copy, resume bullets, cover letters, elevator pitches, interview self-intros — holding to a career-honesty checklist so copy doesn't overstate what actually happened. |
+| [`Business/software-carpentier-brand`](.claude/skills/Business/software-carpentier-brand/) | Represents the user professionally under their personal brand — LinkedIn headline/About and feed posts, resume bullets, cover letters, elevator pitches, interview self-intros — holding to a career-honesty checklist so copy doesn't overstate what actually happened. |
 | [`Business/system-design-communication`](.claude/skills/Business/system-design-communication/) | Live coaching, not a decision gate — practice explaining a design (Design Walkthrough), a simulated system-design interview (Mock Interview), or defending one architectural choice over another under "what if?" pressure (Tradeoff Defense). Never supplies the "right" answer; exposes gaps and pressure-tests reasoning instead. |
+| [`Business/delete-ai-words`](.claude/skills/Business/delete-ai-words/) | Audits and rewrites text so it stops reading like AI — bans negative-parallelism reframes, a fixed list of tell words, forced rule-of-three, fake-depth participles. General-purpose, and the prose-style pass that `software-carpentier-brand` and `learning-gate`'s `guided-walkthrough` defer to. |
 | [`Git/commit-and-push`](.claude/skills/Git/commit-and-push/) | Stages, commits, and pushes with a message derived from the actual diff. |
 
 ## Agents
