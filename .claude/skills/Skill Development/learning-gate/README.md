@@ -24,6 +24,7 @@ debugging, architecture decisions, and understanding checks. This skill does not
 |---|---|
 | `SKILL.md` | The four steps, the Never list, the escape hatch, examples. |
 | `concept-learning.md` | The S0 path this skill owns end to end: teach → example → contrast → scenario → retrieval. |
+| `guided-walkthrough.md` | The S0–S2 delivery protocol for a multi-step task the user performs themselves: map the path, coach one step at a time, verify each before revealing the next. |
 | `assistance-levels.md` | The 0–5 scale, what's allowed at each, defaults per state. |
 
 ## Design choices
@@ -34,8 +35,10 @@ debugging, architecture decisions, and understanding checks. This skill does not
 - **Coexists with problem-solving-gates**, doesn't absorb it.
 - **Assistance levels are user-facing** — you can set a ceiling by number for a thread — and also
   internal calibration language. No persistent config file; the ceiling resets per thread.
-- **Owns concept-learning, defers the rest.** State S0 (learning a new concept) is fully handled
-  here. Debug / architecture / test / db reps get a one-line pointer and defer to the domain skill.
+- **Owns concept-learning and guided walkthroughs, defers the rest.** State S0 (learning a new
+  concept) and S0–S2 step-by-step walkthroughs of a task the user performs themselves are fully
+  handled here. Debug / architecture / test / db reps get a one-line pointer and defer to the
+  domain skill.
 
 ## How to steer it
 
