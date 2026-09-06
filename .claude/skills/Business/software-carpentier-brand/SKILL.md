@@ -1,6 +1,6 @@
 ---
 name: software-carpentier-brand
-description: Use when copy needs to represent the user professionally under their personal brand — LinkedIn headline/About, resume bullets, cover letters, elevator pitches, interview self-intros, portfolio/personal-site copy, or a description of the DevHiveMind Obsidian vault for an external audience. Also use to run a "check my brand consistency" pass on something already written. Applies a fixed identity (carpenter→architect device, target positioning in regulated/high-stakes systems, named proof points) and a hard honesty-calibration layer specific to this user's career facts (total relevant experience, pre-prod vs. production scope, execution vs. ownership, feature-count inflation) — constraints a generic writing pass won't know to check. Not for gathering evidence from work that just happened in this session or repo — that Evidence Block belongs to `explaining-my-work`; hand off there first, then run its output back through this skill's voice and honesty layer. Not for job-search strategy, salary negotiation, or which jobs to apply to — that's a different decision, not a voice/copy one.
+description: Use when copy needs to represent the user professionally under their personal brand — LinkedIn headline/About, LinkedIn feed posts (reacting to news, or writing up your own work), resume bullets, cover letters, elevator pitches, interview self-intros, portfolio/personal-site copy, or a description of the DevHiveMind Obsidian vault for an external audience. Also use to run a "check my brand consistency" pass on something already written. Applies a fixed identity (carpenter→architect device, target positioning in regulated/high-stakes systems, named proof points) and a hard honesty-calibration layer specific to this user's career facts (total relevant experience, pre-prod vs. production scope, execution vs. ownership, feature-count inflation) — constraints a generic writing pass won't know to check. Not for gathering evidence from work that just happened in this session or repo — that Evidence Block belongs to `explaining-my-work`; hand off there first, then run its output back through this skill's voice and honesty layer. Not for job-search strategy, salary negotiation, or which jobs to apply to — that's a different decision, not a voice/copy one.
 ---
 
 # Software Carpentier Brand
@@ -24,6 +24,10 @@ wrong by default).
   skill governs how something is *said*, not what to *do*.
 - **Technical writing that isn't self-representing.** A design doc, a PR description, a Slack
   update to a teammate — no brand voice needed there.
+- **De-AI-ing prose.** "Make it sound less like AI" on an existing draft (a LinkedIn post
+  included) is `delete-ai-words`, not this skill. The "check my brand consistency" pass here only
+  checks identity, proof points, and the honesty calibration — run `delete-ai-words` for the
+  prose, then add these checks after only if the draft also makes career claims.
 
 ---
 
@@ -133,6 +137,47 @@ caveat underneath an oversold line.
 
 ---
 
+## Drafting a LinkedIn feed post
+
+A feed post is a different job from profile copy: it reacts to something (a launch, a debate, a
+thing just shipped) and it runs on angle + hook, not on a headline formula. The identity, the
+proof points, and the honesty calibration above still bind — a public post is the *worst* place
+for an oversold production claim or an inflated tenure to leak.
+
+**Gather the raw material first — don't draft from a cold start.** Use `AskUserQuestion` to get:
+
+- the news, topic, or event being reacted to (or "my own work" + which piece)
+- the specific story, number, or example the user brings — the input the model can't invent. It
+  has to trace to a proof-point row above or to an `explaining-my-work` Evidence Block; if it
+  traces to neither, that gap is the thing to close before writing, not to paper over.
+- the goal: reach, inbound leads, authority, or a hiring signal — this changes which proof point
+  leads and how direct the ask is
+- constraints: length, and text post vs. carousel
+
+**Then:**
+
+1. Offer 3–5 distinct angles/hooks, each anchored to a real proof point or Evidence Block fact —
+   not a generic take any account could post. Name which proof point each one leans on.
+2. User picks one (or more).
+3. Assemble: the chosen angle, the full caption in the Voice rules above (lead with what was
+   built and its consequence; every sentence checkable; no unattached soft-skill claims; real
+   numbers only), and direction for the image/carousel — what it contains and what it looks like.
+4. Run the honesty-calibration pass on the caption. Report pass/fail per relevant check; show the
+   fixed line for any fail.
+5. Close with concrete next steps to sharpen it.
+
+**Guardrail — don't run one recipe into the ground.** If a hook pattern or angle was already used
+in a recent post this conversation, flag it and vary the execution; mirroring what worked is
+fine, repeating the exact move is not.
+
+**Optional post recipe.** If the user has a content-performance report or a posting SOP, its
+findings — best formats, best-performing angles ranked, hook patterns, cadence quirks — go in a
+bracketed block here and override the Voice-rules defaults where they conflict. Absent that, the
+Voice rules are the default. This block is user-specific, like the proof-point table — keep it
+current or delete it.
+
+---
+
 ## Output contract
 
 When invoked, respond with these parts in order:
@@ -148,12 +193,15 @@ When invoked, respond with these parts in order:
 For a "check my brand consistency" request on existing copy: skip part 1, run the existing text
 through parts 2 and 3, and show the specific line edits rather than a rewritten whole.
 
+For a LinkedIn feed post: follow **Drafting a LinkedIn feed post** above (interview, then angles,
+then assemble); parts 2 and 3 of this contract still apply to the finished caption.
+
 ---
 
 ## Portability
 
 Repo-agnostic. Writes nothing unless the user asks for a file; produces the draft in chat. Copy the
 `software-carpentier-brand/` directory into another repo's `.claude/skills/` to use it there. The
-proof-point table is specific to this user's real career facts as of 2026 — when a new role, a new
-metric, or a materially longer tenure exists, this file needs a real update, not copy that quietly
-outgrows it.
+proof-point table and the optional post recipe are specific to this user's real career facts as of
+2026 — when a new role, a new metric, or a materially longer tenure exists, this file needs a real
+update, not copy that quietly outgrows it.

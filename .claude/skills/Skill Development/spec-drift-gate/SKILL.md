@@ -1,6 +1,6 @@
 ---
 name: spec-drift-gate
-description: Use before starting substantial AI-assisted implementation work — a feature, a refactor, a new system, a script — that will span multiple files, multiple turns, or multiple sessions, and no written spec exists yet for it. Also use mid-build, at a natural checkpoint (a new phase starting, a session resuming after a gap, a proposed action that touches something the original ask never mentioned), to check work so far against the spec that was written at the start. Not for a single, fully-specified, one-shot request (fix this bug, add this function, answer this question) — nothing to gate when the request already is the spec. Not system-design specifically — purpose/audience/functional/non-functional numeric targets for a whole system is `design-scoping`'s front door; this skill treats a settled design-scoping scope statement as an equivalent input and doesn't re-gate it, but still wants the build-level spec (tradeoffs actually weighed, an explicit out-of-scope line, a controlled-experiment slice) once implementation starts. Not a one-shot "which of several readings did you mean" check on a single request — `ambiguity-gate` (resolve the reading first; once intent is settled as "build this multi-step thing," this skill's spec requirement applies next, not a second clarifying question). Not auditing the blast radius of one already-decided change against the existing codebase's dependents — `change-surface-audit` (this skill audits the build against its OWN stated plan over time, not the codebase against a proposed change). Not the end-of-session context dump — `session-handoff` (this skill's spec is what a handoff should point back to, not a replacement for writing one).
+description: Use before starting substantial AI-assisted implementation work — a feature, a refactor, a new system, a script — that will span multiple files, multiple turns, or multiple sessions, and no written spec exists yet for it. Triggers on vague one-line build requests too ("make me a dashboard", "write me a script that…") — a detailed-looking request is not the same as a written spec, and Step 2a runs a short scoped interview to draft one; a whole-system one-liner ("build an app for my gym") still goes to design-scoping first per Step 1, and Step 2a only adds the build-level spec afterward. Also use mid-build, at a natural checkpoint (a new phase starting, a session resuming after a gap, a proposed action that touches something the original ask never mentioned), to check work so far against the spec that was written at the start. Not for a single, fully-specified, one-shot request (fix this bug, add this function, answer this question) — nothing to gate when the request already is the spec. Not system-design specifically — purpose/audience/functional/non-functional numeric targets for a whole system is `design-scoping`'s front door; this skill treats a settled design-scoping scope statement as an equivalent input and doesn't re-gate it, but still wants the build-level spec (tradeoffs actually weighed, an explicit out-of-scope line, a controlled-experiment slice) once implementation starts. Not a one-shot "which of several readings did you mean" check on a single request — `ambiguity-gate` (resolve the reading first; once intent is settled as "build this multi-step thing," this skill's spec requirement applies next, not a second clarifying question). Not auditing the blast radius of one already-decided change against the existing codebase's dependents — `change-surface-audit` (this skill audits the build against its OWN stated plan over time, not the codebase against a proposed change). Not the end-of-session context dump — `session-handoff` (this skill's spec is what a handoff should point back to, not a replacement for writing one). Not a "walk me through it / I've never done this" setup or procedure the user will perform and repeat themselves — that's `learning-gate` → `guided-walkthrough.md`; this gate resumes only if the task grows into an unattended multi-file or multi-session build. A settled spec's substantial slices can be handed to the `spec-executor` subagent to run unattended in an isolated worktree (Step 3a) — that subagent executes, it does not decide scope, and its report is a Step 4 checkpoint like any other, never a self-certifying approval.
 ---
 
 # Spec Drift Gate
@@ -27,9 +27,29 @@ Before touching a file, get these stated — draft them from context and confirm
 
 Write it down — a markdown file, or at minimum a stated block in the conversation the user can point back to. This is the artifact Step 4 checks against; without it, Step 4 has nothing to compare.
 
+## Step 2a — When context doesn't supply the spec: run a scoped extraction interview
+
+If the request is a one-liner, or the four items above can't be drafted honestly from what's on the table, interview for them — don't guess, and don't start building to find out.
+
+- **Batch, don't barrage.** 2–3 rounds of 4–6 numbered questions, not fifteen at once. Round 1 is fundamentals (the problem, who it's for, must-haves vs. explicitly out); later rounds drill into what those answers exposed. You can't ask a sharp edge-case question before you know what the thing is.
+- **Every question must be able to change the build.** If you'd do the same thing regardless of the answer, cut it. Never ask what the conversation, the files, or memory already answered.
+- **Probe across:** what triggered the request and what success looks like in the user's own words; audience and context of use; scope in *and* explicitly out; constraints (deadline, stack, brand, platform, integrations); where data comes from and real examples; edge cases and failure states; taste references; whether it's one-off or maintained; and what would make them reject the result on delivery — that last one is often the most revealing.
+- **Adapt depth to stakes.** A throwaway script needs a few questions; a client-facing build needs the full pass.
+- **If the user says "just build it":** don't gatekeep. Compress to the 3 questions whose answers would most change the outcome, say you'll proceed on stated assumptions, and if they decline even those, build immediately with every assumption listed at the top of the deliverable so a wrong guess is visible and cheap to fix.
+
+Feed the answers straight into the Step 2 spec block, confirm it, then continue. Once that spec exists, don't re-interview the same build — later revisions get at most one or two clarifying questions, and a contradiction with the spec is a Step 4 decision, not a fresh interview.
+
 ## Step 3 — Precision instruction
 
 Once the spec is settled, the next instruction should be scoped to one slice of it — the next concrete step on the map, not "now build all of it." A spec describes the destination; a precision instruction is the next move toward it.
+
+## Step 3a — Execution handoff, when the slice warrants running unattended
+
+Most slices just get built inline, in the same conversation — that's still the default. Consider handing a slice to the `spec-executor` subagent (background, worktree-isolated) instead when the slice is substantial enough to run unattended and doesn't need turn-by-turn judgment calls: a well-bounded chunk of a multi-phase build, a controlled-experiment slice from Step 2 item 4, or a slice starting after the user has stepped away and won't be available to answer questions mid-build.
+
+Brief the subagent with exactly three things: the written spec, the precision instruction for this one slice, and the worktree to run in. Nothing else — a spec-executor that has to guess at scope is the exact failure this skill exists to prevent, just relocated into an agent instead of a foreground conversation. The subagent commits its own work in the worktree but does not merge or push; it reports back what it did, what it flagged as out-of-spec, and what it thinks the next slice is — treat that report as input to Step 4, not as a merge-ready result.
+
+Don't reach for this by default. A slice small enough to finish in the current conversation, or one where the next move genuinely depends on a judgment call only the user can make, stays inline.
 
 ## Step 4 — Drift check at each checkpoint
 
@@ -42,6 +62,8 @@ At a checkpoint, diff the proposed or actual work against the written spec:
 
 Never silently expand ("while I'm in here, I'll also...") without naming that it's happening. A silent expansion is exactly the failure this step exists to catch.
 
+**A `spec-executor` report is a checkpoint, not an approval.** Run the same diff against it: check its "still in scope" claim against the actual spec rather than trusting the subagent's own assessment, and treat every "flagged — not in spec" item as a real Step 4 decision (amend or pull back) — the subagent surfaces drift, it doesn't resolve it.
+
 ## Red flags — this gate is not doing its job
 
 - Multi-file or multi-session work started with no spec anyone could point back to.
@@ -51,3 +73,5 @@ Never silently expand ("while I'm in here, I'll also...") without naming that it
 - The spec was written once at the start and never looked at again across multiple sessions or phases.
 - A controlled experiment was skipped on a genuinely uncertain approach in favor of building the whole thing at once and finding out later.
 - "It's basically the same thing" is used to fold a new piece of work into an already-approved scope instead of naming it as an amendment.
+- A `spec-executor` report on a nontrivial slice has nothing in its "flagged — not in spec" section and that absence is trusted at face value instead of being checked.
+- A `spec-executor` result got merged or pushed on the strength of the subagent's own report, with no Step 4 diff performed by whoever's reviewing it.
