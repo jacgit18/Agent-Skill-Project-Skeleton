@@ -7,7 +7,10 @@ from subdirectories. So what's here is:
 |---|---|
 | `spec-executor.md` | **A registered agent.** Executes one slice of an approved `spec-drift-gate` spec in an isolated worktree, unattended. Does not decide scope, merge, or push. |
 | `decision-making-prioritization/` | **Not an agent** — notes, prompts, and an `AGENTS.md` sketch for a decision-prioritization helper. Nothing here is dispatched. |
-| `ai-qa-testing/` | **Not an agent** — Python scratch scripts and a learning plan for prompt-QA experiments. Nothing here is dispatched. |
+
+(The `ai-qa-testing/` prompt-QA scratch scripts that used to sit here were a duplicate of
+`curriculum/journals/ai-qa-testing/`, which is their real home in the learning-portfolio
+project — removed from `.claude/agents/`.)
 
 The weekly **Catalog Drift Audit** is also an agent, but it is a scheduled *cloud* routine
 (claude.ai/code/routines), not a file in this repo. Its trail is
