@@ -18,7 +18,7 @@ decision or the rep it needs, and produces an ADR / model / handoff doc from the
 | Path | What's in it |
 |---|---|
 | [`.claude/skills/`](.claude/skills/) | The skill library (see below). |
-| [`.claude/settings.json`](.claude/settings.json) | Wires the `UserPromptSubmit` prompt-logging hook. |
+| [`.claude/settings.json`](.claude/settings.json) | Wires two hooks: `UserPromptSubmit` → prompt logging, `SessionStart` → mechanical catalog-drift glance. |
 | [`.claude/_Prompts/logs/`](.claude/_Prompts/logs/) | Dated logs of every prompt submitted in the repo. |
 | [`Architecture/`](Architecture/) | System-design notes: system design, backing services, web-server architecture, design patterns, devops, networking, security, testing, 12-factor. Source material for the skills. |
 | [`Communication/Companies Worked At/`](Communication/Companies%20Worked%20At/) | BSA/agile process notes. Source material for the `Business/` and `Prompts/` group's BSA-derived skills. |
@@ -26,7 +26,7 @@ decision or the rep it needs, and produces an ADR / model / handoff doc from the
 | [`Finance/`](Finance/) | Personal error-log templates — `Error Log/Language Error.md` is the template `problem-journal`'s Capture mode writes into. |
 | [`Goals/`](Goals/) | Personal learning roadmap and AI-engineering framework notes. |
 | [`Books/`](Books/) | Business and tech book notes. |
-| [`scripts/`](scripts/) | `hooks/log-prompt.sh`, `git/batch-git-push.sh`. |
+| [`scripts/`](scripts/) | `hooks/log-prompt.sh`, `hooks/catalog-drift-check.sh`; `git/state.sh`, `git/commit.sh`, `git/push.sh`, `git/batch-git-push.sh`. |
 | `READ DELETE/` | Pre-reorg flat copies of skills, kept for diffing. Slated for deletion. |
 
 ## The skill library

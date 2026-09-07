@@ -15,8 +15,8 @@ Every skill is a directory with a fixed shape:
 Most skills are **gates**: they withhold the answer until a precondition is met — a stated
 hypothesis, a listed set of unknowns, a settled prior decision, a learning rep the user
 must do themselves. A few (`index-tuning`, `failure-mode-analysis`, `reliability-math`,
-`change-surface-audit`, `document-page-check`) are procedures, not gates. The README's per-group
-tables say which is which.
+`change-surface-audit`, `document-page-check`, `disclosure-gap-audit`) are procedures, not gates.
+The README's per-group tables say which is which.
 
 ## Cross-cutting meta-skills
 
