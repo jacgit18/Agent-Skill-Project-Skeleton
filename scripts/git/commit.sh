@@ -15,11 +15,14 @@
 #   3. Runs a sanity pass over the staged set: refuses on .env files, obvious
 #      key/cert files, files larger than 1 MiB (override with ALLOW_BIG=1),
 #      and staged merge-conflict markers.
-#   4. Appends a trailer unless a -m already carries it. The trailer is, in
-#      order of precedence: the COMMIT_TRAILER env var (set it empty to append
-#      nothing), else `git config commit-helper.trailer`, else the default
-#      below. Portability: another repo sets its own via git config or unsets
-#      it with COMMIT_TRAILER=.
+#   4. Appends a trailer unless a -m already carries it. The trailer resolves
+#      as: the COMMIT_TRAILER env var if set (empty = append nothing), else
+#      `git config commit-helper.trailer` if that key exists (empty = none).
+#      If NEITHER is set, first run auto-initialises the git-config key once —
+#      to the Co-Authored-By line the repo's recent history already uses, or
+#      the built-in default if there is none — prints what it set, and uses
+#      that. So a fresh repo needs no manual `git config`; to change it later,
+#      `git config commit-helper.trailer "…"` (or "" to stop appending one).
 #   5. Prints `git diff --cached --stat` and the assembled message, then commits.
 #
 # It does NOT push and does NOT open PRs. Use scripts/git/push.sh to push.
@@ -30,7 +33,34 @@ top="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "commit.sh: not a g
 cd "$top" || exit 1
 
 DEFAULT_TRAILER="Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
-TRAILER="${COMMIT_TRAILER-$(git config --get commit-helper.trailer 2>/dev/null || printf '%s' "$DEFAULT_TRAILER")}"
+
+resolve_trailer() {
+  # 1. Ephemeral override — COMMIT_TRAILER set (even to empty) wins, no config touched.
+  if [ "${COMMIT_TRAILER+set}" = set ]; then
+    printf '%s' "$COMMIT_TRAILER"
+    return
+  fi
+  # 2. An existing git-config key (any scope) — empty value means "deliberately none".
+  if git config --get commit-helper.trailer >/dev/null 2>&1; then
+    git config --get commit-helper.trailer
+    return
+  fi
+  # 3. Unconfigured — seed the key once, visibly. Prefer the Co-Authored-By line
+  #    the repo's own recent history uses; fall back to the built-in default.
+  local seed
+  seed="$(git log -30 --pretty=%B 2>/dev/null \
+          | grep -iE '^Co-authored-by: .+ <.+>$' \
+          | sort | uniq -c | sort -rn | head -1 \
+          | sed -E 's/^ *[0-9]+ +//')"
+  [ -n "$seed" ] || seed="$DEFAULT_TRAILER"
+  if git config --local commit-helper.trailer "$seed" 2>/dev/null; then
+    echo "commit.sh: initialised  commit-helper.trailer = \"$seed\"" >&2
+    echo "commit.sh:   change:  git config commit-helper.trailer \"…\"   ( \"\" = append no trailer )" >&2
+  fi
+  printf '%s' "$seed"
+}
+
+TRAILER="$(resolve_trailer)"
 
 msgs=()
 paths=()

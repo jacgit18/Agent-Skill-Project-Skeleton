@@ -41,6 +41,8 @@ tidy for a new home:
 
 - The `scripts/git/*` wrappers named in the steps are optional — copy them across too, or
   ignore them and use the plain-git commands shown beside each step.
-- The `Co-Authored-By` trailer is this project's. In another repo, set its own with
-  `git config commit-helper.trailer "…"` (honoured by `commit.sh`), or drop the trailer
-  rule from Step 5.
+- The `Co-Authored-By` trailer is this project's. If you carry `commit.sh` across it
+  self-initialises `git config commit-helper.trailer` on first run (adopting the repo's own
+  `Co-Authored-By` history, else the default) — override any time with
+  `git config commit-helper.trailer "…"`, or `""` for none. Working by hand instead, just
+  use the trailer the new repo wants in Step 5.

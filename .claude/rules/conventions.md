@@ -44,7 +44,9 @@ for a human. `land.sh` goes through GitHub, so a merge the web UI would block is
 here too; its local-resync steps are best-effort and skip (with a note) rather than force.
 
 The scripts carry no hard dependency on this repo. Portability knobs: `commit.sh` takes the
-commit trailer from `COMMIT_TRAILER` (empty = none) → `git config commit-helper.trailer` →
-the built-in default; and the prompt-log dir from `PROMPT_LOG_DIR` (default
-`.claude/_Prompts/logs`, and a no-op if that dir is absent). `push.sh` runs without the
-stall guard if neither `timeout` nor `gtimeout` is on `PATH`.
+commit trailer from `COMMIT_TRAILER` (empty = none), else `git config commit-helper.trailer`
+— and if neither is set, its first run writes that git-config key once (to the
+`Co-Authored-By` line the repo's recent history already uses, or the built-in default) and
+says so, so a fresh clone needs no manual setup. Prompt-log dir is `PROMPT_LOG_DIR` (default
+`.claude/_Prompts/logs`, a no-op if that dir is absent). `push.sh` runs without the stall
+guard if neither `timeout` nor `gtimeout` is on `PATH`.
