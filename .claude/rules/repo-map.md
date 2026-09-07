@@ -12,6 +12,7 @@ What is actually tracked: `.claude/`, `Artifact/`, `Books/`, `curriculum/`, `.su
 |---|---|
 | `.claude/skills/<Group>/<name>/` | The skill library. Groups: `AI Engineering`, `Architecture` (+ `Architecture/Data`), `Business`, `Documents`, `Finance`, `Git`, `Health`, `Prompts`, `Research`, `Skill Development`, `Testing`. |
 | `.claude/rules/` | This guidance, split into topic files and imported by `CLAUDE.md`. Edit the rule files, not the `CLAUDE.md` list. |
+| `.claude/commands/` | Slash commands. `/new-skill <Group>/<name>` drives the add-a-skill workflow end to end; `/sync-catalog` is a read-only catalog consistency check. (Directory is `commands`, plural — Claude Code ignores a singular `command/`.) |
 | `.claude/agents/spec-executor.md` | The one auto-discovered subagent (see `agents.md`). |
 | `.claude/agents/decision-making-prioritization/` | Notes and scaffolding, **not** a registered agent — Claude Code only auto-discovers `.claude/agents/*.md`, not subdirectories. See `.claude/agents/README.md`. |
 | `.claude/settings.json` | Wires the `UserPromptSubmit` prompt-logging hook. |
