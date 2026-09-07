@@ -1,6 +1,6 @@
 ---
 name: commit-and-push
-description: Stage, commit, and push work to GitHub with a commit message built from the actual diff — an imperative subject, a body that says why the change was made, and the required co-author trailer. Use when the user says "commit this", "commit and push", "push my changes", "save this to git", "commit with a good message", "write the commit message", or finishes a chunk of work and wants it in version control. It reads `git status` / `git diff` / recent `git log` first, matches the repo's existing message convention, groups unrelated changes into separate commits, runs a pre-commit sanity pass (secrets, .env files, large binaries, stray debug code, merge markers), branches off the default branch when the user hasn't said to commit straight to it, and confirms the message and push target before doing anything outward-facing. It deliberately does NOT open pull requests, resolve merge conflicts, rewrite published history (rebase / amend / force-push), or pick a branching strategy.
+description: Stage, commit, and push work to GitHub with a commit message built from the actual diff — an imperative subject, a body that says why the change was made, and the required co-author trailer. Use when the user says "commit this", "commit and push", "push my changes", "save this to git", "commit with a good message", "write the commit message", or finishes a chunk of work and wants it in version control. It reads `git status` / `git diff` / recent `git log` first, matches the repo's existing message convention, groups unrelated changes into separate commits, runs a pre-commit sanity pass (secrets, .env files, large binaries, stray debug code, merge markers), branches off the default branch when the user hasn't said to commit straight to it, and confirms the message and push target before doing anything outward-facing. It deliberately does NOT open pull requests, resolve merge conflicts, rewrite published history (rebase / amend / force-push), or decide how a branch's history should be integrated (merge vs. squash vs. rebase vs. fast-forward) — that last one is `history-integration-strategy`.
 ---
 
 # Commit and Push
@@ -17,8 +17,8 @@ Turn "commit this" into a clean commit whose message is actually derived from wh
 
 - **Pull requests.** This skill stops after `git push`. Opening a PR is a separate, explicitly-started step.
 - **Merge conflict resolution.** If a push is rejected for conflicts or the tree has conflict markers, stop and report it — don't guess at a resolution.
-- **History rewriting.** No `rebase`, no `commit --amend` on a pushed commit, no `push --force`. If the user wants history changed, that's a deliberate separate request with its own confirmation.
-- **Branching strategy.** This skill will branch off the default branch when needed (below), but it doesn't design a Git flow.
+- **History rewriting.** No `rebase`, no `commit --amend` on a pushed commit, no `push --force`. If the user wants history changed, that's a deliberate separate request with its own confirmation. Deciding *whether* to squash or rebase a branch for integration is `history-integration-strategy` (it picks the strategy; it doesn't run the rebase).
+- **Branching / integration strategy.** This skill will branch off the default branch when needed (below), but it doesn't design a Git flow or choose how a finished branch folds back in — merge commit vs. squash vs. rebase vs. fast-forward is `history-integration-strategy`.
 
 ---
 

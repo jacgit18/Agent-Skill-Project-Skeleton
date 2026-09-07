@@ -46,7 +46,7 @@ That's a valid precondition — a named hypothesis with reasoning behind it. Cla
 
 **Trigger:** User is making an architecture or design decision and has listed the unknowns/constraints and formed an initial position.
 
-If the decision is specifically a coverage-target / CI-enforcement choice → `coverage-policy`; a test-levels / test-mix choice → `test-strategy`. Those skills own the gate for their decision — hand off rather than also running Options Generator on top.
+If the decision is specifically a coverage-target / CI-enforcement choice → `coverage-policy`; a test-levels / test-mix choice → `test-strategy`; how a branch's history folds into another (merge vs. squash vs. rebase vs. fast-forward) → `history-integration-strategy`. Those skills own the gate for their decision — hand off rather than also running Options Generator on top.
 
 **Precondition check:** They need (a) unknowns or constraints named, and (b) an initial position — a leaning, even a tentative one. "What should I do?" with neither of these present is not valid input for this mode. If either is missing, ask for it and stop.
 

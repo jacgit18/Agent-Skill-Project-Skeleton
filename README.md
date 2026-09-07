@@ -147,6 +147,7 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | [`Business/system-design-communication`](.claude/skills/Business/system-design-communication/) | Live coaching, not a decision gate — practice explaining a design (Design Walkthrough), a simulated system-design interview (Mock Interview), or defending one architectural choice over another under "what if?" pressure (Tradeoff Defense). Never supplies the "right" answer; exposes gaps and pressure-tests reasoning instead. |
 | [`Business/delete-ai-words`](.claude/skills/Business/delete-ai-words/) | Audits and rewrites text so it stops reading like AI — bans negative-parallelism reframes, a fixed list of tell words, forced rule-of-three, fake-depth participles. General-purpose, and the prose-style pass that `software-carpentier-brand` and `learning-gate`'s `guided-walkthrough` defer to. |
 | [`Git/commit-and-push`](.claude/skills/Git/commit-and-push/) | Stages, commits, and pushes with a message derived from the actual diff. |
+| [`Git/history-integration-strategy`](.claude/skills/Git/history-integration-strategy/) | Gate: pick merge commit / fast-forward / squash / rebase for folding a branch in (or merge-in vs. rebase-onto for syncing), after five facts — shared history, a mandated strategy, commit quality, integrate-vs-sync, whether the team bisects. One recommendation, not a survey. `commit-and-push` hands the strategy choice here. |
 
 ## Agents
 
