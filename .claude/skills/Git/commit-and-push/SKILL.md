@@ -24,6 +24,10 @@ Turn "commit this" into a clean commit whose message is actually derived from wh
 
 ## Process
 
+> The `scripts/git/*` helpers below (`state.sh`, `commit.sh`, `push.sh`, `batch-git-push.sh`)
+> are this repo's convenience wrappers. If the skill is used somewhere they don't exist, run
+> the plain-git equivalent shown alongside each step — the process is the same either way.
+
 ### 1. Read the real state first
 
 Never draft a message from memory of the conversation alone. `scripts/git/state.sh` gives the
@@ -93,7 +97,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
 
 ### 6. Confirm, then commit
 
-Show the user the staging plan and the full message(s) before running anything. On approval, use the repo's `scripts/git/commit.sh` — it stages exactly the paths you name, folds in any uncommitted prompt logs (`.claude/_Prompts/logs/`, per `conventions.md`), runs the Step 4 sanity checks on the staged set, appends the trailer, and commits:
+Show the user the staging plan and the full message(s) before running anything. On approval, if `scripts/git/commit.sh` is present, use it — it stages exactly the paths you name, folds in any uncommitted prompt logs (`.claude/_Prompts/logs/`, per `conventions.md`), runs the Step 4 sanity checks on the staged set, appends the trailer, and commits:
 
 ```bash
 scripts/git/commit.sh -m "<subject>" -m "<body>" -- <specific paths>

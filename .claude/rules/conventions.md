@@ -42,3 +42,9 @@ scripts/git/batch-git-push.sh 90 main "Add skills"   # bulk: many new files, N p
 thin resilience wrapper — a rejected push (non-fast-forward, protected branch) still stops
 for a human. `land.sh` goes through GitHub, so a merge the web UI would block is blocked
 here too; its local-resync steps are best-effort and skip (with a note) rather than force.
+
+The scripts carry no hard dependency on this repo. Portability knobs: `commit.sh` takes the
+commit trailer from `COMMIT_TRAILER` (empty = none) → `git config commit-helper.trailer` →
+the built-in default; and the prompt-log dir from `PROMPT_LOG_DIR` (default
+`.claude/_Prompts/logs`, and a no-op if that dir is absent). `push.sh` runs without the
+stall guard if neither `timeout` nor `gtimeout` is on `PATH`.

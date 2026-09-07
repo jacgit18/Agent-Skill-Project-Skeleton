@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# commit.sh — commit with this repo's conventions baked in.
+# commit.sh — commit with a repo's staging + message conventions baked in.
 #
 #   scripts/git/commit.sh -m "Subject line" [-m "body paragraph" ...] \
 #       [--] <pathspec> [<pathspec> ...]
@@ -8,13 +8,18 @@
 # What it does, in order:
 #   1. Stages exactly the pathspecs you name — never a blanket `git add -A`
 #      (see .claude/rules/conventions.md).
-#   2. Also stages any uncommitted prompt-log files under
-#      .claude/_Prompts/logs/ so the log rides along with whatever commit is
-#      being made and never has to be staged by hand.
+#   2. Also stages any uncommitted files under the prompt-log dir (default
+#      .claude/_Prompts/logs/, override with PROMPT_LOG_DIR) so that log rides
+#      along with whatever commit is being made. No-op if the dir doesn't
+#      exist, so this is harmless in a repo without the prompt-logging hook.
 #   3. Runs a sanity pass over the staged set: refuses on .env files, obvious
 #      key/cert files, files larger than 1 MiB (override with ALLOW_BIG=1),
 #      and staged merge-conflict markers.
-#   4. Appends the required Co-Authored-By trailer unless a -m already carries it.
+#   4. Appends a trailer unless a -m already carries it. The trailer is, in
+#      order of precedence: the COMMIT_TRAILER env var (set it empty to append
+#      nothing), else `git config commit-helper.trailer`, else the default
+#      below. Portability: another repo sets its own via git config or unsets
+#      it with COMMIT_TRAILER=.
 #   5. Prints `git diff --cached --stat` and the assembled message, then commits.
 #
 # It does NOT push and does NOT open PRs. Use scripts/git/push.sh to push.
@@ -24,7 +29,8 @@ set -uo pipefail
 top="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "commit.sh: not a git repo" >&2; exit 1; }
 cd "$top" || exit 1
 
-TRAILER="Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
+DEFAULT_TRAILER="Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
+TRAILER="${COMMIT_TRAILER-$(git config --get commit-helper.trailer 2>/dev/null || printf '%s' "$DEFAULT_TRAILER")}"
 
 msgs=()
 paths=()
@@ -51,7 +57,7 @@ done
 git add -- "${paths[@]}"
 
 # 2. Fold in any uncommitted prompt logs.
-logdir=".claude/_Prompts/logs"
+logdir="${PROMPT_LOG_DIR:-.claude/_Prompts/logs}"
 if [ -d "$logdir" ]; then
   logs="$(git status --porcelain -- "$logdir" | sed 's/^...//')"
   if [ -n "$logs" ]; then
@@ -98,10 +104,10 @@ if [ -n "$problems" ]; then
   exit 1
 fi
 
-# 4. Assemble -m args, appending the trailer if absent.
+# 4. Assemble -m args, appending the trailer if set and not already present.
 commit_args=()
 for m in "${msgs[@]}"; do commit_args+=(-m "$m"); done
-if ! printf '%s\n' "${msgs[@]}" | grep -qF "$TRAILER"; then
+if [ -n "$TRAILER" ] && ! printf '%s\n' "${msgs[@]}" | grep -qF -- "$TRAILER"; then
   commit_args+=(-m "$TRAILER")
 fi
 
@@ -110,6 +116,6 @@ echo "── staged ────────────────────
 git diff --cached --stat
 echo "── message ────────────────────────────"
 for m in "${msgs[@]}"; do printf '%s\n\n' "$m"; done
-printf '%s\n' "$TRAILER"
+[ -n "$TRAILER" ] && printf '%s\n' "$TRAILER"
 echo "───────────────────────────────────────"
 git commit "${commit_args[@]}"
