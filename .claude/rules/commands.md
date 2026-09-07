@@ -6,8 +6,8 @@ There is no build, lint, or test runner. The operational scripts live in `script
 # One-call repo snapshot (read-only) — replaces status + diff + diff --cached + log.
 scripts/git/state.sh
 
-# Commit: stage exactly these paths (+ auto-fold prompt logs), sanity-check the staged
-# set, append the Co-Authored-By trailer, commit. Never pushes, never `git add -A`.
+# Commit: stage exactly these paths, sanity-check the staged set, append the
+# Co-Authored-By trailer, commit. Never pushes, never `git add -A`.
 scripts/git/commit.sh -m "Subject line" -m "Optional body para" -- path/one path/two
 
 # Push with a timeout + HTTP/1.1 fallback + one retry, so a stalled push fails fast.

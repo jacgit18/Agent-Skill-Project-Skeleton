@@ -8,14 +8,10 @@
 # What it does, in order:
 #   1. Stages exactly the pathspecs you name — never a blanket `git add -A`
 #      (see .claude/rules/conventions.md).
-#   2. Also stages any uncommitted files under the prompt-log dir (default
-#      .claude/_Prompts/logs/, override with PROMPT_LOG_DIR) so that log rides
-#      along with whatever commit is being made. No-op if the dir doesn't
-#      exist, so this is harmless in a repo without the prompt-logging hook.
-#   3. Runs a sanity pass over the staged set: refuses on .env files, obvious
+#   2. Runs a sanity pass over the staged set: refuses on .env files, obvious
 #      key/cert files, files larger than 1 MiB (override with ALLOW_BIG=1),
 #      and staged merge-conflict markers.
-#   4. Appends a trailer unless a -m already carries it. The trailer resolves
+#   3. Appends a trailer unless a -m already carries it. The trailer resolves
 #      as: the COMMIT_TRAILER env var if set (empty = append nothing), else
 #      `git config commit-helper.trailer` if that key exists (empty = none).
 #      If NEITHER is set, first run auto-initialises the git-config key once —
@@ -23,7 +19,7 @@
 #      the built-in default if there is none — prints what it set, and uses
 #      that. So a fresh repo needs no manual `git config`; to change it later,
 #      `git config commit-helper.trailer "…"` (or "" to stop appending one).
-#   5. Prints `git diff --cached --stat` and the assembled message, then commits.
+#   4. Prints `git diff --cached --stat` and the assembled message, then commits.
 #
 # It does NOT push and does NOT open PRs. Use scripts/git/push.sh to push.
 
@@ -86,26 +82,13 @@ done
 # 1. Stage the named pathspecs.
 git add -- "${paths[@]}"
 
-# 2. Fold in any uncommitted prompt logs.
-logdir="${PROMPT_LOG_DIR:-.claude/_Prompts/logs}"
-if [ -d "$logdir" ]; then
-  logs="$(git status --porcelain -- "$logdir" | sed 's/^...//')"
-  if [ -n "$logs" ]; then
-    while IFS= read -r f; do
-      [ -n "$f" ] && git add -- "$f"
-    done <<EOF
-$logs
-EOF
-  fi
-fi
-
 # Nothing staged? Stop.
 if git diff --cached --quiet; then
   echo "commit.sh: nothing staged after add — aborting." >&2
   exit 1
 fi
 
-# 3. Sanity pass over the staged set.
+# 2. Sanity pass over the staged set.
 problems=""
 staged_files="$(git diff --cached --name-only)"
 while IFS= read -r f; do
@@ -134,14 +117,14 @@ if [ -n "$problems" ]; then
   exit 1
 fi
 
-# 4. Assemble -m args, appending the trailer if set and not already present.
+# 3. Assemble -m args, appending the trailer if set and not already present.
 commit_args=()
 for m in "${msgs[@]}"; do commit_args+=(-m "$m"); done
 if [ -n "$TRAILER" ] && ! printf '%s\n' "${msgs[@]}" | grep -qF -- "$TRAILER"; then
   commit_args+=(-m "$TRAILER")
 fi
 
-# 5. Show, then commit.
+# 4. Show, then commit.
 echo "── staged ─────────────────────────────"
 git diff --cached --stat
 echo "── message ────────────────────────────"
