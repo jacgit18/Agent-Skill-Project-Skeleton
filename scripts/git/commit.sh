@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# commit.sh — commit with this repo's conventions baked in.
+# commit.sh — commit with a repo's staging + message conventions baked in.
 #
 #   scripts/git/commit.sh -m "Subject line" [-m "body paragraph" ...] \
 #       [--] <pathspec> [<pathspec> ...]
@@ -8,13 +8,21 @@
 # What it does, in order:
 #   1. Stages exactly the pathspecs you name — never a blanket `git add -A`
 #      (see .claude/rules/conventions.md).
-#   2. Also stages any uncommitted prompt-log files under
-#      .claude/_Prompts/logs/ so the log rides along with whatever commit is
-#      being made and never has to be staged by hand.
+#   2. Also stages any uncommitted files under the prompt-log dir (default
+#      .claude/_Prompts/logs/, override with PROMPT_LOG_DIR) so that log rides
+#      along with whatever commit is being made. No-op if the dir doesn't
+#      exist, so this is harmless in a repo without the prompt-logging hook.
 #   3. Runs a sanity pass over the staged set: refuses on .env files, obvious
 #      key/cert files, files larger than 1 MiB (override with ALLOW_BIG=1),
 #      and staged merge-conflict markers.
-#   4. Appends the required Co-Authored-By trailer unless a -m already carries it.
+#   4. Appends a trailer unless a -m already carries it. The trailer resolves
+#      as: the COMMIT_TRAILER env var if set (empty = append nothing), else
+#      `git config commit-helper.trailer` if that key exists (empty = none).
+#      If NEITHER is set, first run auto-initialises the git-config key once —
+#      to the Co-Authored-By line the repo's recent history already uses, or
+#      the built-in default if there is none — prints what it set, and uses
+#      that. So a fresh repo needs no manual `git config`; to change it later,
+#      `git config commit-helper.trailer "…"` (or "" to stop appending one).
 #   5. Prints `git diff --cached --stat` and the assembled message, then commits.
 #
 # It does NOT push and does NOT open PRs. Use scripts/git/push.sh to push.
@@ -24,7 +32,35 @@ set -uo pipefail
 top="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "commit.sh: not a git repo" >&2; exit 1; }
 cd "$top" || exit 1
 
-TRAILER="Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
+DEFAULT_TRAILER="Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
+
+resolve_trailer() {
+  # 1. Ephemeral override — COMMIT_TRAILER set (even to empty) wins, no config touched.
+  if [ "${COMMIT_TRAILER+set}" = set ]; then
+    printf '%s' "$COMMIT_TRAILER"
+    return
+  fi
+  # 2. An existing git-config key (any scope) — empty value means "deliberately none".
+  if git config --get commit-helper.trailer >/dev/null 2>&1; then
+    git config --get commit-helper.trailer
+    return
+  fi
+  # 3. Unconfigured — seed the key once, visibly. Prefer the Co-Authored-By line
+  #    the repo's own recent history uses; fall back to the built-in default.
+  local seed
+  seed="$(git log -30 --pretty=%B 2>/dev/null \
+          | grep -iE '^Co-authored-by: .+ <.+>$' \
+          | sort | uniq -c | sort -rn | head -1 \
+          | sed -E 's/^ *[0-9]+ +//')"
+  [ -n "$seed" ] || seed="$DEFAULT_TRAILER"
+  if git config --local commit-helper.trailer "$seed" 2>/dev/null; then
+    echo "commit.sh: initialised  commit-helper.trailer = \"$seed\"" >&2
+    echo "commit.sh:   change:  git config commit-helper.trailer \"…\"   ( \"\" = append no trailer )" >&2
+  fi
+  printf '%s' "$seed"
+}
+
+TRAILER="$(resolve_trailer)"
 
 msgs=()
 paths=()
@@ -51,7 +87,7 @@ done
 git add -- "${paths[@]}"
 
 # 2. Fold in any uncommitted prompt logs.
-logdir=".claude/_Prompts/logs"
+logdir="${PROMPT_LOG_DIR:-.claude/_Prompts/logs}"
 if [ -d "$logdir" ]; then
   logs="$(git status --porcelain -- "$logdir" | sed 's/^...//')"
   if [ -n "$logs" ]; then
@@ -98,10 +134,10 @@ if [ -n "$problems" ]; then
   exit 1
 fi
 
-# 4. Assemble -m args, appending the trailer if absent.
+# 4. Assemble -m args, appending the trailer if set and not already present.
 commit_args=()
 for m in "${msgs[@]}"; do commit_args+=(-m "$m"); done
-if ! printf '%s\n' "${msgs[@]}" | grep -qF "$TRAILER"; then
+if [ -n "$TRAILER" ] && ! printf '%s\n' "${msgs[@]}" | grep -qF -- "$TRAILER"; then
   commit_args+=(-m "$TRAILER")
 fi
 
@@ -110,6 +146,6 @@ echo "── staged ────────────────────
 git diff --cached --stat
 echo "── message ────────────────────────────"
 for m in "${msgs[@]}"; do printf '%s\n\n' "$m"; done
-printf '%s\n' "$TRAILER"
+[ -n "$TRAILER" ] && printf '%s\n' "$TRAILER"
 echo "───────────────────────────────────────"
 git commit "${commit_args[@]}"

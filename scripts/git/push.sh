@@ -21,10 +21,22 @@ remote="${1:-origin}"
 branch="${2:-$(git rev-parse --abbrev-ref HEAD)}"
 t="${PUSH_TIMEOUT:-90}"
 
+# `timeout` is GNU coreutils; macOS ships it as `gtimeout` (brew coreutils) or
+# not at all. Without it, push without a per-attempt cap rather than failing —
+# the HTTP/1.1 fallback and retry still apply, just not the hang guard.
+if command -v timeout >/dev/null 2>&1; then
+  cap() { timeout "$t" "$@"; }
+elif command -v gtimeout >/dev/null 2>&1; then
+  cap() { gtimeout "$t" "$@"; }
+else
+  echo "push.sh: no timeout/gtimeout on PATH — pushing without a stall guard" >&2
+  cap() { "$@"; }
+fi
+
 attempt() {
   local label="$1"; shift
   echo "push.sh: ${label} ..."
-  if timeout "$t" "$@"; then
+  if cap "$@"; then
     echo "push.sh: ${label} — ok"
     return 0
   fi

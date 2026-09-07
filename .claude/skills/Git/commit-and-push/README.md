@@ -26,12 +26,23 @@ history (`rebase` / `amend` / `--force`), or design a branching strategy.
 
 ## Related
 
-- `scripts/git/batch-git-push.sh` — for bulk file additions (90+ unrelated new files), the
-  skill defers to this batched stage/commit/push script.
-- Commit trailer (`Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`) is fixed by the
-  session's attribution guidance; the skill just enforces it on every message it writes.
+- `scripts/git/state.sh` / `commit.sh` / `push.sh` / `batch-git-push.sh` — this repo's
+  convenience wrappers for the steps. The skill prefers them when present and shows the
+  plain-git equivalent for each, so it works with or without them.
+- Commit trailer (`Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`) comes from the
+  session's attribution guidance; the skill enforces whatever the active trailer is on every
+  message it writes.
 
 ## Portability
 
-Repo-agnostic. Copy the directory into another repo's `.claude/skills/`. The batch-push
-reference assumes `scripts/git/batch-git-push.sh` exists in that repo; drop that line if not.
+Repo-agnostic — the process is plain git. Copy the directory into another repo's
+`.claude/skills/`; nothing here hard-depends on this repo's paths. Two soft references to
+tidy for a new home:
+
+- The `scripts/git/*` wrappers named in the steps are optional — copy them across too, or
+  ignore them and use the plain-git commands shown beside each step.
+- The `Co-Authored-By` trailer is this project's. If you carry `commit.sh` across it
+  self-initialises `git config commit-helper.trailer` on first run (adopting the repo's own
+  `Co-Authored-By` history, else the default) — override any time with
+  `git config commit-helper.trailer "…"`, or `""` for none. Working by hand instead, just
+  use the trailer the new repo wants in Step 5.
