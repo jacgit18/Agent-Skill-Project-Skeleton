@@ -18,6 +18,12 @@ anything outward-facing.
 Stops after `git push`. Does **not** open PRs, resolve merge conflicts, rewrite published
 history (`rebase` / `amend` / `--force`), or design a branching strategy.
 
+- **vs `history-integration-strategy`** — this skill turns a working tree into commits and
+  pushes them; it does not choose *how* a branch's history folds into another (merge commit
+  vs. squash vs. rebase vs. fast-forward, or merge-in vs. rebase-onto for syncing). That
+  decision is `history-integration-strategy`, which produces no commits itself. "Commit
+  this" → here; "squash or rebase before merging?" → there.
+
 ## Related
 
 - `scripts/git/batch-git-push.sh` — for bulk file additions (90+ unrelated new files), the
