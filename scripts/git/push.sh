@@ -3,6 +3,10 @@
 # push.sh — push the current branch with a timeout, an HTTP/1.1 fallback, and
 # one retry, so a stalled push fails fast instead of hanging a session.
 #
+# Always passes -u, so the local branch gets its upstream link on the first
+# push (no lingering "Publish Branch" prompt in editors); re-setting an
+# already-correct upstream is a harmless no-op.
+#
 #   scripts/git/push.sh [remote=origin] [branch=current]
 #
 # Env:
@@ -33,10 +37,10 @@ attempt() {
   return 1
 }
 
-attempt "push"                git push "$remote" "$branch" && exit 0
-attempt "push (HTTP/1.1)"     git -c http.version=HTTP/1.1 push "$remote" "$branch" && exit 0
+attempt "push"                git push -u "$remote" "$branch" && exit 0
+attempt "push (HTTP/1.1)"     git -c http.version=HTTP/1.1 push -u "$remote" "$branch" && exit 0
 sleep 3
-attempt "push (retry, HTTP/1.1)" git -c http.version=HTTP/1.1 push "$remote" "$branch" && exit 0
+attempt "push (retry, HTTP/1.1)" git -c http.version=HTTP/1.1 push -u "$remote" "$branch" && exit 0
 
 echo "push.sh: all attempts failed — the remote may be having trouble; retry shortly." >&2
 exit 1

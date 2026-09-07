@@ -13,6 +13,11 @@ scripts/git/commit.sh -m "Subject line" -m "Optional body para" -- path/one path
 # Push with a timeout + HTTP/1.1 fallback + one retry, so a stalled push fails fast.
 scripts/git/push.sh [remote=origin] [branch=current]
 
+# Merge a PR via `gh` (branch protection + checks still enforced — not a direct push
+# to main), then delete the remote branch and resync the local base. Default method
+# is a merge commit; --squash / --rebase override. No arg = the current branch's PR.
+scripts/git/land.sh [PR-number | branch] [--merge | --squash | --rebase]
+
 # Chunked commit + push — bulk file adds, never more than N files in one push.
 # Args: [batch_size=90] [branch=current] [commit_prefix="Add files"]
 scripts/git/batch-git-push.sh 50 main "Add skills"

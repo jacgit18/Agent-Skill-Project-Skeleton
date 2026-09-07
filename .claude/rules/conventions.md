@@ -1,7 +1,9 @@
 # Conventions
 
 - **Branches / PRs:** branch per change; PRs target `main`. Automated routines open PRs,
-  they do not push to `main`.
+  they do not push to `main`. Merging a PR is fine from the terminal — `scripts/git/land.sh`
+  does it through `gh` (branch protection and checks still apply); that is merging a PR, not
+  a direct push to `main`.
 - **`.gitignore`:** `*.csv` is ignored (personal financial exports live in the working tree
   but are never committed).
 - **Commit messages** end with:
@@ -28,9 +30,15 @@ scripts/git/commit.sh -m "Subject" [-m body] -- path [path...]
                                            #   the Co-Authored-By trailer, then commit
 scripts/git/push.sh [remote] [branch]      # push with a timeout + HTTP/1.1 fallback + one
                                            #   retry, so a stalled push fails fast
+scripts/git/land.sh [PR|branch] [--merge|--squash|--rebase]
+                                           # merge the PR via gh (default: merge commit),
+                                           #   delete its remote branch, then check out the
+                                           #   base, fast-forward it, prune, drop the local
+                                           #   head branch. No arg = current branch's PR.
 scripts/git/batch-git-push.sh 90 main "Add skills"   # bulk: many new files, N per push
 ```
 
 `state.sh` is read-only. `commit.sh` never pushes and never `git add -A`. `push.sh` is a
 thin resilience wrapper — a rejected push (non-fast-forward, protected branch) still stops
-for a human.
+for a human. `land.sh` goes through GitHub, so a merge the web UI would block is blocked
+here too; its local-resync steps are best-effort and skip (with a note) rather than force.
