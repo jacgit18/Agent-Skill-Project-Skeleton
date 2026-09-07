@@ -97,16 +97,16 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
 
 ### 6. Confirm, then commit
 
-Show the user the staging plan and the full message(s) before running anything. On approval, if `scripts/git/commit.sh` is present, use it — it stages exactly the paths you name, folds in any uncommitted prompt logs (`.claude/_Prompts/logs/`, per `conventions.md`), runs the Step 4 sanity checks on the staged set, appends the trailer, and commits:
+Show the user the staging plan and the full message(s) before running anything. On approval, if `scripts/git/commit.sh` is present, use it — it stages exactly the paths you name, runs the Step 4 sanity checks on the staged set, appends the trailer, and commits:
 
 ```bash
 scripts/git/commit.sh -m "<subject>" -m "<body>" -- <specific paths>
 ```
 
-Equivalent by hand (also stage the current day's prompt-log file alongside your real paths):
+Equivalent by hand:
 
 ```bash
-git add <specific paths> .claude/_Prompts/logs/$(date +%F).md
+git add <specific paths>
 git commit -F - <<'EOF'
 <subject>
 
