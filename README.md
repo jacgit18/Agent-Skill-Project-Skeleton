@@ -26,7 +26,7 @@ decision or the rep it needs, and produces an ADR / model / handoff doc from the
 | [`Finance/`](Finance/) | Personal error-log templates — `Error Log/Language Error.md` is the template `problem-journal`'s Capture mode writes into. |
 | [`Goals/`](Goals/) | Personal learning roadmap and AI-engineering framework notes. |
 | [`Books/`](Books/) | Business and tech book notes. |
-| [`scripts/`](scripts/) | `hooks/log-prompt.sh`, `hooks/catalog-drift-check.sh`; `git/state.sh`, `git/commit.sh`, `git/push.sh`, `git/batch-git-push.sh`. |
+| [`scripts/`](scripts/) | `hooks/log-prompt.sh`, `hooks/catalog-drift-check.sh`; `git/state.sh`, `git/commit.sh`, `git/push.sh`, `git/land.sh`, `git/batch-git-push.sh`. |
 | `READ DELETE/` | Pre-reorg flat copies of skills, kept for diffing. Slated for deletion. |
 
 ## The skill library
