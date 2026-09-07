@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#
+# push.sh — push the current branch with a timeout, an HTTP/1.1 fallback, and
+# one retry, so a stalled push fails fast instead of hanging a session.
+#
+#   scripts/git/push.sh [remote=origin] [branch=current]
+#
+# Env:
+#   PUSH_TIMEOUT=90   per-attempt timeout, seconds
+
+set -uo pipefail
+
+top="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "push.sh: not a git repo" >&2; exit 1; }
+cd "$top" || exit 1
+
+remote="${1:-origin}"
+branch="${2:-$(git rev-parse --abbrev-ref HEAD)}"
+t="${PUSH_TIMEOUT:-90}"
+
+attempt() {
+  local label="$1"; shift
+  echo "push.sh: ${label} ..."
+  if timeout "$t" "$@"; then
+    echo "push.sh: ${label} — ok"
+    return 0
+  fi
+  local rc=$?
+  if [ "$rc" -eq 124 ]; then
+    echo "push.sh: ${label} — timed out after ${t}s"
+  else
+    echo "push.sh: ${label} — failed (exit ${rc})"
+  fi
+  return 1
+}
+
+attempt "push"                git push "$remote" "$branch" && exit 0
+attempt "push (HTTP/1.1)"     git -c http.version=HTTP/1.1 push "$remote" "$branch" && exit 0
+sleep 3
+attempt "push (retry, HTTP/1.1)" git -c http.version=HTTP/1.1 push "$remote" "$branch" && exit 0
+
+echo "push.sh: all attempts failed — the remote may be having trouble; retry shortly." >&2
+exit 1

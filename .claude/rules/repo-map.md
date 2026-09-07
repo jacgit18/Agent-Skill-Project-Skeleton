@@ -20,9 +20,8 @@ What is actually tracked: `.claude/`, `Artifact/`, `Books/`, `curriculum/`, `.su
 | `.claude/_Prompts/catalog-audit-log.md` | Durable trail of `catalog-drift-audit` runs; each run reads it first to avoid re-flagging resolved items. |
 | `README.md` | Human-facing catalog index with one table row per skill. Kept in sync by hand. |
 | `SKILL-BACKLOG.md` | Skill candidates; each entry is marked `[x] Built …` with its isolation + interaction-test result recorded inline. |
-| `Priority Dev Roadmap.md` | Personal career/learning roadmap (vault doc, not catalog process). |
 | `template/skill-template/` | Scaffold for a new skill — `SKILL.md` + `reference-file.md` + `README.md` skeletons. Copy to `.claude/skills/<Group>/<name>/`. |
 | `template/spec-system/agent-spec-template.md` | Template + worthiness test for authoring a new agent. |
-| `scripts/` | `hooks/log-prompt.sh`, `hooks/catalog-drift-check.sh`, `git/batch-git-push.sh`. |
+| `scripts/` | `hooks/log-prompt.sh`, `hooks/catalog-drift-check.sh`; `git/state.sh` (snapshot), `git/commit.sh` (staged-pathspec commit + prompt-log fold + trailer), `git/push.sh` (timeout/fallback/retry), `git/batch-git-push.sh` (bulk). See `commands.md` / `conventions.md`. |
 | `Artifact/` | Talking points / catalog write-ups for external posts. |
 | `curriculum/`, `.superpowers/sdd/` | A separate spec-driven learning-portfolio project (specs, plans, task briefs/reports). Unrelated to the skill catalog. |

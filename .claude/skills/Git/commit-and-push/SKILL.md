@@ -26,14 +26,15 @@ Turn "commit this" into a clean commit whose message is actually derived from wh
 
 ### 1. Read the real state first
 
-Never draft a message from memory of the conversation alone. Run:
+Never draft a message from memory of the conversation alone. `scripts/git/state.sh` gives the
+snapshot in one call (branch + tracking, staged vs unstaged vs untracked, diffstat, recent
+log). Then pull the detail you need:
 
 ```bash
-git status --porcelain           # what's changed, what's already staged
-git diff                         # unstaged changes
+scripts/git/state.sh             # one-call snapshot
+git diff                         # unstaged changes in full
 git diff --cached                # already-staged changes (respect the user's staging)
 git log --oneline -10            # recent history — for message convention
-git rev-parse --abbrev-ref HEAD  # current branch
 git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main  # default branch
 ```
 
@@ -92,10 +93,16 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
 
 ### 6. Confirm, then commit
 
-Show the user the staging plan and the full message(s) before running anything. On approval, stage and commit — use a heredoc so multi-line messages and the trailer land intact:
+Show the user the staging plan and the full message(s) before running anything. On approval, use the repo's `scripts/git/commit.sh` — it stages exactly the paths you name, folds in any uncommitted prompt logs (`.claude/_Prompts/logs/`, per `conventions.md`), runs the Step 4 sanity checks on the staged set, appends the trailer, and commits:
 
 ```bash
-git add <specific paths>        # prefer explicit paths over `git add -A`
+scripts/git/commit.sh -m "<subject>" -m "<body>" -- <specific paths>
+```
+
+Equivalent by hand (also stage the current day's prompt-log file alongside your real paths):
+
+```bash
+git add <specific paths> .claude/_Prompts/logs/$(date +%F).md
 git commit -F - <<'EOF'
 <subject>
 
@@ -105,16 +112,18 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
 EOF
 ```
 
-Repeat per commit when the changes were grouped.
+Repeat per commit when the changes were grouped. Never `git add -A` / `git add .`.
 
 ### 7. Push
 
 Pushing is outward-facing. If the user's request already included "and push", that's your go-ahead. If they only said "commit", commit and then ask before pushing.
 
 ```bash
-git push                       # existing upstream
-git push -u origin <branch>    # first push of a new branch
+scripts/git/push.sh                       # current branch → origin, with timeout + retry
+git push -u origin <branch>               # first push of a new branch (sets upstream)
 ```
+
+`scripts/git/push.sh` wraps `git push` with a per-attempt timeout, an HTTP/1.1 fallback, and one retry, so a stalled connection fails fast instead of hanging. It does **not** paper over a real rejection.
 
 If the push is **rejected** (non-fast-forward, protected branch, auth), stop and report the exact error. Don't `--force`, don't auto-`pull --rebase` without the user saying so.
 
