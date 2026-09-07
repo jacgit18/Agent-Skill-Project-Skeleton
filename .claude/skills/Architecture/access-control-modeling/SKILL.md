@@ -15,7 +15,7 @@ Take a system where more than one kind of user exists, or where a resource shoul
 - Someone is deciding **where a permission check lives** — in application code, in the database (row-level security), in a policy engine (Casbin/OPA/CASL), or some combination.
 - Someone is adding **multi-tenancy** to a system that didn't have it, or building it in from the start.
 - Someone proposes a shape already-decided and wants it checked — "we'll just add an `isAdmin` boolean", "check the role in the frontend and hide the button", "filter by `tenant_id` in the app, that's enough".
-- An **audit or incident** surfaced an access problem at the application level — a user saw another tenant's data, a non-admin reached an admin-only action, a role granted more than intended.
+- An **audit or incident** surfaced an access problem at the application level — a user saw another tenant's data, a non-admin reached an admin-only action, a role granted more than intended. (A `disclosure-gap-audit` security-pass finding of a missing authz check / IDOR / weak tenant isolation lands here for the model.)
 
 ## Out of scope — hand these off
 

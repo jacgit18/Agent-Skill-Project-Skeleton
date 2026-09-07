@@ -57,6 +57,11 @@ routes the deep work to the specialist skills.
 - **Cost of reversing a decision** — how expensive a choice is to change later →
   `technical-cost-decision`. The significance filter here uses *blast radius* (how much
   breaks if this changes), which is a different axis; don't duplicate the cost analysis.
+- **Auditing a system that already exists and already makes public claims** — for the gaps
+  between what a shipped product does and what its privacy policy / cookie banner / security
+  posture disclose → `disclosure-gap-audit`. This skill states the compliance regime as an
+  input *before* the design; that skill is the post-build audit that checks the built thing
+  against its commitments. Scope here, audit there.
 
 ---
 
