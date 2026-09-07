@@ -1,14 +1,28 @@
 # Commands
 
-There is no build, lint, or test runner. The two operational commands:
+There is no build, lint, or test runner. The operational scripts live in `scripts/git/`:
 
 ```bash
-# Chunked commit + push — never puts more than N files in one push.
+# One-call repo snapshot (read-only) — replaces status + diff + diff --cached + log.
+scripts/git/state.sh
+
+# Commit: stage exactly these paths (+ auto-fold prompt logs), sanity-check the staged
+# set, append the Co-Authored-By trailer, commit. Never pushes, never `git add -A`.
+scripts/git/commit.sh -m "Subject line" -m "Optional body para" -- path/one path/two
+
+# Push with a timeout + HTTP/1.1 fallback + one retry, so a stalled push fails fast.
+scripts/git/push.sh [remote=origin] [branch=current]
+
+# Chunked commit + push — bulk file adds, never more than N files in one push.
 # Args: [batch_size=90] [branch=current] [commit_prefix="Add files"]
 scripts/git/batch-git-push.sh 50 main "Add skills"
 DRY_RUN=1 scripts/git/batch-git-push.sh            # preview only
 INCLUDE_MODIFIED=1 scripts/git/batch-git-push.sh   # also stage modified/deleted, not just untracked
 ```
+
+See `conventions.md` for the staging and prompt-log-rides-along rules these encode. The
+`commit-and-push` skill drives the conversational version (message from the diff, branch
+guard, confirm-before-push); these scripts are the mechanism it calls.
 
 Two hooks run automatically (wired in `.claude/settings.json`), both defensive by design —
 always exit 0, never block, only touch their own output:
