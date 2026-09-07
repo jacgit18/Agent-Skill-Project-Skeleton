@@ -31,7 +31,8 @@ change-surface-audit   →  walk ONE proposed change across 6 surfaces, classify
       ├─ scaling change sizing                           →  data-tier-operations
       ├─ API versioning scheme / DTO shape               →  api-interface-style
       ├─ config value's storage/rotation                 →  config-and-secrets-management
-      └─ permissions/roles/tenancy touched               →  access-control-modeling
+      ├─ permissions/roles/tenancy touched               →  access-control-modeling
+      └─ new pixel/SDK/AI call/data-sharing flow → must disclose  →  disclosure-gap-audit
 ```
 
 `change-surface-audit` runs against **one concrete, already-decided change**. Its

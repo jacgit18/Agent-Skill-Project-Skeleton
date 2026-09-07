@@ -52,6 +52,9 @@ document should do.
 - **A deep security audit** — the security category here is a coarse enumeration (is there
   an obvious auth gap, an over-exposed endpoint, a secret in the wrong place). A real
   threat model / pen-test / STRIDE pass is a separate, deeper exercise; name it and defer.
+  Gaps between what the product *does* and what it *discloses or secures* — undisclosed data
+  practices, a missing privacy control, a policy that doesn't match the build → that's
+  `disclosure-gap-audit`, not an operational failure mode.
 - **The blast radius of one already-decided add/modify/remove change** — "what could this
   specific change break", "is this a breaking change", "we're removing this endpoint" →
   `change-surface-audit`. That skill is reactive to one concrete, already-proposed change
