@@ -28,8 +28,14 @@ document-page-check  →  is this document whole, readable, and correctly number
                         before anything else is built on its contents
 ```
 
-No sibling overlaps today. Nearest neighbours by theme:
+No sibling overlaps that fight. Nearest neighbours by theme:
 
+- **`Documents/codebase-file-orientation`** — the other `Documents/` skill, and the exact
+  opposite direction: it *produces* an orientation doc about a source-code file, this
+  *checks* a paginated document that is about to be consumed. They share a group, not a
+  request — tested CLEAN 2026-09-07. On "document how our module implements section 4 of
+  this PDF" they chain: page-check the PDF section, then `codebase-file-orientation` (or
+  `explaining-my-work`) writes the code side.
 - **`Prompts/ambiguity-gate`** — fires when a *request* is ambiguous. This fires on a
   *document* being unreliable. A "summarize this PDF" request that's clear but backed by a
   truncated file is this skill's case, not ambiguity-gate's.
