@@ -70,11 +70,12 @@ coverage-policy      →  coverage metric / target % / exclusions / CI enforceme
 test-practice-gate   →  the charter you state before Claude writes a test          (gate)
 ```
 
-### Documents — pre-flight checks on files before using them
+### Documents — producing and checking document files
 
 | Skill | Role |
 |---|---|
 | [`Documents/document-page-check`](.claude/skills/Documents/document-page-check/) | Integrity check for a paginated document (PDF / EPUB) before Claude reads, quotes, or summarizes it — confirms the file is complete and untruncated, flags blank / image-only pages, resolves the printed-vs-physical page-number offset, and spot-checks the citations an answer will lean on. Emits a report, then asks whether to gate or proceed. A mechanical pre-flight, not a reasoning gate. |
+| [`Documents/codebase-file-orientation`](.claude/skills/Documents/codebase-file-orientation/) | Procedure (not a gate) that authors or reconciles a per-file companion **orientation doc** for a source file just created or substantially changed — a sidecar `.md` (matched to the repo's own doc convention) covering the file's role, entry points, dependencies in/out, and non-obvious gotchas. Complementary to inline comments, not a replacement. Author mode fills the template and flags what it can't trace; Reconcile mode diffs an existing doc against the current file and proposes a patch. |
 
 ### Finance — personal/business-finance decisions
 
