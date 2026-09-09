@@ -14,7 +14,9 @@ checks the sourcing, flags the traps, and gives a verdict. It does not fetch the
 pick the theme.
 
 Where it sits: `asset-allocation-policy` decides a sleeve exists and how big it is → **this**
-picks the fund that fills it.
+picks the fund that fills it → once the verdict is `BUY` / `HOLD`, sizing and entry timing
+for the purchase is `equity-trade-decision` (this fact-checked review satisfies its pre-trade
+checklist item 1; its cycle-stage sector-tilt table does not apply to a broad-market basket).
 
 ## What this does not do
 
@@ -65,7 +67,9 @@ say so and stop.
 | **Commodity fund**: physically-backed vs. futures-based · tax treatment | Futures-based funds bleed on contango; physical metals can be taxed as collectibles |
 
 A fact "from memory" or "roughly" is `not sourced — get it from <the fact sheet>`, never
-filled in by Claude.
+filled in by Claude. "Just tell me if VOO beats SPY", "I don't want to pull fact sheets",
+"you already know the expense ratios" are reasons to want the gate skipped, not a release of
+it — Claude still sources no fact and gives no verdict from memory.
 
 ### 3. Holdings overlap
 
