@@ -362,6 +362,19 @@ Update database / File output
   - Demo video (5-10 min walkthrough)
   - Architecture diagram
   - API documentation
+- **Role:** the skills-practice sandbox — where the production-AI patterns are learned
+
+#### 1b. AI Investment Advisor (Second Primary Piece — the "real utility" one)
+- **Standalone project**, sequenced beside dashboard polish in Months 6–9. Full plan:
+  `curriculum/journals/project-3-plan.md`.
+- **What it is:** an AI advisor that runs my own `.claude/skills/Finance/` decision gates
+  (allocation policy, exit rules, thesis audit, weekly review, …) against a real portfolio.
+  Claude gathers and tracks each gate's sourced inputs; the gate discipline is preserved —
+  the system never emits a buy/sell/size verdict, the user records the decision.
+- **Tech Stack:** reuses the dashboard's (FastAPI, SQLAlchemy, Postgres/SQLite, Claude API)
+- **Reuses:** every pattern from the dashboard arc — chat, structured output, tool-calling,
+  RAG — pointed at holdings the user actually manages
+- **Deployed:** local-first / single-user (holds real financial positions)
 
 #### 2. Four Learning Project Repos (Secondary Pieces)
 
