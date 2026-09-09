@@ -5,6 +5,65 @@ reads this first so it never re-flags something already resolved. Newest entry o
 
 ---
 
+## 2026-09-09 — manual run (post the 8-skill Finance batch, PRs #22–#29)
+
+Run against `main` after PRs #22–#29 merged (the whole `Finance/` equity system:
+`portfolio-thesis-audit`, `position-exit-rules`, `covered-call-decision`,
+`watchlist-screener-criteria`, `weekly-portfolio-review`, `equity-research-writeup`,
+`asset-allocation-policy`, `etf-selection`). PR #30 (a Finance README pipeline diagram) open,
+not yet merged. Triggered by the user after `/sync-catalog` flagged two unlisted skills.
+
+**Step 1 — stale markers:** CLEAN. No `[x] Built … Memory: pending` / TODO markers in
+`SKILL-BACKLOG.md`. The three `- [ ]` items in "## Loose threads" (requirements-elicitation
+cluster, event-driven-architecture pattern choice, application-internal-structure gate) are
+deliberately-open future candidates, not stale bookkeeping. The `Memory: pending` / `TODO`
+strings that grep surfaced were all prose inside `catalog-drift-audit`'s and
+`codebase-file-orientation`'s own descriptions.
+
+**Step 2 — catalog-doc sync:** 2 skills on disk with no `README.md` row, **both fixed**:
+- `Skill Development/incremental-build-pacing` — a gate; row added to the
+  "Architecture, Business, Skill Development, Git" table after `spec-drift-gate`.
+- `Architecture/tech-decision-walkthrough` — a procedure; row added after `design-scoping`.
+Both were added in the user's commits `7e0b0bd` / `4a41f06` before this session, outside the
+add-a-skill workflow. Also added `SKILL-BACKLOG.md` items 30 + 31 (reconciliation entries).
+All 8 new Finance skills (items 22–29) have rows, backlog entries, and memory files —
+clean.
+
+**Step 3 — dead references:** CLEAN. Every backticked hyphenated skill-name token in a
+`SKILL.md` resolves to a real directory (the `Architecture/Data/` subgroup —
+`caching-strategy`, `database-architecture`, `data-tier-operations`, `dimensional-modeling`,
+`index-tuning`, `relational-modeling` — is real, just one level deeper than a naive
+`maxdepth 3` scan). Cross-cutting gates all resolve. Matches the `/sync-catalog` run's result.
+
+**Step 4 — untested-pair backfill:** recent work is covered — all 8 Finance skills carry a
+`skill-interaction-testing` result in memory (`skill-added-*.md`), and the
+`tech-decision-walkthrough` × `watchlist-screener-criteria` pair was tested during item 25.
+FLAGGED, not fixed: `incremental-build-pacing` and `tech-decision-walkthrough` have **no
+recorded isolation screen or interaction test** — they shipped wired into many siblings'
+descriptions but with no memory record of a test. Hand to `skill-interaction-testing` Step 2
+onward if revisited (candidate pools noted in backlog items 30/31). The 2026-09-06 run's
+`session-handoff` flag was already resolved that same day.
+
+**Step 5 — starvation-by-neglect:** CLEAN. All 8 new Finance skills are pointed at by 6–11
+sibling `SKILL.md` files. `incremental-build-pacing` / `tech-decision-walkthrough` are
+heavily referenced (not starved — their gap was doc bookkeeping only). `reddit-researcher`
+remains referenced by nothing but is a standalone tool with no gate collision surface — same
+non-finding as the 2026-09-06 run.
+
+**Applied:** the 2 `README.md` rows + the 2 `SKILL-BACKLOG.md` reconciliation entries,
+directly. **Flagged (judgment call, not resolved):** the missing retroactive interaction
+test for `incremental-build-pacing` and `tech-decision-walkthrough`.
+
+**Separate, noted not fixed:** `README.md`'s top "## Layout" table still lists vault
+directories that aren't tracked in this repo (`Architecture/`, `Communication/`,
+`Business Venture/`, `Goals/`, `Books/`, `READ DELETE/`) — the same drift `.claude/rules/repo-map.md`
+already documents. Out of scope for this skill (it's a hand-written prose section, not a
+catalog cross-reference); left for a human.
+
+Memory: `catalog-drift-audit-2026-09-09.md`.
+
+---
+
 ## 2026-09-06 — manual run (post `_Other/` triage + `prompt-authoring`)
 
 Run against `main` after PRs #11/#12 merged and the prior session's uncommitted catalog docs

@@ -362,6 +362,18 @@ See [README.md](README.md) "Adding a skill".
 - **Still floated, not built:** `tax-aware-selling` (lot selection, wash-sale window, LT/ST, low-income-year LTCG harvesting) — lower priority, possibly a `weekly-portfolio-review` mode rather than standalone.
 - Memory: `skill-added-etf-selection.md`.
 
+### 30. `incremental-build-pacing` — added outside the workflow, reconciled by the 2026-09-09 drift audit
+
+- [x] On disk since commits `7e0b0bd` / `4a41f06` (user's own "added and updated skill" commits, before the 2026-09-09 Finance batch). Full `SKILL.md` + `README.md` + `increment-delivery.md`. **A gate** (delivery cadence): for an already-planned build the user wants to follow as it's assembled, withholds the one-turn batch, sets an increment size + checkpoint cadence, delivers one piece at a time with a comprehension check before each advance. Governs cadence, not scope — `spec-drift-gate` / `design-scoping` settle the slice first; `learning-gate` Step 3 routes here.
+- **Bookkeeping status:** wired into the catalog — referenced by `learning-gate` (Step 3 row + `guided-walkthrough.md` + the don't-stack paragraph), `spec-drift-gate`, `problem-solving-gates`, `tech-decision-walkthrough`, `system-design-communication`. Was missing from `README.md` (added by this audit — Skill Development row) and from this backlog (this entry). No memory file, and **no recorded isolation screen or `skill-interaction-testing` run** — FLAGGED for a retroactive interaction test if revisited (hand to `skill-interaction-testing` Step 2 onward; likely pool: `learning-gate`, `spec-drift-gate`, `design-scoping`, `guided-walkthrough.md` case, `problem-solving-gates`).
+- Group: `Skill Development/`. Source: a `how-to` fold thread + the `_Other/` triage lineage (see item 27-era notes / `skill-folds-other-directory.md`), plus fresh authoring — not fully traced.
+
+### 31. `tech-decision-walkthrough` — added outside the workflow, reconciled by the 2026-09-09 drift audit
+
+- [x] On disk since commits `7e0b0bd` / `4a41f06` (same as item 30). Full `SKILL.md` + `README.md` + `decision-loop.md`. **A procedure**, not a gate: coached conversational walk through a build's technology choices one decision at a time (interview-style), each ending in a recommendation + the user's call + a short ADR; depth scales with blast radius, load-bearing decisions route into the specialist Architecture skill. Downstream of `design-scoping`, upstream of `spec-drift-gate` → `incremental-build-pacing`. Two registers (collaborative / interviewer) set by `learning-gate`'s assistance level.
+- **Bookkeeping status:** heavily wired — referenced by `learning-gate` (Step 3 row + line-59 clause + don't-stack paragraph), `design-scoping`, `problem-solving-gates`, `system-design-communication`, `api-interface-style`, `technical-cost-decision`, and `watchlist-screener-criteria` (a carve-out added during item 25). Was missing from `README.md` (added by this audit — Architecture row) and this backlog (this entry). No memory file, **no recorded isolation screen or `skill-interaction-testing` run** — FLAGGED for a retroactive interaction test if revisited (likely pool: `design-scoping`, `problem-solving-gates` Options Generator, `system-design-communication` Mode 3, `incremental-build-pacing`, the specialist Architecture skills, `technical-cost-decision`).
+- Group: `Architecture/`. Source: fresh authoring around the `learning-gate` "walk me through the stack" Step 3 thread — not fully traced.
+
 ---
 
 ## Fold into existing skills — reference material, no new skill
