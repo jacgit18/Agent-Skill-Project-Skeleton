@@ -1,6 +1,6 @@
 ---
 name: weekly-portfolio-review
-description: Use for the recurring, structured operational pass over a brokerage account — "do my weekly review", "run the portfolio check", "what do I need to look at this week", "weekly portfolio review" — not the one-off "should I sell this" question. Also fires on a diagnostic framing — "I keep skipping my review", "things fall through the cracks", "my weekly process isn't working" — by walking the seven steps and the red-flags list to find where the process is breaking. It is a procedure, not a gate: it needs concrete inputs (the current holdings with cost basis / price / % of book; each position's written thesis and exit rules on file, or a flag that they're missing; any covered calls written, with strike and expiration; a forward calendar of earnings, ex-dividend, and option-expiration dates; the date of the last review) and then runs a fixed seven-step walk — positions vs. thesis, stops still valid, options expiring, earnings and events ahead, allocation drift vs. each position's size ceiling, watchlist names in range, and what changed since last review. It does not make the decisions: every finding is surfaced and tagged with the skill that owns the follow-up — `portfolio-thesis-audit` for a shaky thesis, `position-exit-rules` for a missing or stale stop, `covered-call-decision` for an expiring call, `equity-trade-decision` for a watchlist name that's ready, a trim flag for a position over its ceiling. It runs on a calendar cadence on purpose — so the review happens when the user is calm, not only when a position drops and disposition-effect bias is strongest. Not `portfolio-thesis-audit` — that is the full per-position keep/sell audit this review flags positions *for*; "which of these should I sell" routes there, "run my weekly check" stays here. A bare "review my portfolio" / "tell me what to do with my holdings" with no cadence signal is `portfolio-thesis-audit` (or `ambiguity-gate` if the intent itself is unsettled); this skill needs a recurring / periodic / weekly framing to fire. Not portfolio construction or target-allocation design. Not the scheduling/automation infrastructure itself — this defines the content of the review; a Python/yfinance script produces the raw data it consumes. Not a bare conceptual question — "how should I review a portfolio" with no holdings is `learning-gate`. Not a substitute for a financial advisor.
+description: Use for the recurring, structured operational pass over a brokerage account — "do my weekly review", "run the portfolio check", "what do I need to look at this week", "weekly portfolio review" — not the one-off "should I sell this" question. Also fires on a diagnostic framing — "I keep skipping my review", "things fall through the cracks", "my weekly process isn't working" — by walking the seven steps and the red-flags list to find where the process is breaking. It is a procedure, not a gate: it needs concrete inputs (the current holdings with cost basis / price / % of book; each position's written thesis and exit rules on file, or a flag that they're missing; any covered calls written, with strike and expiration; a forward calendar of earnings, ex-dividend, and option-expiration dates; the date of the last review) and then runs a fixed seven-step walk — positions vs. thesis, stops still valid, options expiring, earnings and events ahead, allocation drift vs. each position's size ceiling and vs. the `asset-allocation-policy` bands (asset-class, sector, theme, geography) when a policy exists, watchlist names in range, and what changed since last review. It does not make the decisions: every finding is surfaced and tagged with the skill that owns the follow-up — `portfolio-thesis-audit` for a shaky thesis, `position-exit-rules` for a missing or stale stop, `covered-call-decision` for an expiring call, `equity-trade-decision` for a watchlist name that's ready, a trim flag for a position over its ceiling. It runs on a calendar cadence on purpose — so the review happens when the user is calm, not only when a position drops and disposition-effect bias is strongest. Not `portfolio-thesis-audit` — that is the full per-position keep/sell audit this review flags positions *for*; "which of these should I sell" routes there, "run my weekly check" stays here. A bare "review my portfolio" / "tell me what to do with my holdings" with no cadence signal is `portfolio-thesis-audit` (or `ambiguity-gate` if the intent itself is unsettled); this skill needs a recurring / periodic / weekly framing to fire. Not portfolio construction or target-allocation design — that's `asset-allocation-policy`; step 5 checks drift against its bands and routes there when no policy exists. Not the scheduling/automation infrastructure itself — this defines the content of the review; a Python/yfinance script produces the raw data it consumes. Not a bare conceptual question — "how should I review a portfolio" with no holdings is `learning-gate`. Not a substitute for a financial advisor.
 ---
 
 # Weekly Portfolio Review
@@ -65,7 +65,12 @@ this is information for steps 1–3, not an action on its own.
 
 Any position now above its size ceiling (from its exit rules) → **trim flag**. Current cash
 %. Largest position as a share of the book. This is a guardrail check, not a rebalancing
-model — it flags the ceiling breach and stops.
+model — it flags the breach and stops.
+
+Book vs. the `asset-allocation-policy` bands — asset-class targets, per-sector, per-theme,
+geography: any band breached → **flag for `asset-allocation-policy`**. No allocation policy
+on file at all → **flag for `asset-allocation-policy`** to build one; until then drift has
+nothing to measure against.
 
 ### 6. Watchlist
 
@@ -96,6 +101,8 @@ Action items — each tagged with the skill that owns the follow-up:
                             | re-write vs stop>
   [equity-trade-decision]   <TICKER> — cleared the screen <date>, in range, capital available
   [trim]                    <TICKER> — <pct>% of book, over the <pct>% ceiling
+  [asset-allocation-policy]  <which band drifted: asset-class / sector / theme / geography |
+                            no allocation policy on file>
 
 Event calendar — through <next review date>:
   <date> <TICKER> earnings   ·   <date> <TICKER> ex-div   ·   <date> <exp> option expiration
@@ -122,6 +129,7 @@ user's own Automate / Don't-automate split.
 | Earnings / ex-div / expiration calendar pull | Whether to trim a ceiling breach now or wait |
 | Covered-call ITM/OTM status, days to expiry | Sizing any new entry (step 6) |
 | "Over ceiling" and cash-% flags | Editing an exit rule (that's `position-exit-rules`) |
+| Position / sector / asset-class % vs. the `asset-allocation-policy` bands | Whether to act on a band breach (`asset-allocation-policy` owns the rule) |
 | The since-last-review diff of the holdings table | — |
 
 A script that starts *making* the step-1/3/5 decisions has crossed the line — the review
