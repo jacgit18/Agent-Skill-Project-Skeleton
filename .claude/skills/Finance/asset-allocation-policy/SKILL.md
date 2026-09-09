@@ -24,7 +24,13 @@ risk quiz.
   house defaults `position-exit-rules` rule 3 points at.
 - **Pick which names to research.** `watchlist-screener-criteria` → `equity-research-writeup`.
   This policy decides *how much* goes to individual names versus index funds versus the active
-  sleeve, not which ones.
+  sleeve, not which ones — and not which specific fund or ticker fills a sleeve (expense
+  ratio, tracking error, SPY-vs-VOO is a separate fund-selection question).
+- **Execute a rebalance.** Which lots to sell, in what order, today — that follows the
+  trigger and the tax-aware ordering this policy *sets*. `weekly-portfolio-review` step 5
+  flags the drift that fires one.
+- **Allocate a purchase price across the assets of a business being acquired.** That's
+  `seller-financing-evaluation` — a different meaning of "allocation".
 - **Optimise tax-advantaged contributions.** Backdoor Roth mechanics, capturing an employer
   match, the order to fund accounts — separate territory. This policy places the accounts in
   the capital map and routes new taxable contributions; it doesn't sequence the funding.
@@ -33,6 +39,9 @@ risk quiz.
   names a CPA for specifics.
 - **Answer a bare conceptual question.** "What's a 60/40 portfolio", "how does rebalancing
   work" with no real portfolio is `learning-gate`.
+- **Disambiguate a vague ask.** "Get my portfolio in order", "sort out my investments" —
+  that's `ambiguity-gate` first; this takes the set-the-target-shape reading once it's
+  settled.
 - **Draft a formal Investment Policy Statement for a third party.** This produces the user's
   own working policy, not a legal document.
 
@@ -66,8 +75,13 @@ risk quiz.
    for moving capital between them.
 
 If inputs 1–4 are missing, ask for them and **stop** — an allocation off a risk-tolerance
-label alone is the thing this skill exists to prevent. "Just tell me a good split" is a
-reason to want the gate skipped, not a release of it.
+label alone is the thing this skill exists to prevent. "Just tell me a good split", "a rule
+of thumb for someone my age", "60/40 is fine, right?" are reasons to want the gate skipped,
+not a release of it.
+
+If the user only wants **one band** — a single-name cap requested mid-`position-exit-rules`,
+say — don't run the full five-input gate: give that one number from the concentration stance
+if it's stated, or ask only for the stance, and note the rest of the policy is unset.
 
 Claude's contribution once the inputs are in: check the policy the user builds is **complete**
 (all six areas below), **internally consistent** (equity sub-splits sum to the equity target;
