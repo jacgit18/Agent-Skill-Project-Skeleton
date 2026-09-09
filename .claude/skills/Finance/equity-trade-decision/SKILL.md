@@ -1,6 +1,6 @@
 ---
 name: equity-trade-decision
-description: Use when a specific stock trade is on the table — a real ticker, a real entry price, real capital — and someone wants to know whether to enter it, how many shares, or whether a proposed position size is sane. Triggers include "should I buy X here", "how many shares of X should I buy", "is this position too big", "what's my risk on this trade", a stated entry/stop/capital figure to size against, or a cycle-stage/sector-tilt question tied to an actual trade decision. Forces three things in sequence: a pre-trade checklist (fundamentals, technical trend, relative performance, entry timing) that must be answered before a share count is produced; a named economic-cycle stage with at least two cited indicators — never asserted on vibes — before any sector tilt is applied; and the position size computed via risk-budget-divided-by-per-share-risk, never eyeballed, with the risk budget (money that could be lost) kept explicitly separate from the position cost (money actually spent) — the two numbers get conflated in casual reasoning, and this skill's own source material made exactly that error. Not for options, day-trading, or leveraged/aggressive income strategies — those carry different risk math this skill doesn't cover; name the gap and stop. Not portfolio-level diversification-vs-concentration policy, not a retirement-account or insurance-product decision (Backdoor Roth, Infinite Banking, death-benefit sizing — different skills' territory), not a substitute for a financial advisor, and not a bare conceptual question about how position sizing or sector rotation works with no real trade behind it — that's `learning-gate`. Not for judging whether to keep or exit a position already held, or whether to add to a losing one — reviewing an existing holding against its thesis is `portfolio-thesis-audit`; this skill takes over only once a fresh entry (including a re-entry after an exit) with a real price, stop, and capital is on the table.
+description: Use when a specific stock trade is on the table — a real ticker, a real entry price, real capital — and someone wants to know whether to enter it, how many shares, or whether a proposed position size is sane. Triggers include "should I buy X here", "how many shares of X should I buy", "is this position too big", "what's my risk on this trade", a stated entry/stop/capital figure to size against, or a cycle-stage/sector-tilt question tied to an actual trade decision. Forces three things in sequence: a pre-trade checklist (fundamentals, technical trend, relative performance, entry timing) that must be answered before a share count is produced; a named economic-cycle stage with at least two cited indicators — never asserted on vibes — before any sector tilt is applied; and the position size computed via risk-budget-divided-by-per-share-risk, never eyeballed, with the risk budget (money that could be lost) kept explicitly separate from the position cost (money actually spent) — the two numbers get conflated in casual reasoning, and this skill's own source material made exactly that error. Not for options, day-trading, or leveraged/aggressive income strategies — those carry different risk math this skill doesn't cover; name the gap and stop. Not portfolio-level diversification-vs-concentration policy, not a retirement-account or insurance-product decision (Backdoor Roth, Infinite Banking, death-benefit sizing — different skills' territory), not a substitute for a financial advisor, and not a bare conceptual question about how position sizing or sector rotation works with no real trade behind it — that's `learning-gate`. Not for judging whether to keep or exit a position already held, or whether to add to a losing one — reviewing an existing holding against its thesis is `portfolio-thesis-audit`; this skill takes over only once a fresh entry (including a re-entry after an exit) with a real price, stop, and capital is on the table. The stop it sizes against is what `position-exit-rules` produces as its hard price stop — if no stop exists yet, that skill builds it (along with the thesis-invalidating events and the size ceiling) before this one sizes anything.
 ---
 
 # Equity Trade Decision
@@ -30,6 +30,9 @@ guessed, and never confused with the dollar amount actually spent.
   whether to add to a losing one, is `portfolio-thesis-audit`. A buy framed as "average down"
   or "lower my cost basis" on a name already held runs that audit first — this skill sizes
   the add only once a fresh thesis justifies it.
+- **Build the stop / the exit rules.** The hard price stop this skill sizes against — plus
+  the thesis-invalidating events and the size ceiling — is produced by `position-exit-rules`.
+  If no stop is set yet, run that skill first; don't accept an ad-hoc number here.
 
 ---
 
@@ -116,7 +119,9 @@ name), the fix is a tighter stop or a hard capital cap — not silently spending
 risk budget while calling it the same calculation.
 
 If no stop-loss is set, say so and stop — per-share risk and everything downstream of it
-cannot be computed without one. "I'll set a mental stop" is not a number.
+cannot be computed without one. "I'll set a mental stop" is not a number. Building that stop
+is `position-exit-rules` (its hard price stop is exactly this input) — route there rather
+than prompting for a bare number.
 
 ---
 
