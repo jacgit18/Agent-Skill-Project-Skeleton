@@ -24,8 +24,9 @@ risk quiz.
   house defaults `position-exit-rules` rule 3 points at.
 - **Pick which names to research.** `watchlist-screener-criteria` → `equity-research-writeup`.
   This policy decides *how much* goes to individual names versus index funds versus the active
-  sleeve, not which ones — and not which specific fund or ticker fills a sleeve (expense
-  ratio, tracking error, SPY-vs-VOO is a separate fund-selection question).
+  sleeve, not which ones — and not which specific fund fills a sleeve: picking or re-checking
+  the fund itself (expense ratio, tracking difference, holdings overlap, SPY-vs-VOO) is
+  `etf-selection`.
 - **Execute a rebalance.** Which lots to sell, in what order, today — that follows the
   trigger and the tax-aware ordering this policy *sets*. `weekly-portfolio-review` step 5
   flags the drift that fires one.

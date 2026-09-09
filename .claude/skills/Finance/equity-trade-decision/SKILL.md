@@ -36,6 +36,10 @@ guessed, and never confused with the dollar amount actually spent.
 - **Build the stop / the exit rules.** The hard price stop this skill sizes against — plus
   the thesis-invalidating events and the size ceiling — is produced by `position-exit-rules`.
   If no stop is set yet, run that skill first; don't accept an ad-hoc number here.
+- **Choose or vet the ETF itself.** For an ETF / index-fund purchase the fund is chosen and
+  fact-checked in `etf-selection` — that review satisfies pre-trade checklist item 1, and the
+  cycle-stage sector-tilt table does not apply to a broad-market basket. This skill still
+  runs the risk-budget position sizing.
 
 ---
 
