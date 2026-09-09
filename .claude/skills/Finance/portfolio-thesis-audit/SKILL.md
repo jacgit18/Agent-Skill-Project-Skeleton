@@ -39,7 +39,8 @@ re-examines positions already held.
   skill activates once actual positions are named.
 - **Coach the user out of a recurring pattern.** The behavioral flags here are hypotheses to
   check on *this* review; turning "I keep doing this" into a deliberate study pass is
-  `learning-gate` — not this skill, and not `problem-journal` (which is for coding errors).
+  `learning-gate` — not this skill, and not `problem-journal` (which is for coding errors). A
+  standing "I keep buying names off YouTube" process gap is `watchlist-screener-criteria`.
 - **Build a missing exit rule.** When a holding's thesis is intact but it has no exit
   condition, that is a RESEARCH REQUIRED verdict routed to `position-exit-rules` — this skill
   flags the gap, it does not write the rule.
