@@ -18,10 +18,10 @@ Ask for what's missing and note it; the walk can run partially, but gaps get fla
 
 1. **Holdings** — per position: ticker, shares, cost basis, current price, unrealized P&L,
    % of the portfolio. (This is the "portfolio dashboard" data — a script can produce it.)
-2. **Thesis + exit rules on file** — for each position, the written thesis
-   (`portfolio-thesis-audit`) and the exit rules (`position-exit-rules`: hard stop,
-   thesis-invalidating events, size ceiling, upside review trigger). If a position has
-   neither, that is finding #1 for it.
+2. **Thesis + exit rules on file** — for each position, the written thesis (built via
+   `equity-research-writeup`, audited by `portfolio-thesis-audit`) and the exit rules
+   (`position-exit-rules`: hard stop, thesis-invalidating events, size ceiling, upside review
+   trigger). If a position has neither, that is finding #1 for it.
 3. **Option positions** — any covered calls written: underlying, strike, expiration,
    contracts, currently ITM or OTM.
 4. **Forward calendar** — earnings dates, ex-dividend dates, and option-expiration dates for

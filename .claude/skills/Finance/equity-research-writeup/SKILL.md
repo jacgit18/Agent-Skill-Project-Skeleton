@@ -19,7 +19,9 @@ Where it sits: `watchlist-screener-criteria` (numeric filter) → **this** (the 
 ## What this does not do
 
 - **Screen for candidates.** `watchlist-screener-criteria` is the numeric pre-filter. A name
-  should clear it before a full writeup is worth the time; this skill assumes that happened.
+  should clear it before a full writeup is worth the time; this skill assumes that happened. A
+  writeup on an unscreened name is still legitimate — flag that the screen wasn't run; the
+  pre-filter just exists to reserve writeup effort for names worth it.
 - **Size or time the trade.** `equity-trade-decision` does that, *after* this. Its pre-trade
   checklist item 1 ("fundamentals reviewed") is satisfied by a completed writeup here.
 - **Re-check a held position's thesis.** `portfolio-thesis-audit` does that. "Should I still
@@ -33,7 +35,8 @@ Where it sits: `watchlist-screener-criteria` (numeric filter) → **this** (the 
 - **Analyse a private-company acquisition.** That's `seller-financing-evaluation` territory —
   no public filings, a different diligence process.
 - **Answer a bare conceptual question.** "How do I read a 10-K", "what is FCF", "how does a
-  DCF work" with no company on the table is `learning-gate`.
+  DCF work", "help me get better at analysing companies" with no company on the table is
+  `learning-gate`.
 - **Provide the financials or the analysis.** Claude's knowledge of a company is a prompt to
   go verify against the latest filing, never the source. It does not fetch data, fill in a
   figure, or write a section's content.
@@ -49,6 +52,11 @@ earnings call transcript, IR deck, a data provider — named, not "I read somewh
 If the user brings a partial draft, gap-check it against the eight sections rather than
 starting over. If they bring nothing, build it section by section — but the content is
 theirs.
+
+"Just give me the analysis", "no time to read the 10-K", "you already know this stuff" are
+reasons to want the gate skipped, not a release of it — Claude still authors no section,
+supplies no figure, and runs no valuation; prior knowledge is offered only as unverified
+pointers to check against the filing.
 
 ### 1. The business
 
@@ -124,7 +132,7 @@ Then assemble the writeup as the user's document and call out the two feed-forwa
 ## Output — the writeup
 
 ```
-Equity research writeup — <TICKER>   ·   <date>   ·   screen cleared: <date | not run — do that first>
+Equity research writeup — <TICKER>   ·   <date>   ·   screen cleared: <date | not run — flag, not a blocker>
 
 1. Business:            <user's summary>            source(s): <...>
 2. Unit economics:      <the 2–3 drivers + values>  source(s): <...>
@@ -159,7 +167,6 @@ Feeds forward:
 - A thesis that isn't falsifiable ("great company, long-term hold"), or a section 8 that
   doesn't line up clause-for-clause with section 7.
 - The writeup treated as complete while sections are still `THIN` or `UNSOURCED`.
-- A full writeup built on a name that never cleared `watchlist-screener-criteria`.
 
 ---
 
