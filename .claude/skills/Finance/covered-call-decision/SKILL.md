@@ -72,6 +72,11 @@ If any of 1–4 is missing, ask for it and **stop**. Do not name a strike off as
 skipped, not a pass through it — report pass/fail per screen line and produce a strike only
 for a position that clears it.
 
+When the position is an **already-open call being managed into expiration** — roll vs. let
+assign, e.g. routed from `weekly-portfolio-review` step 3 — the share-lot, liquidity, and
+conviction lines are a confirmation, not a re-derivation; the live decision is the new
+strike/expiration versus accepting assignment.
+
 Claude's contribution once the inputs are in:
 
 - Run the **qualification screen** (below) and report pass/fail per line. A single fail on
