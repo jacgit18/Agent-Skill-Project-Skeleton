@@ -1,33 +1,42 @@
 # Agent-Skill-Project-Skeleton
 
-A reusable starting point for **system-design work driven by Claude skills**. It bundles
-three things that normally live apart:
+A reusable starting point for **decision work driven by Claude skills**. It bundles two
+things that normally live apart:
 
 1. A curated library of authored [Claude Skills](.claude/skills/) — mostly *decision gates*
-   that force a reasoning step before Claude does the work.
-2. The [`Architecture/`](Architecture/) knowledge base those skills are built from — the
-   system-design notes that supply each skill's frameworks and vocabulary.
-3. The plumbing to keep it honest — a prompt-logging hook, a batch-push script, and a
-   skill that tests every new skill against its siblings for conflicts.
+   that force a reasoning step before Claude does the work. Distilled from a separate
+   system-design / BSA / finance knowledge base that is **not** in this repo.
+2. The plumbing to keep the library honest — a prompt-logging hook, a `SessionStart`
+   drift glance, git helper scripts, and a skill that tests every new skill against its
+   siblings for conflicts.
 
-Drop this skeleton in front of a design problem and the relevant skill fires, asks for the
+Drop this skeleton in front of a decision and the relevant skill fires, asks for the
 decision or the rep it needs, and produces an ADR / model / handoff doc from there.
 
 ## Layout
 
+What's actually tracked here. The vault directories the skills were distilled from
+(`Architecture/`, `Communication/`, `Business Venture/`, `Finance/`, `Goals/`, …) are **not**
+in this repo — see [`.claude/rules/repo-map.md`](.claude/rules/repo-map.md).
+
 | Path | What's in it |
 |---|---|
-| [`.claude/skills/`](.claude/skills/) | The skill library (see below). |
+| [`.claude/skills/`](.claude/skills/) | The skill library — one directory per skill (`SKILL.md` + companion `*.md` + `README.md`). Groups listed under "The skill library" below. |
+| [`.claude/rules/`](.claude/rules/) | Topic-split repo guidance, imported by `CLAUDE.md`. Edit the rule files, not the `CLAUDE.md` list. |
+| [`.claude/commands/`](.claude/commands/) | Slash commands — `/new-skill <Group>/<name>` runs the add-a-skill workflow; `/sync-catalog` is the read-only consistency check. |
+| [`.claude/agents/`](.claude/agents/) | `spec-executor.md` (the one auto-discovered subagent) plus non-registered scaffolding subdirs. |
 | [`.claude/settings.json`](.claude/settings.json) | Wires two hooks: `UserPromptSubmit` → prompt logging, `SessionStart` → mechanical catalog-drift glance. |
-| [`.claude/_Prompts/logs/`](.claude/_Prompts/logs/) | Dated logs of every prompt submitted in the repo. |
-| [`Architecture/`](Architecture/) | System-design notes: system design, backing services, web-server architecture, design patterns, devops, networking, security, testing, 12-factor. Source material for the skills. |
-| [`Communication/Companies Worked At/`](Communication/Companies%20Worked%20At/) | BSA/agile process notes. Source material for the `Business/` and `Prompts/` group's BSA-derived skills. |
-| [`Business Venture/`](Business%20Venture/) | Startup/business-acquisition notes. Source material for the `Finance/` group. |
-| [`Finance/`](Finance/) | Personal error-log templates — `Error Log/Language Error.md` is the template `problem-journal`'s Capture mode writes into. |
-| [`Goals/`](Goals/) | Personal learning roadmap and AI-engineering framework notes. |
-| [`Books/`](Books/) | Business and tech book notes. |
-| [`scripts/`](scripts/) | `hooks/log-prompt.sh`, `hooks/catalog-drift-check.sh`; `git/state.sh`, `git/commit.sh`, `git/push.sh`, `git/land.sh`, `git/batch-git-push.sh`. |
-| `READ DELETE/` | Pre-reorg flat copies of skills, kept for diffing. Slated for deletion. |
+| [`.claude/_Prompts/`](.claude/_Prompts/) | `catalog-audit-log.md` — the durable `catalog-drift-audit` trail (committed). `logs/YYYY-MM-DD.md` — per-prompt logs, **gitignored**, local only. |
+| `README.md` · `SKILL-BACKLOG.md` · `CLAUDE.md` | Catalog index (one row per skill) · skill-candidate ledger (`[x] Built` + test results inline) · agent-guidance entry point. |
+| [`scripts/`](scripts/) | `hooks/` (`log-prompt.sh`, `catalog-drift-check.sh`) and `git/` (`state.sh`, `commit.sh`, `push.sh`, `land.sh`, `batch-git-push.sh`). |
+| [`template/`](template/) | `skill-template/` scaffold (copy to `.claude/skills/<Group>/<name>/`) + `spec-system/agent-spec-template.md`. |
+| [`adr/`](adr/) | Architecture decision records for the repo's own conventions. |
+| [`Artifact/`](Artifact/) | Talking points / catalog write-ups for external posts. |
+| [`Books/`](Books/) | Business and tech book notes — source material some skills draw on. |
+| [`curriculum/`](curriculum/), [`.superpowers/sdd/`](.superpowers/sdd/) | A separate spec-driven learning-portfolio project (specs, plans, task briefs/reports). Unrelated to the skill catalog. |
+| [`Other/Misc/`](Other/Misc/) | A few imported third-party skills kept around but **not** integrated into the catalog. |
+| [`.out-of-scope/`](.out-of-scope/) | Short notes on skill ideas evaluated and deliberately ruled out. |
+| `.claude-plugin/plugin.json` | A copied-in plugin manifest (`mattpocock-skills`); references skills not in this repo — vestigial. |
 
 ## The skill library
 
