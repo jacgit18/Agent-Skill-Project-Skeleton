@@ -1,6 +1,6 @@
 ---
 name: covered-call-decision
-description: Use when someone holds at least 100 shares of a stock and is considering selling (writing) covered calls against it for premium income — "should I write calls on X", "what strike and expiration", "how much premium can I get from my AMZN shares", "covered call to generate income on this position", or a stated income target the user wants covered-call premium to hit. It is a gate: before any strike or expiration is recommended it runs a qualification screen (100+ shares; a liquid options chain with a tight bid/ask and real open interest; the user genuinely willing to be assigned — sell the shares — at a realistic strike; the strike can sit at or above the user's own price target so the call isn't written against their own thesis; the position is not the highest-conviction "let it run" name; the tax character of an assignment sale is understood — long-term vs short-term, and the account is taxable vs tax-advantaged). Only if it qualifies does it produce the strike (relative to the price target and to assignment probability), the expiration (days-to-expiry, earnings-date and ex-dividend early-assignment considerations), how many contracts of the position to write against, the premium math (premium received, as a % of underlying, annualized with the explicit caveat that it is neither guaranteed nor downside protection beyond the premium amount, breakeven, static return vs. if-assigned return), and the assignment outcome (cash received, the realized capital gain and its tax character, that the thesis position is then closed, wash-sale timing if re-entry is wanted). Not `equity-trade-decision` — that skill sizes and enters a long-equity position and explicitly excludes options; this is the options skill it hands off to. Not `portfolio-thesis-audit` — that judges whether to keep the shares at all; run it first, then this decides whether to write calls on what survives. Not `position-exit-rules` — that defines the equity exit; an assignment is an options-driven exit this skill owns, and it consumes that skill's price target as the floor for strike selection. Not cash-secured puts, credit/debit spreads, the wheel, naked or multi-leg options, buying calls or puts, or LEAPS — covered calls only (long 100+ shares, short calls against them); name the gap and stop. Not a full options tutorial ("what is theta", "how is an option priced") — that's `learning-gate`. Not tax or legal advice — it flags the long-term/short-term and wash-sale issues and names a CPA for specifics. Not a substitute for a financial advisor.
+description: Use when someone holds at least 100 shares of a stock and is considering selling (writing) covered calls against it for premium income — "should I write calls on X", "what strike and expiration", "how much premium can I get from my AMZN shares", "covered call to generate income on this position", a stated income target the user wants covered-call premium to hit, or a diagnostic framing — "my covered calls keep getting assigned right before a pullback", "this isn't working, what am I doing wrong" — which re-runs the screen against the next write (strike vs. target, expiration vs. earnings, wrong position). It is a gate: before any strike or expiration is recommended it runs a qualification screen (100+ shares; a liquid options chain with a tight bid/ask and real open interest; the user genuinely willing to be assigned — sell the shares — at a realistic strike; the strike can sit at or above the user's own price target so the call isn't written against their own thesis; the position is not the highest-conviction "let it run" name; the tax character of an assignment sale is understood — long-term vs short-term, and the account is taxable vs tax-advantaged). Only if it qualifies does it produce the strike (relative to the price target and to assignment probability), the expiration (days-to-expiry, earnings-date and ex-dividend early-assignment considerations), how many contracts of the position to write against, the premium math (premium received, as a % of underlying, annualized with the explicit caveat that it is neither guaranteed nor downside protection beyond the premium amount, breakeven, static return vs. if-assigned return), and the assignment outcome (cash received, the realized capital gain and its tax character, that the thesis position is then closed, wash-sale timing if re-entry is wanted). Not `equity-trade-decision` — that skill sizes and enters a long-equity position and explicitly excludes options; this is the options skill it hands off to. Not `portfolio-thesis-audit` — that judges whether to keep the shares at all; run it first, then this decides whether to write calls on what survives. Not `position-exit-rules` — that defines the equity exit; an assignment is an options-driven exit this skill owns, and it consumes that skill's price target as the floor for strike selection. Not cash-secured puts, credit/debit spreads, the wheel, naked or multi-leg options, buying calls or puts, or LEAPS — covered calls only (long 100+ shares, short calls against them); name the gap and stop. Not a full options tutorial ("what is theta", "how is an option priced") — that's `learning-gate`. Not `problem-solving-gates` — that is software-only; a covered-call-strategy post-mortem ("why do my calls keep getting assigned") is this skill. Not a portfolio-wide income-strategy choice (dividends vs. bonds vs. REITs vs. an options overlay) — that disambiguation is `ambiguity-gate` first; this takes the covered-call reading once it is settled. Not tax or legal advice — it flags the long-term/short-term and wash-sale issues and names a CPA for specifics. Not a substitute for a financial advisor.
 ---
 
 # Covered Call Decision
@@ -53,9 +53,13 @@ The user supplies:
    review trigger) or stated in `portfolio-thesis-audit`. If there is no view, that's a gap
    to close first: a covered call is a bet the stock stays below the strike, which requires
    having a view.
-3. **Willingness to be assigned.** A direct answer to: "would you be genuinely fine selling
-   these shares at strike $K?" If the honest answer is no at any strike the market pays a
-   worthwhile premium for, the position does not qualify — say so.
+3. **Willingness to be assigned, and conviction level.** A direct answer to: "would you be
+   genuinely fine selling these shares at strike $K?" plus whether this is a stable /
+   fully-valued / lower-conviction holding or the highest-upside name in the book. If the
+   honest answer is "no, I want to keep it" at any strike the market pays a worthwhile
+   premium for — or this is the top-conviction position — it does not qualify. Chasing a
+   near-the-money premium to hit an income target *is* a decision to sell the stock; name
+   that when it's what's happening.
 4. **Options-market quality.** Is there a liquid chain — a tight bid/ask (cents, not dollars,
    on liquid names), real open interest and volume at the strikes being considered? If the
    user doesn't know, that check comes before a recommendation, not after.
@@ -64,6 +68,9 @@ The user supplies:
    the premium is not guaranteed income.
 
 If any of 1–4 is missing, ask for it and **stop**. Do not name a strike off assumed inputs.
+"Just tell me the strike and the premium, skip the screening" is a reason to want the screen
+skipped, not a pass through it — report pass/fail per screen line and produce a strike only
+for a position that clears it.
 
 Claude's contribution once the inputs are in:
 
@@ -108,6 +115,10 @@ Expiration:            <n> days out  ·  <before / after> the next earnings date
                        (<intentional | avoid — earnings move can blow through the strike>)
                        ex-dividend <date> falls <inside | outside> this window → <early-
                        assignment risk around it | none>
+Qualified-CC check:    OTM, >30 days out, not deep in-the-money → holding period keeps
+                       running, dividends stay qualified. A deep-ITM or very short-dated
+                       call can suspend the holding period and unqualify dividends for the
+                       option's life. <OK | FLAG>
 Contracts:             <n>  (covers <n×100> of <total> shares — <all | a portion, leaving
                        <n> uncovered to keep some upside>)
 
