@@ -15,6 +15,7 @@ interrogation. The gate is cheap and it is bounded: it produces at most one ques
 | Reference, lookup, factual question, casual conversation | **Answer.** Skip the rest of this skill. Do not manufacture ambiguity to seem thorough. |
 | The request is clearly to **design, architect, or redesign a system or feature** (intent settled; scope not) | **Hand to `design-scoping`.** It owns the functional / non-functional / scale-target / deep-dive decomposition — don't ask a framing question on top of its gate. (Same precedent as `test-practice-gate`.) **Unless** the ask already names a backlog artifact — "write user stories/use cases for the X redesign" routes to `user-story-decomposition` instead, which owns that gate. |
 | The request is clearly to **write, rewrite, or improve a prompt** (intent settled; which prompt / what's wrong with it not) | **Hand to `prompt-authoring`.** It runs its own targeted-question step before producing the finished prompt — don't ask a prompt-shaping question on top of its gate. |
+| The request is clearly to **review or prune a set of already-held investment positions** (intent settled; which to keep / sell / research not) | **Hand to `portfolio-thesis-audit`.** It runs its own per-position thesis / validity / exit gate — don't ask a framing question on top of it. |
 | Code, specs, plans, schemas, migrations, written deliverables — anything where a wrong reading means work gets **redone** | Continue to Step 2. |
 
 ## Step 2: Missing information is not ambiguity
