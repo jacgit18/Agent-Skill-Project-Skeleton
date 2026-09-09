@@ -1,6 +1,6 @@
 ---
 name: watchlist-screener-criteria
-description: Use when someone wants to decide, in advance and as numbers, which stocks are even worth researching — the filter that runs before a name reaches `equity-trade-decision` — or wants to run a specific candidate through that filter. Triggers include "help me set up screening criteria", "what filters should I use to find stocks", "I keep hearing about names from YouTube and want a real process", "does TICKER pass my screen", "should this stock make my watchlist", or a stated candidate whose only backing is a video, a tip, or product familiarity. Two modes. **Define** — the user commits to a screen: a stated investing style (value / quality-compounder / growth / momentum / dividend), then a small set of criteria, each a metric + a numeric threshold + a direction + one line on why the user believes it predicts returns, plus a hard-disqualifier list. Claude checks each criterion is numeric and checkable, that they cohere around the stated style, and that there are enough to actually filter — it does not hand the user a screen. **Screen** — a specific ticker is run against an existing screen: the user brings the metric values from a real data source (Claude does not fetch or estimate fundamentals), and gets pass/fail per line, an overall verdict (add to watchlist / proceed to `equity-trade-decision` / reject), and an explicit flag when a narrative-sourced candidate is failing the filters — the exact pattern the screen exists to stop. If no screen exists yet, Screen mode gates back to Define. Not `equity-trade-decision` — that is the next stage, a specific trade with a real entry, stop, and capital; this decides whether a name earns that work at all. Not `portfolio-thesis-audit` (positions already held) or `position-exit-rules` (exits). Not a stock-picking service — it does not run the screen against the market and return names; the user screens in their own tool and brings candidates. Not backtesting — whether these criteria historically produced returns is a separate quantitative exercise; name it, don't fake it. Not portfolio construction or diversification policy. Not a bare conceptual question — "what is the F-score", "what P/E is considered cheap" with no screen being built is `learning-gate`. Not a substitute for a financial advisor.
+description: Use when someone wants to decide, in advance and as numbers, which stocks are even worth researching — the filter that runs before a name reaches `equity-trade-decision` — or wants to run a specific candidate through that filter. Triggers include "help me set up screening criteria", "what filters should I use to find stocks", "I keep hearing about names from YouTube and want a real process", "does TICKER pass my screen", "should this stock make my watchlist", or a stated candidate whose only backing is a video, a tip, or product familiarity. Two modes. **Define** — the user commits to a screen: a stated investing style (value / quality-compounder / growth / momentum / dividend), then a small set of criteria, each a metric + a numeric threshold + a direction + one line on why the user believes it predicts returns, plus a hard-disqualifier list. Claude checks each criterion is numeric and checkable, that they cohere around the stated style, and that there are enough to actually filter — it does not hand the user a screen. **Screen** — a specific ticker is run against an existing screen: the user brings the metric values from a real data source (Claude does not fetch or estimate fundamentals), and gets pass/fail per line, an overall verdict (add to watchlist / proceed to `equity-trade-decision` / reject), and an explicit flag when a narrative-sourced candidate is failing the filters — the exact pattern the screen exists to stop. If no screen exists yet, Screen mode gates back to Define. Not `equity-trade-decision` — that is the next stage, a specific trade with a real entry, stop, and capital; this decides whether a name earns that work at all. Not `portfolio-thesis-audit` (positions already held) or `position-exit-rules` (exits). Not a stock-picking service — it does not run the screen against the market and return names; the user screens in their own tool and brings candidates. Not backtesting — whether these criteria historically produced returns is a separate quantitative exercise; name it, don't fake it. Not portfolio construction or diversification policy. Not a bare conceptual question — "what is the F-score", "what P/E is considered cheap" with no screen being built is `learning-gate`. Not `problem-solving-gates` Options Generator or `tech-decision-walkthrough` — those cover software and architecture choices; picking a screening style ("value / quality / momentum — which?") is Define mode here. Not screening whole private businesses to acquire — public-equity tickers only; an owner-financed purchase's structure is `seller-financing-evaluation`. Not a substitute for a financial advisor.
 ---
 
 # Watchlist Screener Criteria
@@ -133,6 +133,16 @@ A candidate that surfaced from a narrative **and** passes the screen is fine —
 did its job. A candidate that fails and whose only backing is narrative is a reject, and the
 skill says so directly.
 
+A screen stated inline in the same message counts as an existing screen — run Screen mode
+against it. Offer any coherence or missing-disqualifier feedback as a note; don't gate back
+to a full Define pass to make the point.
+
+**The intake log.** Every candidate gets one row somewhere the user keeps — name, how it
+surfaced, date, pass/fail per criterion, the decision. A rejected name goes on a rejected
+list and is not re-litigated the next time it surfaces on a video unless something material
+actually changed (then re-run it fresh). This is what makes the screen a process rather than
+a one-off vet.
+
 ---
 
 ## Red flags — the screen isn't real
@@ -140,7 +150,9 @@ skill says so directly.
 - Criteria with no number ("cheap", "high quality", "growing") — that is a vibe with a
   metric's name on it.
 - Claude having supplied the thresholds. The user owns the screen or it isn't theirs to
-  trust.
+  trust. "Just give me a good screen" / "I don't want to design my own from scratch" is a
+  reason to want the gate skipped, not a release of it — the user picks the style and commits
+  the thresholds.
 - A screen whose lines don't cohere around any single style — it will pass nothing or
   everything.
 - No hard-disqualifier list.
