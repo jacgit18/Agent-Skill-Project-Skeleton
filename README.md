@@ -92,6 +92,22 @@ test-practice-gate   →  the charter you state before Claude writes a test     
 | [`Finance/asset-allocation-policy`](.claude/skills/Finance/asset-allocation-policy/) | Gate for the whole-book target shape every position-level Finance skill defers. Withholds an allocation recommendation — and refuses target %s off a risk quiz — until the user supplies the capital map (runway vs. investable, by account), the withdrawal plan as a % of the pool (income vs. drawdown), risk capacity vs. tolerance, and an explicit concentrated-vs-diversified stance. Then the user commits a six-area policy (asset-class targets + bands, equity sub-splits, position-sizing bands, diversification limits, tax-aware rebalancing, contribution routing); Claude checks completeness + internal consistency and stress-tests it against the withdrawal plan. Its single-name cap is the house default `position-exit-rules` rule 3 uses; its bands are what `weekly-portfolio-review` step 5 checks drift against. |
 | [`Finance/etf-selection`](.claude/skills/Finance/etf-selection/) | Gate for choosing / comparing / re-checking a specific ETF or index fund by ticker. Withholds a hold/buy/swap verdict until the user assigns the fund an `asset-allocation-policy` sleeve and pulls its real facts from the issuer fact sheet (expense ratio, holdings + top-10 weight, AUM/volume, multi-year tracking difference, structure, ROC/yield, age; duration + YTM for a bond fund; physical-vs-futures + tax for a commodity fund), plus a holdings-overlap check against every adjacent holding and a why-this-tilt-why-now + decay check for any non-core thematic fund. Claude structures, flags the traps, and gives a verdict; it never fetches fund data, picks a theme, or sizes the sleeve. The funds counterpart to `equity-research-writeup`; feeds `equity-trade-decision` for sizing. |
 
+```
+Equity pipeline — each stage a gate, running inside the one above:
+
+asset-allocation-policy      whole-book target shape — the frame the rest operates inside     (gate)
+  watchlist-screener-criteria  numeric pre-filter: does a name earn research?   Define/Screen  (gate)
+    equity-research-writeup    8-section thesis writeup for one company                        (gate)
+    etf-selection              fact-sheet evaluation for one fund                              (gate)
+      position-exit-rules      price stop + invalidating events + size cap, before entry      (gate)
+        equity-trade-decision  size and enter, inside the allocation bands                    (gate)
+covered-call-decision        premium income on a held 100-share lot                           (gate)
+weekly-portfolio-review      recurring pass — routes each finding to the skill that owns it   (procedure)
+portfolio-thesis-audit       re-check a held position's thesis → hold / exit / research       (gate)
+
+seller-financing-evaluation  a seller-financed *business* purchase — not equities             (gate)
+```
+
 ### Health — musculoskeletal recovery decisions
 
 | Skill | Role |
