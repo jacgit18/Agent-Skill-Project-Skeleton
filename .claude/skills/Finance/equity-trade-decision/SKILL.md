@@ -22,8 +22,10 @@ guessed, and never confused with the dollar amount actually spent.
   50 is a portfolio-construction stance, not a single-trade decision — this skill sizes *one*
   position against *one* risk tier and stops there. That stance, and the position-sizing
   bands this trade must fit inside, are `asset-allocation-policy`.
-- **Retirement-account or insurance-product decisions.** Backdoor Roth mechanics, Infinite
-  Banking timing, death-benefit sizing — separate territory, not a stock trade.
+- **Retirement-account or insurance-product decisions.** Which account gets the next
+  contribution dollar, employer-match capture, backdoor-Roth sequencing —
+  `retirement-contribution-sequencing`. Infinite Banking timing, death-benefit sizing —
+  separate, unowned territory. None of these are a stock trade.
 - **Replace a financial advisor.** Names when a real trade thesis needs more research than a
   checklist can verify; never asserts a fundamentals read it hasn't actually seen.
 - **Answer a bare conceptual question.** "How does position sizing work" with no real

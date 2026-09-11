@@ -25,10 +25,13 @@ proposed close are computed, not assumed.
   amortization schedules with no utilization concept and no "close the account" lever. Name
   the gap; this skill is revolving (credit-card) debt only.
 - **Route capital between debt paydown and investing.** A high-APR balance competing with the
-  emergency-fund target — or with a retirement contribution — for the next dollar is a real
-  tension this skill names (an APR above what the portfolio can reliably earn after tax is
-  usually the stronger claim on the dollar) but does not resolve against the investable pool;
-  that's `asset-allocation-policy`'s capital map.
+  emergency-fund target for the next dollar is a real tension this skill names (an APR above
+  what the portfolio can reliably earn after tax is usually the stronger claim on the dollar)
+  but does not resolve against the investable pool; that's `asset-allocation-policy`'s capital
+  map. The same tension against a **retirement contribution** specifically — an unclaimed
+  employer match still comes first regardless, but beyond that a high-APR balance usually
+  outguns the rest of the sequence — is named the same way but resolved in
+  `retirement-contribution-sequencing`, not here.
 - **Debt consolidation loan or balance-transfer mechanics in depth.** It flags the shape (a
   lower blended APR vs. a transfer fee and a promotional-rate cliff) and stops; it does not
   underwrite a specific loan or card offer.
