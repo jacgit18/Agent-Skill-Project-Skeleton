@@ -141,7 +141,10 @@ Premium math:
 Assignment outcome:
   You end with:        $<strike × 100 × contracts> cash, shares gone
   Realized gain:       $<(strike − cost basis) × shares covered>  ·  tax character <LT | ST>
-                       — this is a real tax event in a taxable account
+                       — this is a real tax event in a taxable account. If the covered shares
+                       span more than one tax lot, which lot(s) actually get called — and the
+                       real gain and its LT/ST character — is `tax-lot-selection`'s call, not
+                       assumed here; this line is a single-lot estimate.
   Thesis position:     closed. Re-entry is a fresh equity-trade-decision; if buying back
                        within 30 days of a loss leg elsewhere, watch the wash-sale rule.
 
