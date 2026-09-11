@@ -35,6 +35,11 @@ risk quiz.
 - **Optimise tax-advantaged contributions.** Backdoor Roth mechanics, capturing an employer
   match, the order to fund accounts — separate territory. This policy places the accounts in
   the capital map and routes new taxable contributions; it doesn't sequence the funding.
+- **Decide revolving credit-card debt.** A high-APR card balance competes with the runway
+  target and new contributions for the same next dollar — a real tension worth naming (an APR
+  above what the pool can reliably earn after tax is usually the stronger claim) — but the
+  per-card numbers, payoff order, and any close/consolidate call are `debt-credit-management`'s
+  gate, not this policy's.
 - **Give tax or legal advice.** It flags the tax-aware rebalancing order (new money and
   dividends first, then tax-advantaged accounts, then taxable only on a bad band breach) and
   names a CPA for specifics.
@@ -55,7 +60,15 @@ risk quiz.
    bill, tuition inside ~3 years — out of the investable pool), and the **investable pool**,
    itself broken out by account: taxable brokerage, Roth / IRA, 401(k). Tax treatment changes
    what belongs where (income-heavy and high-turnover assets lean tax-advantaged; long-hold
-   equity and municipals lean taxable), so the accounts are named, not merged.
+   equity and municipals lean taxable), so the accounts are named, not merged. **For each
+   account, also name who actually controls the picks inside it: self-directed** (the user
+   chooses the holdings), **robo-managed** (an automated allocator — e.g. Wealthfront — picks
+   and rebalances the funds), or **employer-managed** (a 401(k) target-date fund or a plan
+   with a fixed menu). This is not cosmetic: a specific holding inside a robo- or
+   employer-managed account is that provider's decision, not the user's — grading its fund
+   overlap (`etf-selection`) or thesis (`portfolio-thesis-audit`) as if the user chose it is
+   the wrong frame. An account with no control type named defaults to "assume self-directed"
+   only after the user is asked and declines to check — never silently.
 2. **Withdrawal plan and horizon.** When money comes out and how much per year, stated as a
    figure and a % of the investable pool. Reconcile it out loud: a withdrawal rate the
    portfolio's expected return can't sustain is a **drawdown plan**, not an income plan — say
@@ -104,7 +117,9 @@ CAPITAL MAP
   Runway / emergency (not investable):   $<n>   — never a buy/rebalance source
   Near-term need (< ~3y, not investable): $<n>   — <what for>
   Investable pool:                        $<n>
-    Taxable brokerage:  $<n>     Roth/IRA:  $<n>     401(k):  $<n>
+    Taxable brokerage:  $<n>  <self-directed | robo-managed | employer-managed>
+    Roth/IRA:            $<n>  <self-directed | robo-managed | employer-managed>
+    401(k):               $<n>  <self-directed | robo-managed | employer-managed>
   Withdrawal plan:      $<n>/yr  = <pct>% of the pool  →  <income plan | drawdown plan>
   Risk capacity:        <can/can't take a 40% equity drawdown for 2y and stay solvent>
   Concentration stance: <CONCENTRATED — cap <pct>%/name, <n>–<n> names | DIVERSIFIED —
@@ -161,6 +176,8 @@ Stress test:        <the target vs. capacity/withdrawal: OK | MISMATCH <what to 
   active sleeve whose dollar cap exceeds its stated %.
 - Runway or near-term-need money folded into the investable pool, or named as a rebalance
   source.
+- An account's control type left unstated, so a robo- or employer-managed holding gets graded
+  (overlap, thesis, "should you sell this") as if the user picked it themselves.
 - A rebalancing rule with a trigger but no tax-aware ordering, or no ordering at all.
 - The policy treated as a one-time answer — no review date, no contribution-routing rule.
 - A target that fails the stress test (capacity can't support the equity weight) left

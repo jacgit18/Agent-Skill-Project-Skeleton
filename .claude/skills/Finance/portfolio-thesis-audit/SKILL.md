@@ -32,7 +32,10 @@ re-examines positions already held.
   and stops there. It does not set or judge the target shape of the whole book — that's
   `asset-allocation-policy`.
 - **Tax-advantaged autopilot accounts.** An IRA / 401(k) in broad index or target-date funds
-  has no per-position thesis to audit — leave it out of the review.
+  has no per-position thesis to audit — leave it out of the review. This extends to any
+  robo-managed account (e.g. a Wealthfront Roth) regardless of tax treatment: check the
+  control type in `asset-allocation-policy`'s capital map before auditing a specific holding
+  inside it — a robo's pick is the provider's decision, not a thesis the user owns.
 - **A held sector / factor / thematic fund.** It *does* carry a tilt thesis (why this
   exposure, why now) — but that check is `etf-selection`, not a stock-style thesis audit run
   here. A held broad-core index fund has no thesis by design.
