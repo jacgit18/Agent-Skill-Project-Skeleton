@@ -30,6 +30,11 @@ checklist item 1; its cycle-stage sector-tilt table does not apply to a broad-ma
   index fund has no per-position thesis by design; a held sector / factor / thematic fund's
   tilt thesis is checked *here*.
 - **Pick individual bonds, a robo-advisor, or a whole managed portfolio.** Out of scope.
+- **Grade a robo- or employer-managed account's fund as the user's own pick.** Check the
+  account's control type in `asset-allocation-policy`'s capital map first. Inside a
+  robo-managed account (e.g. Wealthfront), the specific fund is the provider's algorithm's
+  choice, not the user's — a holdings-overlap or expense-ratio flag there is a question about
+  whether the provider/account still fits the sleeve, not "should you swap this ETF".
 - **Do in-depth fund-tax mechanics.** It flags return-of-capital distributions, the
   futures-fund tax treatment, and the physical-metal collectibles rate; it names a CPA for
   the specifics.
