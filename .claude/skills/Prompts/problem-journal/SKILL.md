@@ -46,7 +46,8 @@ the natural chain (capture while debugging, journal once fixed) is common and co
   pattern.** No error signature to grep, and the Capture template doesn't fit. Naming and
   learning from it is `learning-gate`; for held positions, `portfolio-thesis-audit` raises it
   as a hypothesis during the audit; "I keep buying names off tips or videos" specifically is
-  `watchlist-screener-criteria` (build the numeric pre-filter).
+  `watchlist-screener-criteria` (build the numeric pre-filter); "I keep missing my employer
+  match / messing up the funding order" is `retirement-contribution-sequencing`.
 - **Screenshots or non-text attachments** — the template has a slot for them; leave it as
   `N/A (text-only session)` rather than fabricating a description of an image that wasn't
   provided.
