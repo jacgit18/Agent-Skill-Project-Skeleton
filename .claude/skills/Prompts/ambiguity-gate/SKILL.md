@@ -17,6 +17,7 @@ interrogation. The gate is cheap and it is bounded: it produces at most one ques
 | The request is clearly to **write, rewrite, or improve a prompt** (intent settled; which prompt / what's wrong with it not) | **Hand to `prompt-authoring`.** It runs its own targeted-question step before producing the finished prompt — don't ask a prompt-shaping question on top of its gate. |
 | The request is clearly to **review or prune a set of already-held investment positions** (intent settled; which to keep / sell / research not) | **Hand to `portfolio-thesis-audit`.** It runs its own per-position thesis / validity / exit gate — don't ask a framing question on top of it. |
 | The request is clearly to **clean up, sort out, or decide what to do with a set of credit cards** (intent settled; close / consolidate / pay-off-order not) | **Hand to `debt-credit-management`.** It runs its own per-card table and goal-naming gate — don't ask a framing question on top of it. |
+| The request is clearly to **backtest a trading strategy on historical data** (intent settled; ticker / entry-exit rule / timeframe / sizing not) | **Hand to `strategy-backtest-design`.** It runs its own five-input gate and offers a sourced parameter menu — don't ask a framing question on top of it. |
 | Code, specs, plans, schemas, migrations, written deliverables — anything where a wrong reading means work gets **redone** | Continue to Step 2. |
 
 ## Step 2: Missing information is not ambiguity
