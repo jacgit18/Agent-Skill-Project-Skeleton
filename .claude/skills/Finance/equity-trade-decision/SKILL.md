@@ -1,7 +1,7 @@
 ---
 name: equity-trade-decision
 description: |-
-  Decide a specific stock trade — real ticker, entry, capital: whether to enter, how many shares, or size sanity. Triggers: "should I buy X here", "how many shares", "is this position too big", "what's my risk on this trade". Forces three things in sequence: a pre-trade checklist (fundamentals, trend, relative strength, entry timing) before a share count; a named economic-cycle stage with 2+ cited indicators — never on vibes — before a tilt; and position size as risk-budget divided by per-share-risk, risk budget kept separate from position cost. Not options, day-trading, or leveraged income — name the gap and stop; writing calls on the shares is `covered-call-decision` (enter here first). Not allocation policy (`asset-allocation-policy` sets the bands this fits inside), not keep/exit of a held position (`portfolio-thesis-audit`), not the stop it sizes against (`position-exit-rules`), not pre-screening a tip-sourced name (`watchlist-screener-criteria`), not backtest sizing (`strategy-backtest-design`).
+  Decide a specific stock trade — real ticker, entry, capital: whether to enter, how many shares, or size sanity. Triggers: "should I buy X here", "how many shares", "is this position too big", "what's my risk on this trade". Forces three things in sequence: a pre-trade checklist (fundamentals, trend, relative strength, entry timing) before a share count; a named economic-cycle stage sourced from `macro-cycle-read` — never asserted here from a vibe or a lone indicator — before a tilt; and position size as risk-budget divided by per-share-risk, kept separate from position cost. Not options, day-trading, or leveraged income — name the gap; covered calls are `covered-call-decision` (enter here first). Not allocation policy (`asset-allocation-policy` sets the bands), not keep/exit of a held position (`portfolio-thesis-audit`), not its stop (`position-exit-rules`), not tip-sourced pre-screening (`watchlist-screener-criteria`), not backtest sizing (`strategy-backtest-design`).
 ---
 
 # Equity Trade Decision
@@ -64,10 +64,10 @@ Pre-trade checklist:
                            IPO day — avoid | clean entry, no timing flag>
 
 Cycle stage:               <post-recession recovery | recovery momentum | mid-cycle expansion |
-                           late-cycle/peak | recession/contraction> — evidence: <the ≥2
-                           indicators actually cited (GDP direction, unemployment trend, yield
-                           curve, Fed policy direction, credit spreads) — never asserted with
-                           zero indicators named>
+                           late-cycle/peak | recession/contraction> — evidence: <the stage +
+                           evidence table handed off from `macro-cycle-read` (≥3 of 5 sourced
+                           categories) — never asserted here from the user's own claim or a
+                           bare indicator count>
 Sector tilt:                <this stock's sector> is <favored | neutral | disfavored> for the
                            named stage → <why, from the table below>
 
@@ -145,11 +145,13 @@ than prompting for a bare number.
 | **Late-cycle / peak** | Inflation firming, yield curve flattening, input costs rising | Energy — demand and pricing power peak late | Rate-sensitive growth names |
 | **Recession / contraction** | GDP contracting, unemployment rising, credit spreads widening | Consumer staples, utilities, healthcare, essential services — defensive, inelastic demand | Cyclicals (industrials, discretionary, energy) |
 
-A cycle-stage call with zero cited indicators is a guess wearing a framework's clothes. Two
-named, current indicators (not "the economy feels shaky") is the minimum bar before a sector
-tilt gets applied. A stock that sits in a disfavored sector for the named stage isn't
-automatically a pass — it's a prompt to weight the checklist and risk sizing more
-conservatively, not an automatic veto.
+The stage call itself comes from `macro-cycle-read` — it sources real, current values across
+≥3 of 5 evidence categories (yield curve, labor, leading activity, credit, inflation) before
+naming a stage; run it first if the stage isn't already in hand. This table only applies the
+resulting stage to a sector tilt — it never re-derives or accepts a user-asserted stage on its
+own ("we're clearly late-cycle," two indicators recited from memory) as a substitute. A stock
+that sits in a disfavored sector for the named stage isn't automatically a pass — it's a prompt
+to weight the checklist and risk sizing more conservatively, not an automatic veto.
 
 ---
 
@@ -184,7 +186,8 @@ independent of whatever the position-size math says.
   it.
 - Risk budget and position cost used interchangeably, or position cost computed by dividing
   the risk budget by the entry price instead of the per-share risk.
-- A cycle stage named with no indicators cited, or sector tilt applied as if it alone settles
+- A cycle stage named with no indicators cited, accepted from the user's own unsourced claim
+  instead of run through `macro-cycle-read`, or a sector tilt applied as if it alone settles
   the trade.
 - A pre-trade checklist item marked done without having actually been checked.
 - No stop-loss stated, with sizing math produced anyway by assuming one.
