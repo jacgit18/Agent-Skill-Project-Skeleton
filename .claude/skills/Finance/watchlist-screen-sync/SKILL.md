@@ -1,7 +1,7 @@
 ---
 name: watchlist-screen-sync
 description: |-
-  Run a candidate ticker through the user's committed watchlist screens and file the result into the matching Webull watchlist(s): the general screen routes to Screen Passed / Screen Rejected; five style screens (Deep Value, Quality Compounder, Growth, Momentum, Dividend Income) each route to their own "AI [Style]" watchlist, and one ticker can land on several if it clears more than one. Use for "screen TICKER", "does TICKER pass, add it", "run the style screens", "run the style-watchlist review". Not the whole-account weekly walk (positions/stops/options/calendar/allocation) — that's `weekly-portfolio-review`; this only re-checks style-watchlist tickers against their own criteria. Not for changing the criteria themselves (needs the user's sign-off), sizing/entering a trade (`equity-trade-decision`), or the full thesis writeup (`equity-research-writeup`) — this only decides pass/fail and filing.
+  Run a candidate ticker through the user's committed watchlist screens and file the result into the matching Webull watchlist(s), OR discover new candidates itself via Webull's market-scan tools when a style watchlist is empty or thin. General screen routes to Screen Passed/Rejected; five style screens (Deep Value, Quality Compounder, Growth, Momentum, Dividend Income) each route to their own "AI [Style]" watchlist — a ticker can land on several. Use for "screen TICKER", "does TICKER pass, add it", "find me some [style] candidates", "run discovery", "run the style screens", "run the style-watchlist review". Discovery is the one case here where Claude sources tickers and fetches their values itself — every user-named screen still requires the user's own sourced values. Not the whole-account weekly walk — that's `weekly-portfolio-review`. Not for changing the criteria (needs sign-off), sizing/entering a trade (`equity-trade-decision`), or the full thesis writeup (`equity-research-writeup`).
 ---
 
 # Watchlist Screen Sync
@@ -193,13 +193,89 @@ currently on any of the five style watchlists:
 6. Summarize: tickers flagged per style, tickers newly added this week (and
    which watchlists), any INCOMPLETE screens still pending data.
 
+**The weekly unattended routine also runs Candidate discovery (below) after this re-check
+pass**, one run per style, so the five watchlists don't stay empty between manual visits.
+Same 10-candidates-per-style cap, same auto-file-on-pass behavior, same full-funnel report —
+nothing about discovery loosens or shortcuts when it runs unattended instead of on request.
+
+## Candidate discovery
+
+**The one exception to "Joshua supplies the values."** Every other mode above assumes a
+ticker already exists to screen — the whole catalog's house rule ("Claude does not fetch,
+look up, or estimate a company's fundamentals," per `watchlist-screener-criteria`) exists to
+stop Claude replacing Joshua's own sourcing. Discovery is different: there is no candidate to
+bring yet, so this mode sources tickers from Webull's own real market-scan tools and fetches
+their financials itself — the same real-data-not-memory standard the weekly review pass
+already uses unattended, just run on demand instead of on a schedule.
+
+Triggers: "find me some Growth candidates", "run discovery for Momentum", "scan for new Deep
+Value names", "the watchlists are empty, find something", or the weekly routine's own
+discovery phase (below).
+
+### Per-style candidate sourcing — honest about tool coverage
+
+Webull's scanners map cleanly onto three styles and only loosely onto two. Don't oversell the
+weaker two as equally rigorous:
+
+| Style | Scanner tool(s) used for the raw candidate pool | Coverage |
+|---|---|---|
+| Dividend Income | `Webull:get_high_dividend`, sorted by `YIELD` | **Strong** — near-direct match to the yield criterion |
+| Growth | `Webull:get_gainers_losers` (`rank_type: MONTH_3` or `MONTH_1`, `sort_by: CHANGE_RATIO`, `direction: DESC`) | **Strong** — price momentum as a growth proxy, verified against real EPS/revenue growth after |
+| Momentum | `Webull:get_gainers_losers` (`rank_type: MONTH_1` or `WEEK_52`, `sort_by: CHANGE_RATIO`) cross-checked against `Webull:get_most_active` for liquidity | **Strong** — this style's own criteria (RS rank, 6-month return, golden cross) are themselves price-momentum measures |
+| Deep Value | `Webull:get_market_sectors_detail` per sector, sorted by `PE_TTM` ascending, or `Webull:get_gainers_losers` sorted by `PE_TTM` ascending | **Weak proxy** — Webull has no EV/EBITDA or FCF-yield screener; a low trailing P/E is a rough stand-in, not the actual valuation metric this style uses. Lean harder on the real financial-data verification step below; expect a lower hit rate |
+| Quality Compounder | `Webull:get_market_sectors_detail` per sector, sorted by `MARKET_VALUE` descending (larger, more established names) or `Webull:get_most_active` | **Weak proxy** — no ROIC or gross-profitability screener exists; this only produces a plausible-quality universe, the real criteria table does the actual filtering |
+
+### Steps
+
+1. **Pull a raw candidate pool per style requested** — one scanner call (page size ~20–30)
+   per the table above. If no style is named, ask which, or run all five if Joshua says so
+   explicitly.
+
+2. **Pre-filter before spending real financial-data calls:**
+   - Drop any ticker already on that style's watchlist, on Screen Rejected, or already
+     evaluated this run for a different style's discovery pass.
+   - Drop anything below a basic liquidity floor (near-zero volume, a penny-stock price) —
+     this is a sanity filter, not a criterion; it doesn't replace the style's own table.
+   - Cap the survivors at **10 candidates per style per run**. More than that turns one
+     discovery run into a market-wide scan and burns an unbounded number of tool calls; if
+     the raw pool has more plausible names than that, take the top 10 by the scanner's own
+     sort order.
+
+3. **Pull real financials for each survivor** via Webull's data tools
+   (`get_financial_indicators`, `get_income_statement`, `get_balance_sheet`, `get_cash_flow`,
+   `get_stock_quotes`, `get_52_week_high_low`, `get_stock_bars_single`, or similar) — fetched,
+   never estimated or reasoned out. A value that genuinely isn't available is
+   `data not available`, not a guess.
+
+4. **Run each survivor through its style's criteria table** exactly as written above —
+   same bar as a user-named candidate, no loosened threshold because it came from a scan.
+
+5. **File passers** using the same duplicate-check-then-add steps as the main flow (Steps 3–4
+   above): confirm not already present, then `Webull:add_watchlist_instruments` into that
+   style's watchlist.
+
+6. **Report the whole funnel, not just the winners** — raw pool size, how many were
+   pre-filtered out and why, how many got full financials pulled, pass/fail per evaluated
+   candidate with the failing criterion named, and which were filed. A discovery run that
+   found nothing is a valid, reportable outcome — don't pad it.
+
+A request to skip the financials pull, or file a survivor before it's actually run through
+the criteria table, is the same class of override as loosening a threshold — it doesn't get a
+pass because the candidate came from a scan instead of Joshua. "Just add the first one that
+looks decent" is a reason to want Steps 3–4 skipped, not a release of them.
+
 ## What this does not do
 
 - Does not define, loosen, or reinterpret any criterion — see the Define-mode
-  note at the top.
-- Does not pull metric values from any data source itself — Joshua supplies
-  them, or names the source to check.
+  note at the top, and note discovery evaluates candidates against the same tables, not a
+  looser bar.
+- Does not pull metric values itself for a user-named screen — Joshua supplies
+  them there, or names the source to check. Discovery (above) and the unattended weekly
+  routine are the two named exceptions, and only for sourcing/fetching, never for loosening
+  the pass bar.
 - Does not size, price, or execute a trade on any passed name.
 - Does not write the thesis for a passed name (`equity-research-writeup`).
+- Does not backtest a filed candidate — that's `strategy-backtest-design`, once a specific
+  entry/exit rule is named.
 - Does not remove a name from any watchlist automatically — every removal is
   a manual `Webull:remove_watchlist_instruments` call after Joshua confirms.
