@@ -203,6 +203,10 @@ Your AI learning integrates into agents/skills as you build. **Priority:**
 - Science layer math (linear algebra, neural networks)
 - Transformer architecture deep-dive
 - Pretraining/fine-tuning mechanics
+- Classical ML (supervised learning, regression/classification, feature engineering,
+  cross-validation) — deliberately out of scope, not an oversight. Your target roles
+  (full-stack + AI-engineering layer) don't require it; if AI QA testing (Tier 3) or a
+  specific job posting later demands it, revisit then.
 
 ### "Thin Middle Tier" (minimal theory you need)
 - Tokens & context windows (cost/truncation reasoning)
