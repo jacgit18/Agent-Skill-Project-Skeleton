@@ -1,93 +1,205 @@
 ---
 name: watchlist-screen-sync
 description: |-
-  Run a candidate ticker through the user's written watchlist screen (per `watchlist-screener-criteria`) AND automatically file the result into the matching Webull watchlist — "Screen Passed" if it clears, "Screen Rejected" if it doesn't. Use whenever the user brings a specific ticker to screen and wants the outcome actually reflected in Webull, not just reported in chat — e.g. "does TICKER pass my screen, add it if so", "run X through the screen", "screen this and track it". A bare "does TICKER pass my screen" with no Webull/tracking intent stays with `watchlist-screener-criteria` — chat-only, writes nothing. Not for defining the screen itself (`watchlist-screener-criteria` Define mode), sizing or entering a trade (`equity-trade-decision`), the full thesis writeup on a name that passed (`equity-research-writeup`), or "what order do I look at a stock in" with no ticker in view (`stock-review-order`) — this skill only decides pass/fail and where the ticker gets parked for tracking.
+  Run a candidate ticker through the user's committed watchlist screens and file the result into the matching Webull watchlist(s): the general screen routes to Screen Passed / Screen Rejected; five style screens (Deep Value, Quality Compounder, Growth, Momentum, Dividend Income) each route to their own "AI [Style]" watchlist, and one ticker can land on several if it clears more than one. Use for "screen TICKER", "does TICKER pass, add it", "run the style screens", "run the style-watchlist review". Not the whole-account weekly walk (positions/stops/options/calendar/allocation) — that's `weekly-portfolio-review`; this only re-checks style-watchlist tickers against their own criteria. Not for changing the criteria themselves (needs the user's sign-off), sizing/entering a trade (`equity-trade-decision`), or the full thesis writeup (`equity-research-writeup`) — this only decides pass/fail and filing.
 ---
 
 # Watchlist Screen Sync
 
-Bridges two things that otherwise stay disconnected: `watchlist-screener-criteria`
-(chat-only, writes nothing) and Joshua's actual Webull watchlists. A ticker that clears
-the screen should show up somewhere real, not just get typed out in a chat response he
-has to remember to act on. A ticker that fails should still be logged — not silently
-dropped — so a name that resurfaces later (another YouTube video, another tip) can be
-checked against "we already rejected this" before spending time re-litigating it.
+Bridges Joshua's committed screening criteria (general + five styles) with
+his actual Webull watchlists, so a ticker that clears a screen shows up
+somewhere real instead of just getting typed into a chat response he has to
+remember to act on. A ticker that fails still gets logged, not silently
+dropped, so it can be checked against "already screened" before being
+re-litigated.
 
-**This skill does not replace any gate.** A name landing in "Screen Passed" is not a buy
-signal. It still needs `equity-research-writeup`'s full thesis before `equity-trade-decision`
-sizes anything. This skill only automates the filing step that `watchlist-screener-criteria`
-already recommends doing by hand.
+**This skill does not replace any downstream gate.** Landing on any watchlist
+— general or style-specific — is not a buy signal. `equity-research-writeup`
+still owns the thesis, `equity-trade-decision` still owns sizing and entry.
+This skill only automates the filing step.
 
-## Precondition — a written screen must already exist
+**This skill does not define or loosen the criteria.** The thresholds below
+were committed by Joshua after an initial pass and a subsequent expert-
+literature audit he explicitly approved. Don't adjust a number, add a
+metric, or relax a disqualifier because a candidate is "close" or because it
+seems reasonable in the moment — that's a Define-mode change, and it
+requires Joshua's explicit sign-off in conversation, the same bar as any
+other screen edit.
 
-If Joshua has not defined a screen yet (style, criteria with metric/threshold/direction/why,
-disqualifiers, review cadence), gate back to `watchlist-screener-criteria` Define mode first.
-Do not run this skill against a screen that only exists in conversation memory from a prior
-session unless Joshua confirms it's still current — screens have a stated review cadence for
-a reason.
+## Webull watchlist IDs
+
+| Watchlist | ID |
+|---|---|
+| Screen Passed | `d478a39a042c4612aa3d57493121b3c1` |
+| Screen Rejected | `ffe8dc1df7344497b040f76ecf461d2f` |
+| AI Deep Value | `3157a89143694aefb8dba81fa50dcf33` |
+| AI Quality Compounder | `4af991cc1719405686c10bef335e1e74` |
+| AI Growth | `3a9ed36d4d71445f85534476c91abcd6` |
+| AI Momentum | `115ceb562bf147c990effd9d1b6f6362` |
+| AI Dividend Income | `1f248ceaf10b482d8375af7d4e3774c4` |
+
+Specific to Joshua's Webull account. If copied to
+another account, these IDs won't resolve — call `Webull:get_watchlists` to
+find or recreate equivalents and update this table.
+
+## The five committed style screens
+
+### Deep Value
+
+| Criterion | Rule |
+|---|---|
+| Valuation metric | EV/EBITDA, judged relative to the company's own sector average (no fixed absolute number) |
+| Cash-flow cross-check | EV/FCF or FCF yield, also judged relative to sector — required especially when the candidate is capital-intensive (capex/sales materially above its sector median) |
+| Safety filter | Current ratio ≥ 2, AND long-term debt ≤ net current assets (Graham's classic check) |
+
+A candidate must clear EV/EBITDA AND the FCF cross-check AND the safety
+filter to pass.
+
+### Quality Compounder
+
+| Criterion | Rule |
+|---|---|
+| ROIC | ≥ 15% |
+| Gross Profitability (gross profit ÷ total assets) | Top 30% of its industry peers |
+| Valuation check | Sector-relative EV/EBIT or FCF yield |
+| Piotroski F-Score | Disqualifier only — reject/flag if ≤ 3 or clearly deteriorating. NOT required to be ≥ 7 to pass |
+| Disqualifier — accrual check | Reject if reported profit is significantly higher than actual operating cash flow (Sloan-ratio-style red flag) |
+| Disqualifier — leverage cap | Reject if debt/EBITDA ≥ 3x |
+
+A candidate must clear ROIC AND Gross Profitability AND the valuation check
+to pass, and must not trip either disqualifier or the low F-Score tripwire.
+
+### Growth
+
+| Criterion | Rule |
+|---|---|
+| Annual EPS growth | ≥ 15% per year (3–5 year average) |
+| Revenue growth | ≥ 10% per year |
+| Valuation guardrail | PEG ratio ≤ 1.5 |
+
+A candidate must clear all three.
+
+### Momentum
+
+| Criterion | Rule |
+|---|---|
+| Relative strength vs. S&P 500 | Top 30% of all stocks (RS rank ≥ 70) |
+| 6-month price return | Top 30% of all stocks |
+| Trend confirmation | Requires a recent golden cross (50-day MA just crossed above 200-day) |
+| Regime gate for NEW adds only | Only add a new name if the S&P 500 itself is currently above its own 200-day moving average. If the broad market is below its 200-day average, do not add new Momentum names even if the ticker otherwise clears the screen — wait and re-check later |
+| Crash-risk handling for existing holdings | Flag in the weekly summary if broad-market volatility looks elevated. Does NOT trigger removal of anything already on the list |
+
+A candidate must clear RS rank AND 6-month return AND the golden cross AND
+the regime gate to be newly added.
+
+### Dividend Income
+
+| Criterion | Rule |
+|---|---|
+| Dividend yield | ≥ 3% |
+| Payout ratio (cash basis) | FCF payout ≤ 70% for regular companies; FFO/AFFO payout ≤ 90% for REITs; distributable-cash-flow payout ≤ 70% for midstream/BDCs |
+| Yield-trap flag | Anything above 8% yield is flagged as a likely trap requiring extra scrutiny — not an automatic pass, regardless of payout ratio |
+
+A candidate must clear yield AND the correct sector-appropriate cash payout
+ratio to pass. An 8%+ yield does not auto-fail, but must be called out
+explicitly as a trap risk in the result.
+
+## Structural rules
+
+- A ticker CAN land on more than one style watchlist if it independently
+  clears more than one style's criteria. Styles are not mutually exclusive
+  and are each checked separately.
+- Position-sizing note: this account caps every position at one share by its
+  existing collecting pattern, so multi-style tagging doesn't currently
+  create dollar-level concentration risk. If that pattern ever changes,
+  revisit whether an exposure cap independent of tag count is needed.
+- Weekly review: if a ticker already on a style watchlist no longer clears
+  that style's criteria on re-check, flag it in the weekly summary — do NOT
+  remove it automatically. Removal is always Joshua's manual call.
 
 ## Steps
 
-1. **Get the candidate inputs**, same as `watchlist-screener-criteria` Screen mode:
-   - The ticker.
-   - Each screen metric's value, from a named real source (broker, data provider, filing).
-     Never fetch, estimate, or reason out a value yourself. A missing value is
-     `not supplied — get it from <source>`. A value merely repeated from a video, tip, or
-     headline — with no broker/data-provider/filing behind it — is not a named real source
-     either; flag it `unverified — confirm against a real source before filing` rather than
-     running it as if sourced. This matters more here than in chat-only Screen mode, because
-     a pass here writes to a real, persistent watchlist.
-   - How the candidate surfaced (screen run, video, tip, product familiarity, headline).
+1. **Get the candidate inputs.** The ticker, plus each metric's value from a
+   named real source (broker, data provider, filing) — never fetched,
+   estimated, or reasoned out by Claude. A missing value is
+   `not supplied — get it from <source>`. A value merely repeated from a
+   video, tip, or headline — with no broker/data-provider/filing behind it —
+   is not a named real source either; flag it
+   `unverified — confirm against a real source before filing` rather than
+   running it as if sourced. This matters more here than in chat-only Screen
+   mode, because a pass here writes to a real, persistent watchlist. Also
+   note how the candidate surfaced (screen run, video, tip, headline).
 
-2. **Run Screen mode** exactly as `watchlist-screener-criteria` specifies — produce the full
-   screen-result block (criteria table, disqualifier check, pass count, verdict, informal-input
-   flag). Don't skip or compress this — the table is what makes the Webull action defensible
-   later.
+2. **Run the general screen** (per `watchlist-screener-criteria`, if Joshua
+   has one defined and wants it checked) and/or **run each of the five style
+   screens above independently** against the supplied values — whichever
+   Joshua asked for. Produce a table per screen checked: each criterion, the
+   supplied value, pass/fail, and the overall verdict. Don't skip or
+   compress this — it's what makes the Webull action defensible later.
 
-3. **Check for an existing entry first** — call `Webull:get_watchlist_instruments` on both
-   "Screen Passed" and "Screen Rejected" and confirm the ticker isn't already sitting in
-   either before filing. If it's already in the watchlist the new verdict would file it into,
-   say so and skip the redundant add; if it's in the *other* list (a prior verdict flipped),
-   flag that explicitly and confirm with the user before moving it — don't silently relocate a
-   ticker between lists on a re-run.
+3. **Check for an existing entry first** — for every watchlist a verdict would file the
+   ticker into (or out of, per the resurfaced-ticker case below), call
+   `Webull:get_watchlist_instruments` on that watchlist and confirm the ticker isn't already
+   sitting there before adding it. If it's already on the target list, say so and skip the
+   redundant add; a ticker landing on more than one style list in the same run needs this
+   check per list, not once overall.
 
-4. **Route based on verdict:**
+4. **Route based on verdict(s):**
 
-   | Verdict | Action |
+   | Result | Action |
    |---|---|
-   | `ADD TO WATCHLIST` (clears the screen, no disqualifier triggered) | `Webull:add_watchlist_instruments` with `watchlist_id: d478a39a042c4612aa3d57493121b3c1` ("Screen Passed"), `category: US_STOCK`, `symbols: [<TICKER>]` |
-   | `REJECT` (fails one or more criteria, or a disqualifier triggered) | `Webull:add_watchlist_instruments` with `watchlist_id: ffe8dc1df7344497b040f76ecf461d2f` ("Screen Rejected"), `category: US_STOCK`, `symbols: [<TICKER>]` |
-   | `INCOMPLETE` (metric values missing) | No Webull action. Report which values are still needed. Don't file it anywhere until the screen can actually be run. |
+   | General screen: `ADD TO WATCHLIST` | Add to Screen Passed (`d478a39a042c4612aa3d57493121b3c1`) |
+   | General screen: `REJECT` | Add to Screen Rejected (`ffe8dc1df7344497b040f76ecf461d2f`) |
+   | Deep Value: clears all three | Add to AI Deep Value (`3157a89143694aefb8dba81fa50dcf33`) |
+   | Quality Compounder: clears all, no disqualifier | Add to AI Quality Compounder (`4af991cc1719405686c10bef335e1e74`) |
+   | Growth: clears all three | Add to AI Growth (`3a9ed36d4d71445f85534476c91abcd6`) |
+   | Momentum: clears all four (incl. regime gate) | Add to AI Momentum (`115ceb562bf147c990effd9d1b6f6362`) |
+   | Dividend Income: clears yield + payout | Add to AI Dividend Income (`1f248ceaf10b482d8375af7d4e3774c4`), flag separately if yield > 8% |
+   | Any screen: `INCOMPLETE` (missing values) | No Webull action for that screen. Report exactly what's missing. |
 
-5. **Confirm the action taken** — name the watchlist the ticker landed in and why (pass/fail
-   summary), so the Webull change isn't a silent side effect of a chat response.
+   Use `Webull:add_watchlist_instruments` with `category: US_STOCK` and
+   `symbols: [<TICKER>]` for each watchlist the ticker clears — a ticker can
+   trigger multiple adds in the same run.
 
-6. **If a rejected ticker resurfaces later** and gets brought again for screening, check
-   "Screen Rejected" first (via `Webull:get_watchlist_instruments`) before re-running the full
-   screen — per `watchlist-screener-criteria`'s rule, a rejected name isn't re-litigated unless
-   something material actually changed. If it's already on the rejected list and nothing
-   material changed, say so directly instead of re-running the table.
+5. **Confirm every action taken** — name each watchlist the ticker landed
+   on (or didn't) and why, so nothing is a silent side effect.
+
+6. **Resurfaced tickers:** before re-running a full screen on a ticker
+   already on Screen Rejected or lacking a style pass, check via
+   `Webull:get_watchlist_instruments` first. Per `watchlist-screener-criteria`'s
+   rule, don't re-litigate unless something material actually changed —
+   say so directly if nothing has.
+
+## Style-watchlist review pass
+
+**Not the whole-account weekly review.** `weekly-portfolio-review` owns the whole-account
+walk (positions vs. thesis, stops, options expiring, earnings/ex-div calendar, allocation
+drift, watchlist names in range). This pass only re-checks tickers already sitting on a style
+watchlist against that style's own criteria — a narrower, separate cadence.
+
+Manually triggered by Joshua, or via a Claude Cowork Scheduled Task set up
+separately (Claude cannot self-schedule from this chat). For every ticker
+currently on any of the five style watchlists:
+
+1. Re-pull current metric values (Joshua supplies, or confirms the source to
+   check).
+2. Re-run that ticker against its style's table.
+3. If it still clears — no action needed.
+4. If it no longer clears — flag it in the summary with which criterion it
+   now fails. Do NOT remove it from the watchlist. Joshua decides.
+5. For Momentum specifically, also report current S&P 500 vs. its 200-day
+   average, since that gates whether *new* adds are allowed this week (it
+   does not affect existing holdings).
+6. Summarize: tickers flagged per style, tickers newly added this week (and
+   which watchlists), any INCOMPLETE screens still pending data.
 
 ## What this does not do
 
-- Does not define or modify the screen itself.
-- Does not pull metric values from any data source — Joshua supplies them.
-- Does not size, price, or execute a trade on a passed name.
-- Does not write the thesis for a passed name — that's the next stage
-  (`equity-research-writeup`), not automated here.
-- Does not remove a name from "Screen Rejected" automatically if circumstances change —
-  that's a manual `Webull:remove_watchlist_instruments` call once Joshua confirms the
-  re-run and a new verdict.
-- Does not screen an ETF or fund ticker. `watchlist-screener-criteria`'s own Screen mode
-  excludes them (`etf-selection` territory) — this skill inherits that exclusion and refuses
-  to file an ETF ticker into either watchlist.
-
-## Portability
-
-**Not repo-agnostic — the one exception in `Finance/`.** Every other skill in this group
-writes nothing and copies cleanly between repos or users. This one hardcodes two watchlist
-IDs (`d478a39a042c4612aa3d57493121b3c1` "Screen Passed", `ffe8dc1df7344497b040f76ecf461d2f`
-"Screen Rejected") specific to Joshua's Webull account (Individual Cash, 5MU64629) and
-requires the connected Webull MCP tool. Copied to another account or repo, these IDs won't
-resolve — call `Webull:get_watchlists` to find or recreate the equivalent lists and update
-this file before use.
+- Does not define, loosen, or reinterpret any criterion — see the Define-mode
+  note at the top.
+- Does not pull metric values from any data source itself — Joshua supplies
+  them, or names the source to check.
+- Does not size, price, or execute a trade on any passed name.
+- Does not write the thesis for a passed name (`equity-research-writeup`).
+- Does not remove a name from any watchlist automatically — every removal is
+  a manual `Webull:remove_watchlist_instruments` call after Joshua confirms.
