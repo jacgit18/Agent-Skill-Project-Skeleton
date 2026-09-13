@@ -1,6 +1,35 @@
 # Agents
 
-Skills are procedures inside one foreground conversation. Actual unattended-agent infra:
+Skills are procedures inside one foreground conversation. Two different mechanisms cover
+work that happens outside that conversation, and picking between them is mechanical, not a
+style preference:
+
+- **`.claude/agents/<name>.md` subagent files** (`spec-executor.md` is the one real example)
+  — auto-discovered by Claude Code, but only ever dispatched *inside a live session*: either
+  explicitly (the Agent tool, by name) or by self-invocation when an incoming request matches
+  the file's `description`. They cannot fire on their own — no session open, no dispatch, no
+  exceptions. Author one when the job is delegation: work big or isolated enough to
+  background (a different tool budget, an isolated worktree), but still something a user or
+  a running conversation triggers, in that session or a later one.
+- **Scheduled cloud routines** (created via `/schedule`, live at claude.ai/code/routines) —
+  run unattended on a cron schedule, in an isolated cloud sandbox, with no session and
+  usually no human present. They are **not files in this repo** — only a short description of
+  one, if it's worth a durable pointer, belongs in the bullet list below. Author one when the
+  job genuinely has to happen without anyone opening a session to trigger it.
+
+**Concretely: Style-Watchlist Review is a routine, not a subagent file, because the
+requirement was a timer.** The job is "re-check every ticker on the five style watchlists
+every Sunday, whether or not anyone opens Claude Code that day." A subagent file cannot do
+that — "weekly, unattended" was never on the table for that mechanism, so there was no
+tradeoff to weigh; the routine was the only mechanism that could do the job at all.
+
+(The `.claude/agents/decision-making-prioritization/` scaffolding was copied in from
+elsewhere to try the subagent mechanism out, not authored for a job here, and isn't
+registered — see `.claude/agents/README.md`. Don't read its presence, or `spec-executor.md`'s,
+as this repo having settled on subagent files as the default place new agent work goes; each
+job still gets checked against the two mechanisms above on its own terms.)
+
+Actual unattended-agent infra:
 
 - **`spec-executor`** (`.claude/agents/spec-executor.md`) — subagent that executes exactly
   one slice of an already-approved `spec-drift-gate` spec in an isolated worktree. It does
