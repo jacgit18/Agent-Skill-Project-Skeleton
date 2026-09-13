@@ -35,7 +35,11 @@ same vibes problem with an extra step.
 - **Screen the market and return names.** The user runs the screen in their own tool (a
   broker screener, Finviz, a data provider) and brings candidates. Claude defines the
   criteria structure and vets a candidate's stated numbers — it does not fetch, look up, or
-  estimate a company's fundamentals.
+  estimate a company's fundamentals. The one named exception in the catalog:
+  `watchlist-screen-sync`'s Discovery mode, which sources and fetches candidates itself via
+  Webull's own market-scan tools for its five committed style screens specifically — because
+  there, unlike here, no candidate exists yet for a human to bring. That exception doesn't
+  extend to this skill's own Define/Screen modes.
 - **Backtest the screen.** Whether these thresholds historically produced returns is a
   separate quantitative exercise. Name it as a follow-up; do not assert a screen "works"
   without it.

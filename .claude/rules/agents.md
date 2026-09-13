@@ -41,18 +41,24 @@ Actual unattended-agent infra:
   drift on a branch, opens a PR. Never pushes to `main`. Its audit trail is
   `.claude/_Prompts/catalog-audit-log.md`.
 - **Style-Watchlist Review** — a scheduled cloud routine (not in this repo; lives at
-  claude.ai/code/routines, weekly, Sunday 6pm ET). Reads the "The five committed style
-  screens" and "Style-watchlist review pass" sections of
-  `.claude/skills/Finance/watchlist-screen-sync/SKILL.md` (the sole source of truth — the
-  routine's own prompt duplicates none of the criteria) and re-checks every ticker on each
-  of the five "AI [Style]" Webull watchlists against its style's table, reporting drift back
-  in the run's own session. Deliberately read-only: it pulls each ticker's current metrics
-  itself via Webull's financial-data tools rather than waiting on a human to supply them —
-  the one unattended-specific deviation from the interactive skill — but is barred from
-  calling any Webull tool that mutates state (`add_watchlist_instruments`,
-  `remove_watchlist_instruments`, any order/trade action) and never touches this git repo
-  beyond reading that one file. Never fixes drift itself; a human decides what to do with a
-  no-longer-clearing ticker via the interactive skill.
+  claude.ai/code/routines, weekly, Sunday 6pm ET). Reads
+  `.claude/skills/Finance/watchlist-screen-sync/SKILL.md` fresh each run (the sole source of
+  truth — the routine's own prompt duplicates none of the criteria or tool mappings) and runs
+  two phases. **Phase A, read-only:** re-checks every ticker on each of the five "AI [Style]"
+  Webull watchlists against its style's criteria table, pulling current metrics itself via
+  Webull's financial-data tools (the one deviation from the interactive skill's "the user
+  supplies values" rule — no human is present to ask). **Phase B, scoped write:** runs the
+  skill's "Candidate discovery" mode per style — pulls a raw candidate pool from Webull's real
+  market-scan tools, pre-filters, caps at 10 survivors per style, pulls real financials, runs
+  the same criteria tables, and auto-files passers. This is the routine's only permitted
+  mutating action, and it's narrow on purpose: `add_watchlist_instruments`, only into the one
+  style watchlist a candidate just verified against, only after a duplicate check. Still
+  barred from `remove_watchlist_instruments`, any watchlist create/delete/update, any
+  order/trade action, and any write to this git repo. Neither phase fixes drift or removes a
+  no-longer-clearing ticker — that stays a human call via the interactive skill. First fire
+  (2026-09-13, Phase-A-only version, before Phase B existed) confirmed correct via
+  `get_run_log`: found all five watchlists genuinely empty, made zero mutating calls, sent no
+  notification since there was nothing to flag.
 
 To author a new agent, copy `template/spec-system/agent-spec-template.md` to
 `.claude/agents/<name>.md` and fill it in (the template starts with a worthiness test —
