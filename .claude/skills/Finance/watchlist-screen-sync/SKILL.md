@@ -1,7 +1,7 @@
 ---
 name: watchlist-screen-sync
 description: |-
-  Run a candidate ticker through the user's committed watchlist screens and file the result into the matching Webull watchlist(s), OR discover new candidates itself via Webull's market-scan tools when a style watchlist is empty or thin. General screen routes to Screen Passed/Rejected; five style screens (Deep Value, Quality Compounder, Growth, Momentum, Dividend Income) each route to their own "AI [Style]" watchlist — a ticker can land on several. Use for "screen TICKER", "does TICKER pass, add it", "find me some [style] candidates", "run discovery", "run the style screens", "run the style-watchlist review". Discovery is the one case here where Claude sources tickers and fetches their values itself — every user-named screen still requires the user's own sourced values. Not the whole-account weekly walk — that's `weekly-portfolio-review`. Not for changing the criteria (needs sign-off), sizing/entering a trade (`equity-trade-decision`), or the full thesis writeup (`equity-research-writeup`).
+  Run a candidate ticker through the user's committed watchlist screens and file the result into the matching Webull watchlist(s). General screen → Screen Passed/Rejected. Five style screens (Deep Value, Quality Compounder, Growth, Momentum, Dividend Income) each file to their own "AI [Style]" list — a ticker can land on several. AI Shortlist: aggregator, no own criteria — mirrors each style's top passer(s). AI Day Trade: manual-only liquidity/volatility screen (price floor, $ volume, RVOL, ATR%) — never in the unattended routine, intraday goes stale weekly. Triggers: "screen TICKER", "find [style] candidates", "run discovery", "sync the shortlist", "check TICKER for day trade". Discovery (style or day-trade) is the one exception where Claude sources/fetches values itself; every named screen still needs the user's own values. Not `weekly-portfolio-review`'s whole-account walk. Not criteria changes (needs sign-off), sizing/entry (`equity-trade-decision`), or the thesis writeup (`equity-research-writeup`).
 ---
 
 # Watchlist Screen Sync
@@ -37,6 +37,8 @@ other screen edit.
 | AI Growth | `3a9ed36d4d71445f85534476c91abcd6` |
 | AI Momentum | `115ceb562bf147c990effd9d1b6f6362` |
 | AI Dividend Income | `1f248ceaf10b482d8375af7d4e3774c4` |
+| AI Shortlist | `73b222507bd84d3b84a16e14c0d2ed72` |
+| AI Day Trade | `e1d3094ed02842d583034ee9a23f801e` |
 
 Specific to Joshua's Webull account. If copied to
 another account, these IDs won't resolve — call `Webull:get_watchlists` to
@@ -44,10 +46,11 @@ find or recreate equivalents and update this table.
 
 **"AI" in each name is a list-ownership marker, not a sector filter.** It means "Claude
 created and files into this list" — nothing more. These watchlists are NOT scoped to AI or
-tech companies; every style screen applies market-wide, across every sector, exactly as it
-would for a healthcare, industrial, financial, energy, or consumer name. Never narrow
-discovery's candidate pool to AI/tech/semiconductor names because of the list name — see the
-cross-sector sampling requirement in Candidate discovery below.
+tech companies; every style screen, the Day Trade screen, and Shortlist's aggregation apply
+market-wide, across every sector, exactly as they would for a healthcare, industrial,
+financial, energy, or consumer name. Never narrow discovery's candidate pool to
+AI/tech/semiconductor names because of the list name — see the cross-sector sampling
+requirement in Candidate discovery below.
 
 ## The five committed style screens
 
@@ -111,6 +114,77 @@ A candidate must clear yield AND the correct sector-appropriate cash payout
 ratio to pass. An 8%+ yield does not auto-fail, but must be called out
 explicitly as a trap risk in the result.
 
+## AI Shortlist — cross-style aggregator
+
+No independent criteria of its own. A ticker only ever reaches AI Shortlist by first
+clearing one of the five style tables above and holding a spot on that style's own
+watchlist — Shortlist never files a name that hasn't already earned one elsewhere.
+
+**Ranking metric per style** (used only to pick which passers are "top," never to change
+who passes):
+
+| Style | Rank by (higher/better unless noted) |
+|---|---|
+| Deep Value | Discount to sector-average EV/EBITDA — bigger discount ranks higher |
+| Quality Compounder | ROIC |
+| Growth | Revenue growth rate; PEG (lower is better) breaks ties |
+| Momentum | RS rank, then 6-month return breaks ties |
+| Dividend Income | Yield among names NOT flagged as a yield trap; lowest cash payout ratio breaks ties |
+
+**Membership rule:** at every style-watchlist review pass (manual or the weekly routine),
+after re-checking the five style lists, rank each style's currently-clearing tickers by
+that style's metric above and take the top 2. AI Shortlist's membership is the union of
+those five top-2 sets (up to 10 tickers, fewer if a style has under 2 passers). A ticker
+earns its spot via any style it's top-2 in — being top-2 for two styles at once still
+earns only one slot.
+
+**Adds are automatic, removals are flagged only** — same asymmetry as every style list
+above. A newly top-2 ticker is added via `Webull:add_watchlist_instruments` (after the
+usual duplicate check) in the same run that promotes it. A ticker that falls out of the
+top 2 for every style it qualified through is flagged in the summary ("no longer
+top-ranked for <style>") — it is NOT removed automatically. Joshua decides whether to drop
+it via `Webull:remove_watchlist_instruments`.
+
+Watchlist ID: `73b222507bd84d3b84a16e14c0d2ed72`.
+
+## AI Day Trade — manual-only liquidity/volatility screen
+
+**Never part of the unattended weekly routine.** Intraday setups are stale within hours; a
+Sunday-night batch re-check can't track something that trades on same-session volume and
+range. This screen and its Discovery mode below only run when Joshua invokes them himself,
+in-session.
+
+| Criterion | Rule |
+|---|---|
+| Price floor | ≥ $5 — avoids penny-stock/manipulation-prone names |
+| Average dollar volume (20-day ADV × price) | ≥ $20M/day — ensures fills at day-trade size without excessive slippage |
+| Relative volume (RVOL) — today's volume vs. 20-day average | ≥ 1.5x — the actual same-session-interest trigger for a day-trade setup |
+| Intraday volatility — 14-day ATR ÷ price | ≥ 3% — enough range to clear commissions/slippage and hit a meaningful target |
+| Float (shares outstanding available to trade) | Flag, don't disqualify, if < 20M shares — bigger gaps and reversals, tighter risk control needed, not a reason to exclude |
+
+A candidate must clear the price floor AND ADV AND RVOL AND ATR% to pass. A small float is
+a flag, not a disqualifier, in the result.
+
+**No automated re-check exists for this list** (see above) — a ticker is only
+re-evaluated when Joshua names it again. If RVOL and ATR% have both fallen back toward
+baseline (RVOL < 1.2x, ATR% < 2%) on a re-check, flag it as cooled off; removal is still
+Joshua's manual call via `Webull:remove_watchlist_instruments`, same as every other list.
+
+Watchlist ID: `e1d3094ed02842d583034ee9a23f801e`.
+
+### Day Trade discovery (manual-only)
+
+Same sourcing exception as Candidate discovery below, scoped to this one screen and never
+triggered by the weekly routine. Sourcing: `Webull:get_gainers_losers` (`rank_type: DAY`,
+`sort_by: CHANGE_RATIO` or `VOLUME`, `direction: DESC`) cross-checked against
+`Webull:get_most_active` for the raw pool; `Webull:get_stock_quotes` /
+`Webull:get_stock_snapshot` for current price and volume (the RVOL numerator);
+`Webull:get_stock_bars` for the 14-day range needed to compute ATR%. Pre-filter, cap at 10
+survivors, pull real quote/bar data for each, run the table above, file passers the same
+way as any other discovery mode (duplicate check, then add). Report the full funnel — raw
+pool size, pre-filtered-out count, evaluated count, pass/fail per candidate, filed tickers
+— same as every other discovery report.
+
 ## Structural rules
 
 - A ticker CAN land on more than one style watchlist if it independently
@@ -123,6 +197,11 @@ explicitly as a trap risk in the result.
 - Weekly review: if a ticker already on a style watchlist no longer clears
   that style's criteria on re-check, flag it in the weekly summary — do NOT
   remove it automatically. Removal is always Joshua's manual call.
+- AI Shortlist is not an independent style — a ticker cannot land there without first
+  clearing (and currently holding a spot on) one of the five style lists. See its own
+  section above for the ranking/promotion mechanic.
+- AI Day Trade is excluded from every unattended pass (weekly routine, style-watchlist
+  review). It only runs when invoked directly — see its own section above.
 
 ## Steps
 
@@ -139,7 +218,8 @@ explicitly as a trap risk in the result.
 
 2. **Run the general screen** (per `watchlist-screener-criteria`, if Joshua
    has one defined and wants it checked) and/or **run each of the five style
-   screens above independently** against the supplied values — whichever
+   screens above independently**, and/or **the Day Trade screen** if Joshua
+   asked for it specifically, against the supplied values — whichever
    Joshua asked for. Produce a table per screen checked: each criterion, the
    supplied value, pass/fail, and the overall verdict. Don't skip or
    compress this — it's what makes the Webull action defensible later.
@@ -162,7 +242,11 @@ explicitly as a trap risk in the result.
    | Growth: clears all three | Add to AI Growth (`3a9ed36d4d71445f85534476c91abcd6`) |
    | Momentum: clears all four (incl. regime gate) | Add to AI Momentum (`115ceb562bf147c990effd9d1b6f6362`) |
    | Dividend Income: clears yield + payout | Add to AI Dividend Income (`1f248ceaf10b482d8375af7d4e3774c4`), flag separately if yield > 8% |
+   | Day Trade: clears price floor + ADV + RVOL + ATR% | Add to AI Day Trade (`e1d3094ed02842d583034ee9a23f801e`), flag separately if float < 20M shares |
    | Any screen: `INCOMPLETE` (missing values) | No Webull action for that screen. Report exactly what's missing. |
+
+   AI Shortlist has no row here — it is never filed to directly from a per-ticker screen.
+   It is synced only through the style-watchlist review pass below.
 
    Use `Webull:add_watchlist_instruments` with `category: US_STOCK` and
    `symbols: [<TICKER>]` for each watchlist the ticker clears — a ticker can
@@ -184,6 +268,10 @@ walk (positions vs. thesis, stops, options expiring, earnings/ex-div calendar, a
 drift, watchlist names in range). This pass only re-checks tickers already sitting on a style
 watchlist against that style's own criteria — a narrower, separate cadence.
 
+AI Day Trade is never part of this pass — see its own section above. AI Shortlist has no
+re-check of its own; it's resynced as the final step below from the five styles' fresh
+results.
+
 Manually triggered by Joshua, or via a Claude Cowork Scheduled Task set up
 separately (Claude cannot self-schedule from this chat). For every ticker
 currently on any of the five style watchlists:
@@ -199,11 +287,18 @@ currently on any of the five style watchlists:
    does not affect existing holdings).
 6. Summarize: tickers flagged per style, tickers newly added this week (and
    which watchlists), any INCOMPLETE screens still pending data.
+7. **Sync AI Shortlist** from this run's fresh per-style verdicts: recompute each style's
+   top 2 by its ranking metric (see the AI Shortlist section above), add any newly-promoted
+   ticker, and flag — never remove — any ticker that fell out of every style's top 2.
 
 **The weekly unattended routine also runs Candidate discovery (below) after this re-check
 pass**, one run per style, so the five watchlists don't stay empty between manual visits.
 Same 10-candidates-per-style cap, same auto-file-on-pass behavior, same full-funnel report —
 nothing about discovery loosens or shortcuts when it runs unattended instead of on request.
+The Shortlist sync (step 7 above) also runs automatically as part of the unattended routine,
+since it only reuses data the re-check pass already pulled — no extra Webull calls beyond its
+own add/duplicate-check. AI Day Trade discovery is never run by the unattended routine — see
+its own section above.
 
 ## Candidate discovery
 
@@ -217,7 +312,8 @@ already uses unattended, just run on demand instead of on a schedule.
 
 Triggers: "find me some Growth candidates", "run discovery for Momentum", "scan for new Deep
 Value names", "the watchlists are empty, find something", or the weekly routine's own
-discovery phase (below).
+discovery phase (below). This section covers the five style lists only — Day Trade discovery
+has its own section above and is never part of the weekly routine.
 
 ### Per-style candidate sourcing — honest about tool coverage
 
@@ -304,3 +400,7 @@ looks decent" is a reason to want Steps 3–4 skipped, not a release of them.
   entry/exit rule is named.
 - Does not remove a name from any watchlist automatically — every removal is
   a manual `Webull:remove_watchlist_instruments` call after Joshua confirms.
+- Does not give AI Shortlist independent criteria — every member must already be clearing
+  (and holding a spot on) a style list; see its own section above.
+- Does not run AI Day Trade screening or discovery unattended — manual-only, invoked
+  in-session, never part of the weekly routine.

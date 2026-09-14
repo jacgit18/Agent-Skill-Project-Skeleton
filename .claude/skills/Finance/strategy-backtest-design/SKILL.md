@@ -38,8 +38,9 @@ buy-and-hold benchmark, not a verdict on whether to trade the rule live.
 ## The gate — five inputs, all required before any run
 
 1. **Ticker(s)** — a real symbol, named directly or pulled from a Webull watchlist (e.g.
-   "Screen Passed", or one of the five "AI [Style]" watchlists — all populated via
-   `watchlist-screen-sync`, including its Candidate discovery mode).
+   "Screen Passed", one of the five "AI [Style]" watchlists, AI Shortlist, or AI Day
+   Trade — all populated via `watchlist-screen-sync`, including its Candidate discovery
+   mode).
 2. **Entry rule** — a specific, testable condition. Not "buy when it looks good."
 3. **Exit rule** — paired to the entry style; must include both a stop-loss and a trend/target
    exit, not just one.
