@@ -55,7 +55,14 @@ Actual unattended-agent infra:
   style watchlist a candidate just verified against, only after a duplicate check. Still
   barred from `remove_watchlist_instruments`, any watchlist create/delete/update, any
   order/trade action, and any write to this git repo. Neither phase fixes drift or removes a
-  no-longer-clearing ticker — that stays a human call via the interactive skill. First fire
+  no-longer-clearing ticker — that stays a human call via the interactive skill. Also resyncs
+  **AI Shortlist** at the end of each run — a cross-style aggregator with no criteria of its
+  own that mirrors each style's top-2-ranked passer(s) from that run's fresh results; folded
+  in "for free" since it reuses data the re-check pass already pulled, no extra Webull calls
+  beyond its own add/duplicate-check. **AI Day Trade is deliberately never touched by this
+  routine** — intraday liquidity/volatility setups go stale within hours, so a weekly batch
+  can't track them; that screen and its discovery mode are manual-only, invoked in-session
+  per `watchlist-screen-sync`'s own file. First fire
   (2026-09-13, Phase-A-only version, before Phase B existed) confirmed correct via
   `get_run_log`: found all five watchlists genuinely empty, made zero mutating calls, sent no
   notification since there was nothing to flag.
