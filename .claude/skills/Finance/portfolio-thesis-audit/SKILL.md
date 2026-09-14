@@ -80,7 +80,9 @@ review**:
    "long-term hold"). If there is no written thesis, say so — that is itself the finding.
 2. **Current validity.** Is the thesis still true? Yes / no / can't tell — and the evidence
    for that call. "Can't tell without reading the last two quarterlies" is a valid answer and
-   routes to *research required*, not *hold*.
+   routes to *research required*, not *hold* — `equity-research-sourcing` can fetch and cite
+   the current figures needed to make that call, the same way it feeds
+   `equity-research-writeup`'s sections 4/5; it still issues no validity verdict itself.
 3. **The exit condition.** The specific, observable trigger that ends the position: a price
    level, a thesis-invalidating event, a position-size cap. "I'll know when to sell" and "if
    it drops a lot" are not exit conditions.
