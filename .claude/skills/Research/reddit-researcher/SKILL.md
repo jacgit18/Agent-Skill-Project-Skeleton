@@ -1,6 +1,6 @@
 ---
 name: reddit-researcher
-description: "Current-awareness research across three free sources — Reddit, Hacker News, and the open web — for roughly the last 30 days. Synthesizes findings into a grounded, cited report with relevance filtering, deduplication, cross-source signal detection, and anti-hallucination guardrails. No paid APIs or MCP servers required."
+description: "Current-awareness research across three free sources — Reddit, Hacker News, and the open web — for roughly the last 30 days. Synthesizes findings into a grounded, cited report with relevance filtering, deduplication, cross-source signal detection, and anti-hallucination guardrails. No paid APIs or MCP servers required. Not for a single named, checkable claim about a public company's fundamentals or competitive position (pricing power, retention, market share) — that's `Finance/equity-research-sourcing` Scope mode, which verifies one claim against a primary source rather than sweeping recent chatter."
 argument-hint: "React vs Vue, best AI coding tools, latest news on OpenAI"
 license: MIT
 user-invocable: true

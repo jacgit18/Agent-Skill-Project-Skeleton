@@ -40,7 +40,9 @@ Where it sits: `watchlist-screener-criteria` (numeric filter) → **this** (the 
   `learning-gate`.
 - **Provide the financials or the analysis.** Claude's knowledge of a company is a prompt to
   go verify against the latest filing, never the source. It does not fetch data, fill in a
-  figure, or write a section's content.
+  figure, or write a section's content. For sourced figures behind sections 2/4/5
+  specifically, `equity-research-sourcing` fetches and cites them — hand off there when the
+  wall is data, not judgment.
 
 ---
 
