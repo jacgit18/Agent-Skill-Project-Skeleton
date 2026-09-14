@@ -72,7 +72,7 @@ material changes; the effort of *arguing from it* does not.
 |---|---|
 | "Pull TICKER's numbers for section 4", "get me the financials", "source this for me" | **Fetch** — Claude pulls and cites |
 | "Where do I find TICKER's segment revenue myself", "how do I check this number", "I'll pull it, just tell me where" | **Lookup** — Claude points, user pulls |
-| "Research TICKER's competitive position", "find evidence for the bear case", "dig into whether TICKER has pricing power" | **Scope** — narrow the claim first, then research or hand off |
+| "Research TICKER's competitive position", "find evidence for the bear case", "dig into whether TICKER has pricing power", "what's TICKER's moat like", "does TICKER actually have a moat" | **Scope** — narrow the claim first, then research or hand off |
 
 Default to **Fetch** when the ask is to get numeric figures; switch to **Lookup** when the
 user wants to pull one themselves, or a figure isn't available through this skill's tools and
@@ -122,7 +122,10 @@ isn't already answered:
 1. **The specific claim.** One dimension, not "everything about the competition": pricing
    power, retention/churn, market-share direction, customer concentration, regulatory/legal
    exposure, supply-chain dependency, insider activity. If the user already named one
-   ("does TICKER actually have pricing power"), this step is already done — don't re-ask.
+   ("does TICKER actually have pricing power"), this step is already done — don't re-ask. A
+   bare "what's TICKER's moat like" routes here too — "moat" is not itself a claim
+   (`equity-research-writeup` section 3 already treats "wide moat" with no number as a
+   non-answer), so this step's job is narrowing it into one of the dimensions above.
 2. **The window.** Most recent quarter/fiscal year, or a stated period — recency matters for
    evidence the same way it does for a filing.
 3. **Who runs it.** Claude executes one narrow, scoped `WebSearch`/`WebFetch` here and returns
@@ -136,8 +139,11 @@ sources say" stops short of "and that means the moat is wide."
 
 **If the user pastes back external research** (from ChatGPT or anywhere else): check every
 claim for a named, checkable source before it counts as evidence — an unsourced claim is
-`NOT VERIFIED` regardless of how fluently it reads or which model produced it. Flag it, don't
-wave it through just because it arrived pre-written.
+`NOT VERIFIED` regardless of how fluently it reads or which model produced it. "Named" means
+a specific person, firm, publication, or filing **plus a date** — a soft attribution like
+"analysts say" or "a recent report found" names neither and is `NOT VERIFIED`, not a pass,
+even though it reads like a citation. Flag it, don't wave it through just because it arrived
+pre-written and superficially sourced-looking.
 
 Either path, the result feeds section 3 or 6 as **raw sourced evidence**, never the argument
 itself — the user still writes why it matters.
