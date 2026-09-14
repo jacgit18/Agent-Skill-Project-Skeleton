@@ -42,6 +42,13 @@ Specific to Joshua's Webull account. If copied to
 another account, these IDs won't resolve — call `Webull:get_watchlists` to
 find or recreate equivalents and update this table.
 
+**"AI" in each name is a list-ownership marker, not a sector filter.** It means "Claude
+created and files into this list" — nothing more. These watchlists are NOT scoped to AI or
+tech companies; every style screen applies market-wide, across every sector, exactly as it
+would for a healthcare, industrial, financial, energy, or consumer name. Never narrow
+discovery's candidate pool to AI/tech/semiconductor names because of the list name — see the
+cross-sector sampling requirement in Candidate discovery below.
+
 ## The five committed style screens
 
 ### Deep Value
@@ -222,14 +229,28 @@ weaker two as equally rigorous:
 | Dividend Income | `Webull:get_high_dividend`, sorted by `YIELD` | **Strong** — near-direct match to the yield criterion |
 | Growth | `Webull:get_gainers_losers` (`rank_type: MONTH_3` or `MONTH_1`, `sort_by: CHANGE_RATIO`, `direction: DESC`) | **Strong** — price momentum as a growth proxy, verified against real EPS/revenue growth after |
 | Momentum | `Webull:get_gainers_losers` (`rank_type: MONTH_1` or `WEEK_52`, `sort_by: CHANGE_RATIO`) cross-checked against `Webull:get_most_active` for liquidity | **Strong** — this style's own criteria (RS rank, 6-month return, golden cross) are themselves price-momentum measures |
-| Deep Value | `Webull:get_market_sectors_detail` per sector, sorted by `PE_TTM` ascending, or `Webull:get_gainers_losers` sorted by `PE_TTM` ascending | **Weak proxy** — Webull has no EV/EBITDA or FCF-yield screener; a low trailing P/E is a rough stand-in, not the actual valuation metric this style uses. Lean harder on the real financial-data verification step below; expect a lower hit rate |
-| Quality Compounder | `Webull:get_market_sectors_detail` per sector, sorted by `MARKET_VALUE` descending (larger, more established names) or `Webull:get_most_active` | **Weak proxy** — no ROIC or gross-profitability screener exists; this only produces a plausible-quality universe, the real criteria table does the actual filtering |
+| Deep Value | `Webull:get_market_sectors_detail`, sorted by `PE_TTM` ascending, sampled across **every** sector `Webull:get_market_sectors` returns (see cross-sector requirement below) | **Weak proxy** — Webull has no EV/EBITDA or FCF-yield screener; a low trailing P/E is a rough stand-in, not the actual valuation metric this style uses. Lean harder on the real financial-data verification step below; expect a lower hit rate |
+| Quality Compounder | `Webull:get_market_sectors_detail`, sorted by `MARKET_VALUE` descending, sampled across **every** sector `Webull:get_market_sectors` returns (see cross-sector requirement below) | **Weak proxy** — no ROIC or gross-profitability screener exists; this only produces a plausible-quality universe, the real criteria table does the actual filtering |
+
+**Cross-sector requirement for Deep Value and Quality Compounder — the only two styles that
+source from sectors.** Call `Webull:get_market_sectors` once to get the full sector list, then
+pull `Webull:get_market_sectors_detail` for **every** sector returned (small page size, ~3–5
+per sector), not just the one or two largest by market value. Semiconductors and Software &
+IT Services are usually the biggest sectors by aggregate market cap in the current market —
+if the pool only ever samples the top sector(s), Deep Value and Quality Compounder discovery
+silently turns into an AI/semiconductor screener every single run, which is exactly the
+outcome the "AI" list-name note above says these watchlists are NOT supposed to be. Combine
+the per-sector pulls into one raw pool spanning healthcare, industrials, financials, energy,
+consumer, materials, utilities, communication services, real estate, and tech/software alike,
+*then* apply the pre-filter and the 10-candidate cap below.
 
 ### Steps
 
 1. **Pull a raw candidate pool per style requested** — one scanner call (page size ~20–30)
-   per the table above. If no style is named, ask which, or run all five if Joshua says so
-   explicitly.
+   per the table above, except Deep Value and Quality Compounder, which pull across every
+   sector per the cross-sector requirement above (one `get_market_sectors_detail` call per
+   sector, not one call total). If no style is named, ask which, or run all five if Joshua
+   says so explicitly.
 
 2. **Pre-filter before spending real financial-data calls:**
    - Drop any ticker already on that style's watchlist, on Screen Rejected, or already
@@ -238,8 +259,12 @@ weaker two as equally rigorous:
      this is a sanity filter, not a criterion; it doesn't replace the style's own table.
    - Cap the survivors at **10 candidates per style per run**. More than that turns one
      discovery run into a market-wide scan and burns an unbounded number of tool calls; if
-     the raw pool has more plausible names than that, take the top 10 by the scanner's own
-     sort order.
+     the raw pool has more plausible names than that, take the top few from each scanner
+     page (or, for Deep Value/Quality Compounder, from each sector) rather than re-sorting
+     the whole combined pool by raw value and truncating — for Quality Compounder
+     specifically, a straight market-value-descending cut across all sectors combined would
+     just re-collapse the pool onto the largest global companies (which are AI/tech mega-caps
+     right now), undoing the cross-sector sampling above.
 
 3. **Pull real financials for each survivor** via Webull's data tools
    (`get_financial_indicators`, `get_income_statement`, `get_balance_sheet`, `get_cash_flow`,
