@@ -49,6 +49,12 @@ re-examines positions already held.
   check on *this* review; turning "I keep doing this" into a deliberate study pass is
   `learning-gate` — not this skill, and not `problem-journal` (which is for coding errors). A
   standing "I keep buying names off YouTube" process gap is `watchlist-screener-criteria`.
+- **Track whether behavior is drifting across many decisions over time.** This skill checks
+  one review's worth of held positions against their theses, right now — it doesn't log each
+  decision as it happens or look for a rising stop-override rate, thesis rewrites, or a
+  sourced-vs-unsourced shift across months of history. That cross-decision pattern read is
+  `trading-decision-journal`'s Review mode; this skill's own disposition-effect flag stays
+  scoped to the position in front of it on this one pass.
 - **Build a missing exit rule.** When a holding's thesis is intact but it has no exit
   condition, that is a RESEARCH REQUIRED verdict routed to `position-exit-rules` — this skill
   flags the gap, it does not write the rule.

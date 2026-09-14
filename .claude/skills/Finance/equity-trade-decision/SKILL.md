@@ -43,6 +43,11 @@ guessed, and never confused with the dollar amount actually spent.
   fact-checked in `etf-selection` — that review satisfies pre-trade checklist item 1, and the
   cycle-stage sector-tilt table does not apply to a broad-market basket. This skill still
   runs the risk-budget position sizing.
+- **Judge whole-account performance against a benchmark.** The "relative performance" pre-trade
+  checklist item below compares *this one stock* to a benchmark, right now, as one input to
+  *this* entry decision. Whether the whole account is beating that benchmark over time,
+  risk-adjusted, is `performance-benchmarking` — a different question on a different cadence,
+  not a byproduct of this checklist.
 
 ---
 
