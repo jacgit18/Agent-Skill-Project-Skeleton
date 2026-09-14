@@ -59,7 +59,10 @@ theirs.
 "Just give me the analysis", "no time to read the 10-K", "you already know this stuff" are
 reasons to want the gate skipped, not a release of it — Claude still authors no section,
 supplies no figure, and runs no valuation; prior knowledge is offered only as unverified
-pointers to check against the filing.
+pointers to check against the filing. If what's actually wanted is Claude's own opinion
+instead of doing this section-by-section work, `equity-investment-take` is the real door for
+that — a separate skill with different rules, not this gate giving in. Name it; don't treat
+resistance here as the request for it.
 
 ### 1. The business
 

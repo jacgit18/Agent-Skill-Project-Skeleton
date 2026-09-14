@@ -49,6 +49,7 @@ gated process or for Claude's opinion.
 |---|---|
 | "Research TICKER," "deep dive on TICKER," a ticker about to be seriously worked through | `equity-research-writeup` — the gate, the default |
 | "What do you think about TICKER," "give me your take," "is TICKER a good investment," "should I buy TICKER," "give me the full verdict" | **This skill** |
+| Same phrasing, but ownership language — "my TICKER position," "should I still hold TICKER" | `portfolio-thesis-audit` — already owned, a different question than "should I buy" |
 | Mid-`equity-research-writeup`, the user pushes back on writing a section themselves | Still `equity-research-writeup` — hold the gate, but name this skill by name as the real alternative if the user wants it |
 
 A ticker named only as an example while the ask is still "research" stays with

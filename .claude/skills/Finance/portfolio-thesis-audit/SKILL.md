@@ -23,6 +23,10 @@ re-examines positions already held.
   stop, capital to size against, a share count — that's `equity-trade-decision`. This skill
   produces no share counts and no cycle-stage sizing; when the audit ends in "exit and
   redeploy", the redeploy is a separate `equity-trade-decision` pass.
+- **Opine on a name not yet owned.** `equity-investment-take` gives Claude's own sourced
+  verdict on a new candidate; this skill only ever grades a position already held. Ownership
+  language ("my position," "should I still hold") keeps a "what do you think about TICKER"
+  ask here even though that same phrasing is that skill's own trigger for an unowned name.
 - **Options positions.** Covered calls, cash-secured puts, spreads — assignment risk, theta
   decay, strike and expiry selection are a different model this review doesn't carry. Name
   the gap and stop rather than run an equity thesis audit on an options overlay. Whether to
