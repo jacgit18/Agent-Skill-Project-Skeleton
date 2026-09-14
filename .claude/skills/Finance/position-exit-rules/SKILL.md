@@ -38,6 +38,10 @@ its stop-loss input when it sizes the position.
   doesn't.
 - **Answer a bare conceptual question.** "How does a trailing stop work", "what's a good
   stop-loss percentage in general" with no real position is `learning-gate`.
+- **Track whether the stop actually gets honored over time.** This skill produces the number;
+  whether it later gets moved instead of hit, and whether that's becoming a pattern across many
+  exits, is recorded and reviewed by `trading-decision-journal` — a separate, after-the-fact
+  log this skill doesn't keep.
 
 ---
 

@@ -32,6 +32,11 @@ buy-and-hold benchmark, not a verdict on whether to trade the rule live.
   backtest input — ask for the actual condition instead.
 - **Fabricate or estimate price data.** If the Webull tool can't return real bars for a ticker
   or window, say so and stop — never fill the gap with a plausible-looking series.
+- **Measure how the real account actually performed.** A backtest tests a *hypothetical* rule
+  against history that already happened; it is not a report on what the user's real money
+  actually did. Realized, whole-account return against a benchmark is
+  `performance-benchmarking` — a completely different data source (real account history, not
+  a simulated rule) and a different question (did this work, not would this have worked).
 
 ---
 

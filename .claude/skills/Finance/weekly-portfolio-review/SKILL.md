@@ -13,6 +13,12 @@ after the thesis changed, a broken thesis just sits there for months. This skill
 **procedure**: a fixed weekly walk that catches those on a calendar, and routes each finding
 to the skill that owns the decision. It does not make the calls itself.
 
+Two adjacent, slower-cadence passes are deliberately *not* folded into this weekly walk:
+whether the account is actually beating a benchmark over time (`performance-benchmarking`,
+monthly/quarterly) and whether decision-making behavior itself is drifting across many trades
+(`trading-decision-journal`'s Review mode, same rhythm). Both would add noise at a weekly
+cadence; this walk stays about positions and process, not results or behavior trends.
+
 ## Inputs the walk needs
 
 Ask for what's missing and note it; the walk can run partially, but gaps get flagged loudly.
@@ -75,6 +81,17 @@ geography: any band breached → **flag for `asset-allocation-policy`**. No allo
 on file at all → **flag for `asset-allocation-policy`** to build one; until then drift has
 nothing to measure against.
 
+**Multi-screen overlap.** For each held position, check whether it sits on more than one of
+`watchlist-screen-sync`'s style watchlists — a small, narrow exception to this skill's usual
+script/user-supplied inputs: pull it directly via `get_watchlist_instruments` per "AI [Style]"
+list (five short reads), the same live-data standard the rest of the catalog already uses for
+a real, fetched fact rather than an estimate. A name clearing Quality Compounder *and* Growth
+*and* Momentum at once is one position wearing three labels, not three independent
+diversifying bets — flag any held ticker on 2+ style lists as a single concentrated exposure,
+so it doesn't read as more diversified than the dollar exposure actually is. This is a raw
+multiplicity fact, separate from the sector/theme band check above — a ticker can be well
+within every allocation band and still be this kind of overlap.
+
 ### 6. Watchlist
 
 Names that cleared `watchlist-screener-criteria` and are waiting: any that have moved into or
@@ -136,6 +153,7 @@ user's own Automate / Don't-automate split.
 | "Over ceiling" and cash-% flags | Editing an exit rule (that's `position-exit-rules`) |
 | Position / sector / asset-class % vs. the `asset-allocation-policy` bands | Whether to act on a band breach (`asset-allocation-policy` owns the rule) |
 | The since-last-review diff of the holdings table | — |
+| Which held tickers sit on 2+ style watchlists (`get_watchlist_instruments`, live) | — flagged as a fact, not acted on |
 
 A script that starts *making* the step-1/3/5 decisions has crossed the line — the review
 surfaces and routes, it doesn't decide.
