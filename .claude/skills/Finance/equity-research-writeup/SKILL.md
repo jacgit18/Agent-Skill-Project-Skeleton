@@ -92,15 +92,19 @@ ask lands on the user:
   pre-written case in any of them.
 
 At the start of a fresh writeup, ask which mode fits unless the user's own phrasing already
-answered it. Once picked, the mode name goes in the output block's header so it's visible
-which one produced the writeup.
+answered it, or `learning-gate` already routed here with a learning-flavored classification —
+either counts as already decided, not a reason to re-ask. Once picked, the mode name goes in
+the output block's header so it's visible which one produced the writeup.
 
 **The line Coach mode must not cross:** teaching *how to read* the number is not the same as
 *telling the user what the number means for this company*. "Rising ARPU with flat customers
 usually signals pricing power" is coaching. "This company clearly has pricing power" is
 Claude authoring the interpretation — that's `equity-investment-take`'s job, a different
 skill, not a mode of this one. If the coaching starts reading like a verdict, pull back to the
-question, not the answer.
+question, not the answer. A user who answers the guiding question with "I don't know" gets a
+stronger hint — narrow the pattern further, point at the specific comparison to make — never
+the verdict; same escape-hatch shape as `learning-gate`'s own progressive hinting, not a
+release of the gate. Genuine incapacity is not a different case from open refusal here.
 
 ### 1. The business
 
