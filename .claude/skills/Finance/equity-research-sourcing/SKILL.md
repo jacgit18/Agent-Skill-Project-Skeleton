@@ -61,6 +61,9 @@ material changes; the effort of *arguing from it* does not.
   into sections yet.
 - **Screen the market for candidates.** Sourcing here starts from a named ticker already past
   the screen, not "find me some names" — that's `watchlist-screen-sync`'s Discovery mode.
+- **Produce an opinion or verdict from the figures it sources.** `equity-investment-take`
+  reuses this skill's tool set and sourcing bar to do exactly that, on explicit request — a
+  separate skill with different rules, not this one quietly gaining an interpretation mode.
 - **Answer a bare conceptual question.** "What's free cash flow", "how do I read a 10-K" with
   no ticker in view is `learning-gate`.
 
