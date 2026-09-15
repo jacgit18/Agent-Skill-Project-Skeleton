@@ -17,7 +17,11 @@ own facts. Not the gate caving — a different skill, different rules, asked for
 
 Where it sits: parallel to `etf-selection`, the same relationship `equity-investment-take` has
 to `equity-research-writeup`. Both answer "should I own this fund"; which one responds depends
-on whether the user wants their own process or Claude's opinion.
+on whether the user wants their own process or Claude's opinion. One asymmetry from the stock
+side: `equity-investment-take` only covers a name not yet owned (a held stock's re-check is
+`portfolio-thesis-audit`'s job), but `etf-selection` keeps a held fund's re-check inside
+itself rather than routing it out — so this skill is the opinion-door for **both** a new fund
+and a held one; "should I still hold TICKER" gets the same treatment as "should I buy TICKER."
 
 ## What this does not do
 
@@ -137,6 +141,12 @@ The verdict conversation is over — `equity-trade-decision` for sizing and entr
 > "What do you think about NVDA?"
 
 An individual stock — `equity-investment-take`, not this skill.
+
+> "Should I still hold my QQQM position?"
+
+Already owned, but this skill still applies — unlike the stock side, `etf-selection` keeps a
+held fund's re-check internal rather than handing it to `portfolio-thesis-audit`, so this
+skill is the opinion-door either way.
 
 ---
 
