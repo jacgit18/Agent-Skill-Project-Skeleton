@@ -64,6 +64,44 @@ instead of doing this section-by-section work, `equity-investment-take` is the r
 that — a separate skill with different rules, not this gate giving in. Name it; don't treat
 resistance here as the request for it.
 
+## Two delivery modes — Direct and Coach
+
+**Direct** (the default above): Claude hands over the skeleton and checks what comes back.
+Fine for someone who already knows how to read a filing and just needs the structure enforced.
+
+**Coach**: for someone who doesn't yet know how to read fundamentals — "I'm not familiar with
+this," "I don't know what to look for," "walk me through it," "help me understand what these
+numbers mean" — or when `learning-gate` routes here with a learning-flavored intent. The
+precondition doesn't change: the user still states every section in their own words, and
+Claude still never writes a section's content. What changes is how much happens *before* that
+ask lands on the user:
+
+- Pull the real, sourced figures first (via `equity-research-sourcing`'s Fetch/Scope modes)
+  instead of handing over a blank field to fill from nothing.
+- Explain what each figure actually means and what a strong/weak signal looks like *in
+  general* — rising ARPU with flat customer count usually means pricing power; a margin
+  compressing while revenue grows usually means competitive pressure or over-investment;
+  heavy share dilution usually means losses funded by equity, not cash. Teach the pattern, not
+  the verdict on this specific company.
+- Ask one guiding question per section — "given that trend, what does it suggest to you?" —
+  and let the user reason to the answer before writing it down. Refine, don't replace, what
+  they come back with.
+- For section 6 specifically, offer the common bear-case *categories* (valuation risk,
+  competitive disruption, customer concentration, regulatory exposure, execution risk,
+  balance-sheet risk, macro sensitivity) as prompts for the user's own thinking — never a
+  pre-written case in any of them.
+
+At the start of a fresh writeup, ask which mode fits unless the user's own phrasing already
+answered it. Once picked, the mode name goes in the output block's header so it's visible
+which one produced the writeup.
+
+**The line Coach mode must not cross:** teaching *how to read* the number is not the same as
+*telling the user what the number means for this company*. "Rising ARPU with flat customers
+usually signals pricing power" is coaching. "This company clearly has pricing power" is
+Claude authoring the interpretation — that's `equity-investment-take`'s job, a different
+skill, not a mode of this one. If the coaching starts reading like a verdict, pull back to the
+question, not the answer.
+
 ### 1. The business
 
 What it sells, to whom, and how it makes money — revenue mix in plain terms, 3–4 sentences.
@@ -130,6 +168,9 @@ verbatim.
 - Check the section 7 thesis is falsifiable and that section 8 actually maps to it.
 - Where Claude has prior knowledge of the company, offer it explicitly labelled as
   *unverified, check the latest filing* — never as the figure of record.
+- **In Coach mode only:** pull the sourced figures first, explain what each pattern generally
+  means, and ask a guiding question per section — still narrow in the sense that the
+  explanation teaches the pattern, never asserts the verdict for this specific company.
 
 Then assemble the writeup as the user's document and call out the two feed-forward pieces.
 
@@ -138,7 +179,7 @@ Then assemble the writeup as the user's document and call out the two feed-forwa
 ## Output — the writeup
 
 ```
-Equity research writeup — <TICKER>   ·   <date>   ·   screen cleared: <date | not run — flag, not a blocker>
+Equity research writeup — <TICKER>   ·   <date>   ·   mode: <Direct | Coach>   ·   screen cleared: <date | not run — flag, not a blocker>
 
 1. Business:            <user's summary>            source(s): <...>
 2. Unit economics:      <the 2–3 drivers + values>  source(s): <...>
@@ -173,6 +214,9 @@ Feeds forward:
 - A thesis that isn't falsifiable ("great company, long-term hold"), or a section 8 that
   doesn't line up clause-for-clause with section 7.
 - The writeup treated as complete while sections are still `THIN` or `UNSOURCED`.
+- Coach mode's explanation crossing into an actual verdict on this company ("this means
+  pricing power is real here") instead of teaching the general pattern and asking the user to
+  apply it — that's `equity-investment-take` territory, not a coaching explanation.
 
 ---
 
@@ -183,6 +227,12 @@ Feeds forward:
 Give the eight-section skeleton. Ask the user to write section 1 in their own words and pull
 the section 4 figures from the latest 10-K / 10-Q. Do not produce the analysis. Work down the
 sections, checking sources and pushing on the bear case, then assemble.
+
+> "Research NVDA — I've never really read a 10-K before, I don't know what to look for."
+
+Coach mode. Pull the sourced figures via `equity-research-sourcing` first, explain what each
+pattern generally means, ask a guiding question per section, and let the user reason to their
+own answer — still never write the section or assert the verdict for NVDA specifically.
 
 > "Here's my writeup on COST — can you check it?"
 
