@@ -28,9 +28,14 @@ risk quiz.
   sleeve, not which ones — and not which specific fund fills a sleeve: picking or re-checking
   the fund itself (expense ratio, tracking difference, holdings overlap, SPY-vs-VOO) is
   `etf-selection`.
-- **Execute a rebalance.** Which lots to sell, in what order, today — that follows the
+- **Execute a rebalance.** Which positions to trim, in what order, today — that follows the
   trigger and the tax-aware ordering this policy *sets*. `weekly-portfolio-review` step 5
-  flags the drift that fires one.
+  flags the drift that fires one; `rebalancing-execution` turns the flag into the actual
+  plan, applying this policy's own rules rather than inventing new ones.
+- **Decide the entry schedule for a large one-time sum.** Area 6's cadence line is the generic
+  default for routine contributions. A real windfall big enough to warrant an actual
+  historical look — lump sum vs. staged — is `lump-sum-vs-dca`, not a re-litigation of this
+  policy.
 - **Allocate a purchase price across the assets of a business being acquired.** That's
   `seller-financing-evaluation` — a different meaning of "allocation".
 - **Optimise tax-advantaged contributions.** Backdoor Roth mechanics, capturing an employer

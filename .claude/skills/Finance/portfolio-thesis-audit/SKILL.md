@@ -173,6 +173,10 @@ A position whose thesis is intact but sits on a large loss is still a HOLD — *
 boxes are genuinely ticked. The audit doesn't punish red P&L; it punishes the absence of a
 reason.
 
+A HOLD on a position that's *also* over its size ceiling feeds forward to
+`rebalancing-execution` — thesis-intact-but-overweight is exactly that skill's precondition,
+not a reason to reopen this audit.
+
 ---
 
 ## Behavioral flags — raise as hypotheses, never diagnoses
