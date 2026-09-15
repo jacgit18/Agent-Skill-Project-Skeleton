@@ -13,6 +13,53 @@ things that normally live apart:
 Drop this skeleton in front of a decision and the relevant skill fires, asks for the
 decision or the rep it needs, and produces an ADR / model / handoff doc from there.
 
+## Getting started — no coding experience required
+
+This repo isn't software you install or run. It's a library of written instructions
+("skills") for **Claude Code**, Anthropic's AI coding/agent tool — Claude Code reads these
+files and follows them automatically when what you ask matches one. You interact with it
+entirely in plain English; you never need to open, read, or edit a skill file yourself.
+
+**1. Install Claude Code.** It's available as a terminal app, a desktop app, or an extension
+for VS Code / JetBrains — see [claude.com/claude-code](https://claude.com/claude-code) for
+downloads. It walks you through signing in with your Anthropic account.
+
+**2. Get this repo onto your computer — no Git knowledge needed.** On this repo's GitHub
+page, click the green **Code** button → **Download ZIP**, then unzip it somewhere you'll
+remember (Desktop, Documents, wherever). If you're already comfortable with a terminal,
+`git clone <this repo's URL>` works too, but it's not required.
+
+**3. Open the folder in Claude Code.**
+- Desktop app / VS Code extension: open the unzipped folder like any other folder.
+- Terminal: `cd` into the unzipped folder, then run `claude`.
+
+Claude Code automatically reads this repo's `CLAUDE.md` and `.claude/` folder on start —
+that's how it learns about every skill below. Nothing else to configure.
+
+**4. Just ask, in plain English.** You don't need to know a skill's name or where its file
+lives — describe what you're trying to do, and the matching skill fires on its own. A few
+things to try:
+
+- *"What order should I look at a stock in before deciding whether to buy it?"* — a quick
+  reference, nothing to set up.
+- *"I want to research NVDA before deciding whether to buy it."* — a guided walkthrough; say
+  you're new to reading company fundamentals and it'll actively teach you as you go instead
+  of handing you a blank form.
+- *"What do you think about [ticker] — is it worth buying?"* — Claude's own researched
+  opinion, sourced and cited.
+- *"Help me set up a real stock-screening process instead of picking names off YouTube."*
+
+**5. Expect some skills to ask you questions before answering.** Many skills are **gates** —
+before Claude gives an answer, it asks you to state something first (a goal, a number, your
+own reasoning). That's deliberate, not a bug: it exists so you actually do the thinking that
+protects you, instead of getting a fluent-sounding answer nobody checked. Answer honestly and
+the skill moves forward with you.
+
+**Where to go from here:** the rest of this README lists every skill by group with a
+one-line description (below); [`SKILL-BACKLOG.md`](SKILL-BACKLOG.md) has the full history of
+why each one was built, if you're curious. If a skill ever seems to misfire, or you're not
+sure which one you want, just say so in plain English — Claude will sort out the routing.
+
 ## Layout
 
 What's actually tracked here. The vault directories the skills were distilled from
