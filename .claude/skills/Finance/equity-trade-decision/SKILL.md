@@ -1,7 +1,7 @@
 ---
 name: equity-trade-decision
 description: |-
-  Decide a specific stock trade — real ticker, entry, capital: whether to enter, how many shares, or size sanity. Triggers: "should I buy X here", "how many shares", "is this position too big", "what's my risk on this trade". Forces three things in sequence: a pre-trade checklist (fundamentals, trend, relative strength, entry timing) before a share count; a named economic-cycle stage sourced from `macro-cycle-read` — never asserted here from a vibe or a lone indicator — before a tilt; and position size as risk-budget divided by per-share-risk, kept separate from position cost. Not options, day-trading, or leveraged income — name the gap; covered calls are `covered-call-decision` (enter here first). Not allocation policy (`asset-allocation-policy` sets the bands), not keep/exit of a held position (`portfolio-thesis-audit`), not its stop (`position-exit-rules`), not tip-sourced pre-screening (`watchlist-screener-criteria`), not backtest sizing (`strategy-backtest-design`).
+  Decide a specific stock trade — real ticker, entry, capital: whether to enter, how many shares, or size sanity. Triggers: "should I buy X here", "how many shares", "is this position too big", "what's my risk on this trade". Forces four things in sequence: a pre-trade checklist (fundamentals, trend, relative strength, entry timing) before a share count; a named economic-cycle stage sourced from `macro-cycle-read` — never asserted here from a vibe or a lone indicator — before a tilt; position size as risk-budget divided by per-share-risk, kept separate from position cost; and a reward:risk ratio (target minus entry, over entry minus stop) checked against a stated minimum before the size is called good. Not options, day-trading, or leveraged income — name the gap; covered calls are `covered-call-decision` (enter here first). Not allocation policy (`asset-allocation-policy` sets the bands), not keep/exit of a held position (`portfolio-thesis-audit`), not its stop (`position-exit-rules`), not tip-sourced pre-screening (`watchlist-screener-criteria`), not backtest sizing (`strategy-backtest-design`).
 ---
 
 # Equity Trade Decision
@@ -81,7 +81,13 @@ Risk tier:                  <1% high-risk | 2% medium-risk | 3% low-risk> — <w
                            this specific trade>
 Entry price:                $<n>/share
 Stop-loss price:            $<n>/share
+Target price:                $<n>/share | not yet known — ask: what's the realistic price
+                           target this trade is sized against?
 Per-share risk:             $<n>   (entry − stop)
+Per-share reward:            $<n>   (target − entry)
+Reward:risk ratio:           <n>:1  (per-share reward ÷ per-share risk) — <OK, ≥2:1 | FLAG:
+                           below 2:1, this trade risks more than it stands to make | FLAG: no
+                           target given, ratio unknown>
 Risk budget:                $<n>   (total capital × risk-tier %)
 Max shares (risk-based):    <n>    (risk budget ÷ per-share risk)
 Position cost:               $<n>   (max shares × entry price) — a DIFFERENT number from the
@@ -91,7 +97,8 @@ Position as % of capital:   <pct>% — <within your own concentration comfort | 
 
 Red flags:                  <checklist item skipped and treated as fine | cycle stage asserted
                            with no evidence | risk budget and position cost conflated | no
-                           stop-loss set (can't compute per-share risk without one) | none
+                           stop-loss set (can't compute per-share risk without one) | no target
+                           price set, or reward:risk below 2:1, and sizing done anyway | none
                            found>
 ```
 
@@ -103,12 +110,21 @@ question>`, never silently omitted or assumed favorable.
 ## Computing position size — never skip this, and never conflate the two numbers
 
 ```
-1. Risk budget ($)     = Total capital × risk-tier %
-2. Per-share risk ($)  = Entry price − Stop-loss price
-3. Max shares          = Risk budget ÷ Per-share risk
-4. Position cost ($)   = Max shares × Entry price
-5. Position % capital  = Position cost ÷ Total capital
+1. Risk budget ($)      = Total capital × risk-tier %
+2. Per-share risk ($)   = Entry price − Stop-loss price
+3. Per-share reward ($) = Target price − Entry price
+4. Reward:risk ratio    = Per-share reward ÷ Per-share risk
+5. Max shares           = Risk budget ÷ Per-share risk
+6. Position cost ($)    = Max shares × Entry price
+7. Position % capital   = Position cost ÷ Total capital
 ```
+
+Step 4 is a gate on top of the sizing math, not a replacement for it: a trade can be sized
+exactly right for the stated risk tier (steps 1, 2, 5-7 all correct) and still be a bad bet if
+it risks more than it stands to make. **2:1 is the floor, not the target** — below it, say so
+as a red flag rather than sizing the trade anyway. If no target price is stated, the ratio
+can't be computed; that's itself a red flag, not a reason to skip the line and size on risk
+alone.
 
 Step 1 and step 4 are **not the same number** — this is the exact place casual reasoning
 fails at the division. The risk budget is what you're willing to *lose* if the stop hits; the
@@ -118,10 +134,12 @@ same risk budget buys fewer shares). Both must be stated — a verdict that only
 them hasn't actually sized the trade.
 
 **Worked example** — $10,000 total capital, entry at $12.00/share, stop at $10.50/share,
-2% (medium-risk) tier:
+target at $15.00/share, 2% (medium-risk) tier:
 
 - Risk budget = $10,000 × 2% = **$200**
 - Per-share risk = $12.00 − $10.50 = **$1.50**
+- Per-share reward = $15.00 − $12.00 = **$3.00**
+- Reward:risk ratio = $3.00 ÷ $1.50 = **2:1** — at the floor, not comfortably above it
 - Max shares = $200 ÷ $1.50 = **133 shares** (round down)
 - Position cost = 133 × $12.00 = **$1,596**
 - Position as % of capital = $1,596 ÷ $10,000 = **~16%**
@@ -131,7 +149,9 @@ them as interchangeable, or dividing the risk budget by the entry price instead 
 per-share risk, produces a share count with no relationship to the stated risk tolerance. If
 the resulting position size is an uncomfortable concentration (here, 16% of capital in one
 name), the fix is a tighter stop or a hard capital cap — not silently spending less of the
-risk budget while calling it the same calculation.
+risk budget while calling it the same calculation. A 2:1 ratio here is acceptable but exactly
+at the line; a lower target, or a stop moved further out with the same target, would drop it
+below 2:1 and should be flagged rather than sized through.
 
 If no stop-loss is set, say so and stop — per-share risk and everything downstream of it
 cannot be computed without one. "I'll set a mental stop" is not a number. Building that stop
@@ -196,6 +216,8 @@ independent of whatever the position-size math says.
   the trade.
 - A pre-trade checklist item marked done without having actually been checked.
 - No stop-loss stated, with sizing math produced anyway by assuming one.
+- No target price stated, or a reward:risk ratio below 2:1, with a share count produced anyway
+  as if size were the only thing that mattered.
 - Options, margin, or day-trading brought into a checklist and risk model built for a plain
   long-equity position.
 - A narrative-sourced name (video / tip / "I use the product") sized here with no numeric
