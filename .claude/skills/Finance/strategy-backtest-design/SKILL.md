@@ -37,6 +37,9 @@ buy-and-hold benchmark, not a verdict on whether to trade the rule live.
   actually did. Realized, whole-account return against a benchmark is
   `performance-benchmarking` — a completely different data source (real account history, not
   a simulated rule) and a different question (did this work, not would this have worked).
+- **Decide a one-time contribution's entry schedule.** `lump-sum-vs-dca` also pulls real bars
+  and runs a rolling-window comparison, but the question is different — not a trading rule
+  entered/exited many times, a single sum invested once, on one of two or three schedules.
 
 ---
 

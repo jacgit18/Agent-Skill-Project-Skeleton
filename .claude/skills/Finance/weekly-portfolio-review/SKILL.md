@@ -1,7 +1,7 @@
 ---
 name: weekly-portfolio-review
 description: |-
-  The recurring operational pass over a brokerage account. Triggers: "do my weekly review", "run the portfolio check", "what do I look at this week" — not the one-off "should I sell this". Also fires on "I keep skipping my review", walking the steps to find where it breaks. A procedure, not a gate: needs concrete inputs (holdings w/ cost basis / price / % of book; each thesis + exit rules, or a missing-flag; covered calls w/ strike + expiry; an earnings/ex-div/expiration calendar; last review date), then a fixed seven-step walk — positions vs. thesis, stops valid, options expiring, events ahead, allocation drift vs. bands, watchlist names in range, what changed. Decides nothing: each finding tags the skill that owns it (`portfolio-thesis-audit`, `position-exit-rules`, `covered-call-decision`, `equity-trade-decision`, `etf-selection`). A bare "review my portfolio" with no cadence signal is `portfolio-thesis-audit`. A style-watchlist re-check is `watchlist-screen-sync`'s pass.
+  The recurring operational pass over a brokerage account. Triggers: "do my weekly review", "run the portfolio check", "what do I look at this week" — not the one-off "should I sell this". Also fires on "I keep skipping my review", walking the steps to find where it breaks. A procedure, not a gate: needs concrete inputs (holdings w/ cost basis / price / % of book; each thesis + exit rules, or a missing-flag; covered calls w/ strike + expiry; an earnings/ex-div/expiration calendar; last review date), then a fixed seven-step walk — positions vs. thesis, stops valid, options expiring, events ahead, allocation drift vs. bands, watchlist names in range, what changed. Decides nothing: each finding tags the skill that owns it (`portfolio-thesis-audit`, `position-exit-rules`, `covered-call-decision`, `equity-trade-decision`, `etf-selection`, `rebalancing-execution`). A bare "review my portfolio" with no cadence signal is `portfolio-thesis-audit`. A style-watchlist re-check is `watchlist-screen-sync`'s pass.
 ---
 
 # Weekly Portfolio Review
@@ -74,12 +74,14 @@ this is information for steps 1–3, not an action on its own.
 
 Any position now above its size ceiling (from its exit rules) → **trim flag**. Current cash
 %. Largest position as a share of the book. This is a guardrail check, not a rebalancing
-model — it flags the breach and stops.
+model — it flags the breach and stops; turning a real breach into an actual trim/buy plan is
+`rebalancing-execution`'s job, once the position's thesis is confirmed intact (a breach from a
+broken thesis routes to `portfolio-thesis-audit` instead).
 
 Book vs. the `asset-allocation-policy` bands — asset-class targets, per-sector, per-theme,
-geography: any band breached → **flag for `asset-allocation-policy`**. No allocation policy
-on file at all → **flag for `asset-allocation-policy`** to build one; until then drift has
-nothing to measure against.
+geography: any band breached → **flag for `asset-allocation-policy`**, then `rebalancing-execution`
+to act on it. No allocation policy on file at all → **flag for `asset-allocation-policy`** to
+build one; until then drift has nothing to measure against.
 
 **Multi-screen overlap.** For each held position, check whether it sits on more than one of
 `watchlist-screen-sync`'s style watchlists — a small, narrow exception to this skill's usual
@@ -122,9 +124,10 @@ Action items — each tagged with the skill that owns the follow-up:
   [equity-trade-decision]   <TICKER> — cleared the screen <date>, in range, capital available
   [etf-selection]           <TICKER> — <tilt thesis shaky | cheaper same-exposure fund exists
                             | overlap grew>
-  [trim]                    <TICKER> — <pct>% of book, over the <pct>% ceiling
-  [asset-allocation-policy]  <which band drifted: asset-class / sector / theme / geography |
-                            no allocation policy on file>
+  [rebalancing-execution]   <TICKER> — <pct>% of book, over the <pct>% ceiling, thesis intact
+                            <TICKER or asset class> — band drifted (asset-class / sector /
+                            theme / geography), policy on file, ready to execute
+  [asset-allocation-policy]  no allocation policy on file — build one before drift means anything
 
 Event calendar — through <next review date>:
   <date> <TICKER> earnings   ·   <date> <TICKER> ex-div   ·   <date> <exp> option expiration

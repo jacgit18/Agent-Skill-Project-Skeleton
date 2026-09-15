@@ -1,7 +1,7 @@
 ---
 name: tax-lot-selection
 description: |-
-  Use once a sell is already decided — by position-exit-rules, portfolio-thesis-audit, a rebalance, or an assignment — and the question is which lot: "which shares of X do I sell", "specific ID vs FIFO", "will this trigger a wash sale". A gate: no answer until the user supplies each lot held (date, quantity, cost basis) and the goal — minimize this year's tax, avoid short-term treatment, or harvest a loss. Computes each lot's holding period and gain/loss, then picks lots matching the goal — a broker's FIFO default may differ from specific ID. Before any loss sale, checks the wash-sale window — 30 days either side, including a dividend-reinvestment buy — and flags a disallowed loss. Taxable accounts only; a Roth/IRA/HSA sale has no lot or gain/loss to track — name it and stop. Not `position-exit-rules` — decides whether/when to exit; this decides which shares once it has. Not a full tax return — names a CPA. Not a bare concept question with no real position — `learning-gate`.
+  Use once a sell is already decided — by position-exit-rules, portfolio-thesis-audit, rebalancing-execution, or an assignment — and the question is which lot: "which shares of X do I sell", "specific ID vs FIFO", "will this trigger a wash sale". A gate: no answer until the user supplies each lot held (date, quantity, cost basis) and the goal — minimize this year's tax, avoid short-term treatment, or harvest a loss. Computes each lot's holding period and gain/loss, then picks lots matching the goal — a broker's FIFO default may differ from specific ID. Before any loss sale, checks the wash-sale window — 30 days either side, including a dividend-reinvestment buy — and flags a disallowed loss. Taxable accounts only; a Roth/IRA/HSA sale has no lot or gain/loss to track — name it and stop. Not `position-exit-rules` — decides whether/when to exit; this decides which shares once it has. Not a full tax return — names a CPA. Not a bare concept question with no real position — `learning-gate`.
 ---
 
 # Tax Lot Selection
@@ -49,11 +49,13 @@ For the position being sold, in the taxable account:
    A position bought in one trade is still "one lot," stated as such.
 2. **Current price**, to compute unrealized gain or loss per lot.
 3. **The share count to sell.** This comes from the sell decision already made upstream — a
-   price stop, a thesis exit, a rebalance trim, an assignment, or any other already-fixed
-   reason with a real share count behind it (a debt payoff that needs the cash is a real
-   source too, even though no Finance skill currently decides *that* tension for the user —
-   `debt-credit-management` and `asset-allocation-policy` both name it without resolving it).
-   This skill does not decide *how many* shares, only *which* ones make up that count.
+   price stop, a thesis exit, a rebalance trim (computed by `rebalancing-execution`, which
+   hands off exactly this input once a taxable sale clears the policy's own threshold), an
+   assignment, or any other already-fixed reason with a real share count behind it (a debt
+   payoff that needs the cash is a real source too, even though no Finance skill currently
+   decides *that* tension for the user — `debt-credit-management` and `asset-allocation-policy`
+   both name it without resolving it). This skill does not decide *how many* shares, only
+   *which* ones make up that count.
 4. **The goal**, because it changes which lots are the right answer:
    - **Minimize this year's tax bill** — usually the highest-cost-basis lot(s) first (smallest
      gain), or a losing lot deliberately harvested.
@@ -82,7 +84,7 @@ Lot   Acquired     Qty    Cost basis/sh   Current price   Unrealized G/L   Holdi
 [one row per lot]
 
 Shares to sell:        <n>   (from <position-exit-rules stop | portfolio-thesis-audit exit |
-                        rebalance trim | assignment> — not decided here)
+                        rebalancing-execution trim | assignment> — not decided here)
 Stated goal:            <minimize tax | avoid short-term | broker default>
 
 Lots selected:           <lot IDs and share counts>
