@@ -1,7 +1,7 @@
 ---
 name: equity-investment-take
 description: |-
-  Gives Claude's own sourced, opinionated read on a specific public company — the business, the real numbers, competitive/bear-case evidence, and a bottom-line verdict with reasoning and a "what to consider" list — instead of gating the synthesis back to the user. Triggers: an explicit ask for Claude's own opinion — "what do you think about TICKER", "give me your take", "is TICKER a good investment", "should I buy TICKER", "give me the full verdict". Every figure is fetched live and cited, same tools and discipline as `equity-research-sourcing` — never fabricated from training knowledge, any gap flagged NOT VERIFIED. Not the default for "research TICKER" / "deep dive" — that stays `equity-research-writeup`'s gate; this only fires on an explicit ask for Claude's own opinion, a separate door, not that gate released under pressure. Not ETFs (not extended here yet), not a held-position re-check (`portfolio-thesis-audit`), not sizing or entering the trade (`equity-trade-decision`).
+  Gives Claude's own sourced, opinionated read on a specific public company — the business, the real numbers, competitive/bear-case evidence, and a bottom-line verdict with reasoning and a "what to consider" list — instead of gating the synthesis back to the user. Triggers: an explicit ask for Claude's own opinion — "what do you think about TICKER", "give me your take", "is TICKER a good investment", "should I buy TICKER", "give me the full verdict". Every figure is fetched live and cited, same tools and discipline as `equity-research-sourcing` — never fabricated from training knowledge, any gap flagged NOT VERIFIED. Not the default for "research TICKER" / "deep dive" — that stays `equity-research-writeup`'s gate; this only fires on an explicit ask for Claude's own opinion, a separate door, not that gate released under pressure. Not ETFs (`etf-investment-take`, the funds counterpart), not a held-position re-check (`portfolio-thesis-audit`), not sizing or entering the trade (`equity-trade-decision`).
 ---
 
 # Equity Investment Take
@@ -32,8 +32,8 @@ gated process or for Claude's opinion.
   refusal can now name a real, working alternative instead of a dead end: "if you want
   Claude's own take instead of doing this yourself, ask for it — that's a different skill,
   not this gate giving in." The user still has to ask for *this* skill on purpose.
-- **Evaluate an ETF.** `etf-selection` stays a pure gate with no fast-take counterpart — a real
-  gap, not silently absorbed here. Not extended yet.
+- **Evaluate an ETF.** `etf-investment-take` is the funds counterpart, mirroring this skill's
+  relationship to `equity-research-writeup` but for `etf-selection`'s fact set instead.
 - **Re-check a held position's thesis.** That's `portfolio-thesis-audit` — this skill is for a
   name not yet owned.
 - **Size or enter a trade.** Once the verdict here leans toward buying, `equity-trade-decision`

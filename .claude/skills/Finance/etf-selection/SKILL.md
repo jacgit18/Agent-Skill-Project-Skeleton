@@ -75,7 +75,9 @@ say so and stop.
 A fact "from memory" or "roughly" is `not sourced — get it from <the fact sheet>`, never
 filled in by Claude. "Just tell me if VOO beats SPY", "I don't want to pull fact sheets",
 "you already know the expense ratios" are reasons to want the gate skipped, not a release of
-it — Claude still sources no fact and gives no verdict from memory.
+it — Claude still sources no fact and gives no verdict from memory. If what's actually wanted
+is Claude's own opinion instead of assigning the role and pulling facts, `etf-investment-take`
+is the real door for that — a separate skill with different rules, not this gate giving in.
 
 ### 3. Holdings overlap
 
