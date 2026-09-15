@@ -125,6 +125,9 @@ Standing house rules:     <"25% stop, 8% cap" applied | none — set per positio
    Averaging-down limit:  adding to this position is disallowed once it is at or above the
                           ceiling; any add below it is a fresh `equity-trade-decision`, not a
                           reflex
+   Feeds forward:         a ceiling breach → `rebalancing-execution` (thesis intact) or
+                          `portfolio-thesis-audit` (thesis in question) — this skill sets the
+                          number, it doesn't act on a breach
 
 4. UPSIDE REVIEW TRIGGER
    Re-check at:           <$<n>/share or <valuation level> — forces a thesis re-check, NOT an

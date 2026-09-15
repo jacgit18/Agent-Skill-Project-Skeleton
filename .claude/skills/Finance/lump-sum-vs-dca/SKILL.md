@@ -65,6 +65,10 @@ own.
    input the historical win-rate alone can't supply, and it's what actually decides between two
    options with different expected value and different downside-regret profiles.
 
+If 1–5 are missing — especially 5 — ask and **stop**. A recommendation with no stated
+regret-risk tolerance is not this skill's answer, the same standard `asset-allocation-policy`
+holds for its own five inputs.
+
 ---
 
 ## Computing the real evidence

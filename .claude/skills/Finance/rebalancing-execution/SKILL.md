@@ -53,7 +53,8 @@ specific lot, only if a taxable sale is actually required).
 ## The precondition — a real breach, a confirmed thesis, and the policy's own rules
 
 1. **The breach, sourced.** Current % vs. target vs. band, from `weekly-portfolio-review` step
-   5's flag or `asset-allocation-policy`'s own consistency check — not an eyeballed guess. Name
+   5's flag, `asset-allocation-policy`'s own consistency check, or a `portfolio-thesis-audit`
+   HOLD verdict on a position that's also over its ceiling — not an eyeballed guess. Name
    which kind: a single-position ceiling breach (`position-exit-rules` rule 3 / policy area 3),
    or a broader asset-class/sector/theme/geography band breach (policy area 4).
 2. **Thesis confirmation.** For a single-position breach specifically: is the thesis still
@@ -95,7 +96,7 @@ an unconfirmed thesis, or an invented order isn't an execution plan.
 ## Output — the execution plan
 
 ```
-Rebalancing execution — <date>   ·   source: <weekly-portfolio-review flag | policy consistency check>
+Rebalancing execution — <date>   ·   source: <weekly-portfolio-review flag | policy consistency check | portfolio-thesis-audit HOLD-over-ceiling>
 
 Breach:              <TICKER or asset class>   ·   current <pct>%  vs  target <pct>%  (band <pct>–<pct>%)
 Breach type:          <single-position ceiling | asset-class/sector/theme/geography band>
