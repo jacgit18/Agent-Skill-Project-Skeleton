@@ -15,6 +15,8 @@ here. This skill is a **gate**: the user states the inputs and commits the polic
 checks it holds together and stress-tests it. It does not hand over an allocation from a
 risk quiz.
 
+**Arithmetic helper.** Dollar splits of a target and a what-if stress of it are `portfolio-dashboard-calculator` (numbers only; the bands and targets stay set here).
+
 ## What this does not do
 
 - **Size a single position.** `equity-trade-decision` does that, against one risk tier,

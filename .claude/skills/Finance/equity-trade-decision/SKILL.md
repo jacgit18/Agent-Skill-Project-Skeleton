@@ -12,6 +12,8 @@ checklist actually answered rather than assumed clean, an economic-cycle-stage c
 named evidence rather than a vibe, and a position size computed from a risk budget — not
 guessed, and never confused with the dollar amount actually spent.
 
+**Arithmetic helper.** For a bare "run the numbers" request, or to rank several tickers under one shared risk budget, `portfolio-dashboard-calculator` runs the same risk-budget ÷ per-share-risk math from a script. It returns numbers only — the checklist, cycle stage and verdict stay here.
+
 ## What this does not do
 
 - **Options, day-trading, or leveraged/aggressive income strategies.** Different risk math

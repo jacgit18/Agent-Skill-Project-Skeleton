@@ -21,6 +21,8 @@ Where it sits: `asset-allocation-policy` (sets bands + order) → `weekly-portfo
 5 (flags the breach) → **this** (turns the flag into a plan) → `tax-lot-selection` (picks the
 specific lot, only if a taxable sale is actually required).
 
+**Arithmetic helper.** `portfolio-dashboard-calculator` `drift` computes plain target-minus-current dollars, with no tax ordering. Use it for the raw numbers only; the order of operations and lot handoff stay here.
+
 ## What this does not do
 
 - **Set the bands, the trigger, or the tax-aware order.** Those are `asset-allocation-policy`

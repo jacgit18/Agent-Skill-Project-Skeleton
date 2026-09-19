@@ -21,6 +21,8 @@ cadence default for routine contributions; this skill is for a specific sum big 
 regret-risk stated strongly enough, that the generic default isn't a satisfying answer on its
 own.
 
+**Arithmetic helper.** A plain proportional split of the sum across classes, with no schedule question, is `portfolio-dashboard-calculator` `split` (numbers only).
+
 ## What this does not do
 
 - **Set the destination allocation.** `asset-allocation-policy` decides where the money goes
