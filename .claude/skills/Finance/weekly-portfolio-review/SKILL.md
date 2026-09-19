@@ -142,6 +142,8 @@ not a skipped step.
 
 ---
 
+**Arithmetic helper.** For step 5's drift numbers, or a stress test of the book, `portfolio-dashboard-calculator` computes them from a script (numbers only, no tax ordering, no verdict).
+
 ## Automation boundary
 
 The review is structured so a script does the data, a human does the judgment. Mirrors the

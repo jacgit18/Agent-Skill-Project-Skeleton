@@ -48,6 +48,7 @@ Before helping, answer for yourself: **what is the next piece of reasoning the u
 | Scoping a system design — purpose, requirements, non-functional targets, what to design deep | State purpose + audience, functional + out-of-scope, the numeric targets, the constraints | `design-scoping` (the Architecture-group front door; sequences into the skills in the row above) |
 | Auditing a shipped product / its privacy policy for disclosure & compliance gaps | State which public docs exist + the data inventory (data flows, subprocessors, retention, tracking tech, AI features and where user input goes) | `disclosure-gap-audit` (a procedure, not a rep gate — cede the coaching level, same as `failure-mode-analysis`) |
 | Writing a user story or use case | State the actor + action + benefit, revise after a hint | `user-story-decomposition` |
+| Running arithmetic-only dashboard math from stated inputs (split, drift, stress, share count, ticker ranking) | None — execution, not a rep; run the script and hand any decision to its owning gate | `portfolio-dashboard-calculator` (a calculator, not a gate — numbers only) |
 | Verifying understanding | Explain in own words first | `problem-solving-gates` (Knowledge Checker) |
 | Implementation practice | Attempt the implementation | domain skill, if any (if the practice is happening inside a paced file-by-file build the user is following, that's `incremental-build-pacing`, not a separate practice rep) |
 | Testing — writing a test | Name the behavior/risk the test protects + the charter | `test-practice-gate` |

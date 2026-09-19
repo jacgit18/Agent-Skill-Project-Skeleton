@@ -567,6 +567,14 @@ See [README.md](README.md) "Adding a skill".
 - Source: Claude-recommended via the same gap-analysis request, user picked both, built together.
 - Memory: `skill-added-rebalancing-execution-lump-sum-vs-dca.md` (shared with item 45).
 
+### 47. `portfolio-dashboard-calculator` — user-authored in Claude, imported
+
+- [x] Built `2026-09-19` — `.claude/skills/Finance/portfolio-dashboard-calculator/SKILL.md` + `references/rules.md` + `scripts/calc.py` + `scripts/test_calc.py` (test: all passed). Chat-only calculator version of the user's dashboard; a procedure, not a gate.
+  - **Overlap review (read-based, not a full interaction-test run):** same round-down / 2:1 math as `equity-trade-decision`; overlaps triggers with it, `rebalancing-execution` (drift) and `weekly-portfolio-review`. Resolved as option A (arithmetic layer): description narrowed to "run the numbers", carve-outs added, body pointers added to those three siblings, drift says no tax ordering.
+  - **Interaction test (2026-09-19, 1 simulated read-only agent, 8 scenarios, no live tools):** CLEAN on rounding / 2:1 floor / risk tiers (no contradiction); hand-off or chaining on shares, rebalance, rank→hold, bonus split; control (`split`) tripped only this skill. 3 fixes: `learning-gate` Step 3 row; body pointers in `lump-sum-vs-dca` and `asset-allocation-policy`. Not done: in-description carve-out in `equity-trade-decision` (its description is at the 1024 cap; the calculator's own description and the body pointer carry the hand-off).
+  - **Isolation: MIXED (honest).** 1 no-skill agent, no code, 4 hand-arithmetic tasks (thirds to the cent, rebalance, share sizing, rr-weighted rank): all four correct, including round-down. So the skill does not fix a visible baseline failure on small inputs; its value is determinism and auditability at scale (largest-remainder cents, 30-candidate ranks, stress/monthly simulations, ticker sanitising) and a single shared source of numbers, not that the model can't do the sums.
+  - Description 721 chars (Finance 1024 cap).
+
 ---
 
 ## Fold into existing skills — reference material, no new skill
