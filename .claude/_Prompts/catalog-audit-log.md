@@ -5,6 +5,46 @@ reads this first so it never re-flags something already resolved. Newest entry o
 
 ---
 
+## 2026-09-21 — same-day supplementary run (second instance, wider Step 1 check)
+
+A second, independent instance of this week's routine ran the same five steps against the same
+`main` tip (`0fb0419`, i.e. this entry's own predecessor already merged via PR #59) before
+discovering the other instance had already completed and merged. Steps 2, 3, and 5 reproduced
+that entry's CLEAN results independently (own directory-vs-README cross-check, own
+cross-cutting-reference resolution, own sibling-mention count — same zero findings, `reddit-researcher`
+still the sole, already-explained non-starved-in-practice exception). Step 4 adds nothing beyond
+the two items the other instance already recorded. Rather than open a second, redundant weekly-audit
+PR, this entry records the one thing this pass checked more broadly than the merged run: whether
+each `[x] Built` entry in `SKILL-BACKLOG.md` carries a `Memory: `skill-...md`` line at all, not
+just whether any existing line reads literally "pending."
+
+**Widened Step 1 finding, FLAGGED not fixed:** checked programmatically, every numbered `[x] Built`
+entry against whether it carries a `Memory:` pointer anywhere in its own text (a "fold into an
+existing skill" entry, which never gets its own memory file, doesn't count). **16 built skills
+have no `Memory:` line at all** — not a stale "pending" marker, just no pointer ever written:
+`problem-journal` (item 8), `seller-financing-evaluation` (10), `equity-trade-decision` (11),
+`incremental-build-pacing` (30), `tech-decision-walkthrough` (31), and the 10-skill run from
+`debt-credit-management` through `trading-decision-journal` plus `portfolio-dashboard-calculator`
+(items 32–40, 47). Every one of these entries otherwise fully documents its own isolation screen
+and `skill-interaction-testing` result inline — nothing is missing from the *record*, only the
+memory cross-reference. This sandbox has no access to the author's local Claude memory directory
+(same limitation the 2026-09-09 run named), so there's no way to tell whether a memory file exists
+for any of these 16 and the backlog entry just omitted the pointer, or whether no memory record
+was ever written for them — not something to invent a fix for. Two things worth the human's
+attention: (1) whether these 16 need their `Memory:` lines backfilled (or the omission was
+deliberate for a run judged too routine to warrant its own file — several of these entries are
+already the longest, most detailed in the backlog, so that seems unlikely), and (2) that three
+audits in a row (2026-09-06, 2026-09-09, this week) only ever caught this pattern one skill at a
+time (`model-routing-decision`, fixed 2026-09-09) rather than checking every entry for it — a
+future run of this skill's own Step 1 should check "no `Memory:` line at all," not just the
+literal string "pending," so this doesn't need a 4th manual sweep to catch the next batch.
+
+**Applied:** nothing (this entry is itself the only change — a documentation addendum, no
+`SKILL-BACKLOG.md`/`README.md` edits, since nothing here rose to a confirmable mechanical fix).
+**Flagged (judgment call, not fixed):** the 16-skill `Memory:` line gap above.
+
+---
+
 ## 2026-09-21 — Weekly Catalog Drift Audit (scheduled cloud routine, first live run)
 
 Run against `main` at `6e68b90` (post the large `Finance/` build-out through `portfolio-dashboard-calculator`,
