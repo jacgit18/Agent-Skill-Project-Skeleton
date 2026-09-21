@@ -49,8 +49,15 @@ Actual unattended-agent infra:
   Webull's financial-data tools (the one deviation from the interactive skill's "the user
   supplies values" rule — no human is present to ask). **Phase B, scoped write:** runs the
   skill's "Candidate discovery" mode per style — pulls a raw candidate pool from Webull's real
-  market-scan tools, pre-filters, caps at 10 survivors per style, pulls real financials, runs
-  the same criteria tables, and auto-files passers. This is the routine's only permitted
+  market-scan tools, pre-filters, fully evaluates at most 5 new candidates per style, retrieves
+  financials progressively with early exits and a run-wide cache, runs the same criteria tables,
+  and auto-files passers. Existing watchlist names are reviewed first; if that can't finish
+  within the connector's call limit the run stops before discovery ("degrade by stopping, never
+  by weakening a screen"). Deep Value and Quality Compounder source from one rotating batch of 9
+  Webull sectors per run (ISO week number modulo batch count), not every sector at once — the
+  cross-sector rule is met over several weeks rather than in a single run. Momentum's top-30%
+  percentile tests report `data not available` when the discovery universe is too narrow to
+  support them — deliberately left conservative, not yet resolved. This is the routine's only permitted
   mutating action, and it's narrow on purpose: `add_watchlist_instruments`, only into the one
   style watchlist a candidate just verified against, only after a duplicate check. Still
   barred from `remove_watchlist_instruments`, any watchlist create/delete/update, any
