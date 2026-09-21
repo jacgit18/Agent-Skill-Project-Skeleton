@@ -5,6 +5,58 @@ reads this first so it never re-flags something already resolved. Newest entry o
 
 ---
 
+## 2026-09-21 — Weekly Catalog Drift Audit (scheduled cloud routine, first live run)
+
+Run against `main` at `6e68b90` (post the large `Finance/` build-out through `portfolio-dashboard-calculator`,
+PRs up to #58). No prior run since 2026-09-09 — that entry read first, nothing in it re-flagged.
+
+**Step 1 — stale markers:** CLEAN. No open `Memory: pending` (or similarly unresolved) marker
+in `SKILL-BACKLOG.md`. The only `pending`/`TODO`-matching text is unrelated prose: a source-note
+math caveat on `capacity-estimation` (`#todo Double check calculations`, about the *source
+material*, not a testing marker), `codebase-file-orientation`'s own `TODO(author)` template
+mechanic, a deliberately-open "Loose threads" future-candidate item (Application-internal
+structure gate), and `catalog-drift-audit`'s own description quoting the phrase `"Memory:
+pending"` while explaining what Step 1 checks for.
+
+**Step 2 — catalog-doc sync:** CLEAN. All 79 skill directories under `.claude/skills/`
+(every group, `Architecture/Data/` included) have a `README.md` row, cross-checked both ways —
+no skill on disk missing a row, no README row pointing at a nonexistent directory.
+
+**Step 3 — dead-reference check:** CLEAN. All six fixed cross-cutting names (`ambiguity-gate`,
+`learning-gate`, `problem-solving-gates`, `problem-journal`, `skill-interaction-testing`,
+`catalog-drift-audit`) resolve to real, existing directories. Also resolved-and-confirmed: the
+internal inconsistency `debt-credit-management`'s backlog entry flagged as "catalog-drift-audit
+territory" (`SKILL-BACKLOG.md` item 51, the line right after its own interaction-test writeup) —
+`skill-interaction-testing`'s own "fixed cross-cutting list" and `.claude/rules/skill-architecture.md`'s
+"four cross-cutting meta-skills" list now agree (`ambiguity-gate`, `learning-gate`,
+`problem-solving-gates`, `spec-drift-gate`), with `skill-interaction-testing`'s file explicitly
+noting `problem-journal` was moved off that list. No longer a live contradiction; not re-flagged.
+
+**Step 4 — untested-pair backfill:** not run live (unattended, no multi-agent verification here).
+Two items to hand a human, one carried over and confirmed still open, one new:
+- **Still open (carried from 2026-09-09):** `Skill Development/incremental-build-pacing` and
+  `Architecture/tech-decision-walkthrough` still have no recorded isolation screen or
+  `skill-interaction-testing` run, per their own `SKILL-BACKLOG.md` bookkeeping-status notes.
+  Both are heavily wired into siblings' descriptions already.
+- **New:** `Finance/equity-trade-decision`'s reward:risk-ratio addition (commit `4c94dea`,
+  2026-09-15 — description scope widened from "forces three things" to "forces four things",
+  new gate behavior on target price / reward:risk ratio) has no `SKILL-BACKLOG.md` entry at all
+  and no recorded `skill-interaction-testing` run, made outside the normal add-a-skill workflow.
+  `portfolio-dashboard-calculator`'s later interaction test (2026-09-19) independently confirmed
+  its own 2:1-floor math is clean against `equity-trade-decision`, but that's incidental coverage,
+  not a real test of this specific edit's own collision surface (e.g. against `position-exit-rules`,
+  which also deals in target/stop prices).
+
+**Step 5 — starvation-by-neglect:** CLEAN. Every one of the 79 skill directories is named by at
+least one sibling's `SKILL.md` (checked programmatically, word-boundary matched). `reddit-researcher`
+— the lone unreferenced skill as of the 2026-09-06/09-09 runs — is no longer starved: `Finance/equity-research-sourcing`
+(built 2026-09-14, after those runs) now names it twice as an explicit out-of-scope pointer.
+
+**Applied:** nothing — every mechanical check came back clean, no fixes needed this run.
+**Flagged (judgment calls, not fixed):** the two Step 4 items above.
+
+---
+
 ## 2026-09-09 — manual run (post the 8-skill Finance batch, PRs #22–#29)
 
 Run against `main` after PRs #22–#29 merged (the whole `Finance/` equity system:
