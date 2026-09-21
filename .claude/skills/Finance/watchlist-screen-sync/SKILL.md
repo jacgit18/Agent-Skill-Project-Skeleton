@@ -652,7 +652,13 @@ discovery-based additions, and report where the run stopped.
     mark that criterion unavailable and stop unless cached financial
     indicators directly resolve it.
 5.  Only when both growth hurdles pass, fetch/reuse financial indicators
-    for current Webull P/E and derive PEG. PEG must be <= 1.5.
+    for current Webull P/E. If P/E is absent there, check cached Webull
+    market, ranking, or sector-detail payloads for an exact current
+    `pe_ttm` value before making another call. If no cached payload
+    contains P/E, make at most one cheap Webull market/valuation request
+    capable of returning current P/E. Derive PEG only from an exact
+    Webull P/E and the valid EPS CAGR. PEG must be <= 1.5. If P/E remains
+    unavailable after that fallback, PEG=`data not available` and stop.
 6.  Do not fetch balance sheet, cash flow, or profile for Growth unless
     already cached for another reason.
 
@@ -665,10 +671,19 @@ discovery-based additions, and report where the run stopped.
 3.  Yield > 8% => attach yield-trap scrutiny flag and continue.
 4.  Check financial indicators first for the exact category-appropriate
     payout metric.
-5.  Fetch only the statement(s) needed to derive the committed payout
-    metric. REITs require FFO/AFFO; midstream/BDCs require DCF. If the
-    category-specific numerator is unavailable, stop with
-    `data not available`.
+5.  Regular companies: if an exact cash payout metric is not directly
+    available, fetch only the statement(s) required to derive the
+    committed cash payout ratio.
+6.  REITs: require exact Webull FFO/AFFO plus distributions. Once the
+    relevant Webull financial data establish that FFO/AFFO is not
+    exposed, do not fetch unrelated income, balance-sheet, or cash-flow
+    statements in an attempt to substitute another numerator. Mark the
+    payout criterion `data not available` and stop.
+7.  Midstream/BDCs: require exact Webull distributable cash flow plus
+    distributions. Once the relevant Webull financial data establish
+    that DCF is not exposed, do not fetch unrelated statements or
+    substitute CFO, EPS, or net investment income. Mark the payout
+    criterion `data not available` and stop.
 
 ### Deep Value pipeline
 
@@ -688,9 +703,15 @@ discovery-based additions, and report where the run stopped.
 
 ### Quality pipeline
 
-1.  Fetch/reuse ANNUAL income statement + balance sheet, count 2. Fetch
-    cash flow only when needed for CFO, D&A, F-score, FCF, or Sloan
-    review.
+1.  Fetch/reuse ANNUAL income statement + balance sheet, count 2. Before
+    declaring a prior-period input unavailable, verify that the response
+    contains the required number of distinct comparable fiscal years.
+    If duplicate currency/reporting representations cause count 2 to
+    return only one distinct fiscal year, make one adaptive escalation
+    to count 3 and, only if still necessary, count 4. Deduplicate by
+    symbol + fiscal year + end date and use one consistent reporting
+    currency for absolute-value calculations. Fetch cash flow only when
+    needed for CFO, D&A, F-score, FCF, or Sloan review.
 2.  Derive ROIC. ROIC < 15% => immediate FAIL; do not perform peer
     ranking or valuation.
 3.  Derive debt/EBITDA as soon as inputs exist. Debt/EBITDA >= 3x =>
@@ -702,9 +723,18 @@ discovery-based additions, and report where the run stopped.
     income, operating cash flow, and current/prior total assets. Ratio
     > +10% => immediate FAIL. Financial companies are `not applicable`.
     Do not call `get_financial_alert` as a substitute for this formula.
-6.  Only after ROIC and hard disqualifiers clear, perform
+6.  Finish the company-level gates for all existing Quality names before
+    starting expensive peer expansion. Group surviving names by Webull
+    sector/industry and build each peer universe once per sector, not once
+    per ticker. Reuse the same peer set for every surviving existing name
+    in that sector.
+7.  Only after ROIC and hard disqualifiers clear, perform
     gross-profit/assets peer ranking and sector-relative EV/EBIT or
-    FCF-yield valuation.
+    FCF-yield valuation. Expand peer statements incrementally. Stop peer
+    expansion as soon as the candidate's top-30% ranking or valuation
+    comparison is unambiguous, or as soon as the available Webull data
+    cannot become defensible within the call budget. Report peer sample
+    size for each resolved or unresolved comparison.
 
 ### Momentum pipeline
 
@@ -723,9 +753,17 @@ discovery-based additions, and report where the run stopped.
 ### Call-budget safety and peer sharing
 
 - Maintain a sector cache keyed by Webull sector ID and a statement
-  cache keyed by symbol + period + endpoint.
+  cache keyed by symbol + period + endpoint. Treat duplicate annual
+  rows that represent the same fiscal year/end date in different
+  currencies as one fiscal period for period-count purposes.
+- Complete company-level Quality gates across existing names first, then
+  group surviving names by sector and perform peer work sector-by-sector
+  so a peer universe is constructed once and reused across all relevant
+  survivors.
 - If a peer was fetched for Deep Value, reuse it for Quality and vice
-  versa.
+  versa. Prefer peers whose market cap, P/E, and sector metadata are
+  already present in cached sector-detail payloads before issuing new
+  statement calls.
 - The 5-new-candidates-per-style cap applies to candidate full
   evaluations, not supporting peer calculations.
 - If connector limits are approached, **stop rather than weaken
@@ -736,6 +774,11 @@ discovery-based additions, and report where the run stopped.
   a required `data not available` criterion.
 - Report an `early-exit reason` and concise endpoints used for every
   evaluated ticker so call savings are auditable.
+- Do not begin the rotating 9-sector Deep Value/Quality discovery batch
+  until every mandatory existing-list review has completed. Once
+  discovery begins, calculate the actual ISO week at run time, select the
+  committed 9-sector batch, cache its constituent payloads once, and use
+  that same selected batch for both Deep Value and Quality.
 
 ## Unattended report additions
 
