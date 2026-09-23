@@ -82,6 +82,7 @@ in this repo — see [`.claude/rules/repo-map.md`](.claude/rules/repo-map.md).
 | [`Books/`](Books/) | Business and tech book notes — source material some skills draw on. |
 | [`curriculum/`](curriculum/), [`.superpowers/sdd/`](.superpowers/sdd/) | A separate spec-driven learning-portfolio project (specs, plans, task briefs/reports). Unrelated to the skill catalog. |
 | [`Other/Misc/`](Other/Misc/) | A few imported third-party skills kept around but **not** integrated into the catalog. |
+| [`Other/investor-skills/`](Other/investor-skills/) | An imported 88-skill third-party pack of persona-based investor judgment models (Buffett, Soros, Turtle Trading, crypto/VC/forensic-short/activist ones, etc.), staged for hand-picked upload elsewhere (e.g. ChatGPT). Deliberately outside `.claude/skills/` — Claude Code never auto-discovers or fires it, so it can't collide with the `Finance/` gates below. Not integrated into this catalog. |
 | [`.out-of-scope/`](.out-of-scope/) | Short notes on skill ideas evaluated and deliberately ruled out. |
 | `.claude-plugin/plugin.json` | A copied-in plugin manifest (`mattpocock-skills`); references skills not in this repo — vestigial. |
 
