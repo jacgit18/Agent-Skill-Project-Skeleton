@@ -60,8 +60,8 @@ cross-sector sampling requirement in Candidate discovery below.
 
 | Criterion             | Rule                                                                                                                                                               |
 |:----------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Valuation metric      | EV/EBITDA, judged relative to the company’s own sector average (no fixed absolute number)                                                                          |
-| Cash-flow cross-check | EV/FCF or FCF yield, also judged relative to sector — required especially when the candidate is capital-intensive (capex/sales materially above its sector median) |
+| Valuation metric      | EV/EBITDA, judged relative to the median of a disclosed, representative sector peer set (no fixed absolute number)                                                                          |
+| Cash-flow cross-check | EV/FCF or FCF yield, also judged relative to the sector-peer median — required especially when the candidate is capital-intensive (capex/sales materially above its sector median) |
 | Safety filter         | Current ratio ≥ 2, AND long-term debt ≤ net current assets (Graham’s classic check)                                                                                |
 
 A candidate must clear EV/EBITDA AND the FCF cross-check AND the safety
@@ -73,7 +73,7 @@ filter to pass.
 |:--------------------------------------------------|:---------------------------------------------------------------------------------------------------------------|
 | ROIC                                              | ≥ 15%                                                                                                          |
 | Gross Profitability (gross profit ÷ total assets) | Top 30% of its industry peers                                                                                  |
-| Valuation check                                   | Sector-relative EV/EBIT or FCF yield                                                                           |
+| Valuation check                                   | EV/EBIT or FCF yield relative to the median of a disclosed, representative sector peer set                                                                           |
 | Piotroski F-Score                                 | Disqualifier only — reject/flag if ≤ 3 or clearly deteriorating. NOT required to be ≥ 7 to pass                |
 | Disqualifier — accrual check                      | For non-financial companies, reject if the latest completed annual simplified Sloan accrual ratio `(net income - operating cash flow) / average total assets` is > +10%. Financial companies: `not applicable`. |
 | Disqualifier — leverage cap                       | Reject if debt/EBITDA ≥ 3x                                                                                     |
@@ -129,7 +129,7 @@ never to change who passes):
 
 | Style              | Rank by (higher/better unless noted)                                                |
 |:-------------------|:------------------------------------------------------------------------------------|
-| Deep Value         | Discount to sector-average EV/EBITDA — bigger discount ranks higher                 |
+| Deep Value         | Discount to sector-peer-median EV/EBITDA — bigger discount ranks higher             |
 | Quality Compounder | ROIC                                                                                |
 | Growth             | Revenue growth rate; PEG (lower is better) breaks ties                              |
 | Momentum           | RS rank, then 6-month return breaks ties                                            |
@@ -524,17 +524,21 @@ Use the candidate’s exact Webull sector/industry. Exclude the candidate
 from its peer comparison set. Use only peers with the exact inputs
 required for a metric.
 
-- Sector-average EV/EBITDA = arithmetic mean of valid peer EV/EBITDA.
+- Sector-peer-median EV/EBITDA = median of valid peer EV/EBITDA, from a disclosed,
+  representative peer set — never the arithmetic mean, which a single outlier peer can
+  skew (e.g. one megacap with a triple-digit multiple dragging the whole comparison).
 - Sector-median capex/sales = median of valid peer capex/sales.
 - FCF valuation must be like-for-like: company FCF yield vs peer
-  FCF-yield average/distribution, or company EV/FCF vs peer EV/FCF
-  average/distribution.
-- `Favorable vs sector` means higher FCF yield than sector average, or
-  lower EV/FCF than sector average.
+  FCF-yield median/distribution, or company EV/FCF vs peer EV/FCF
+  median/distribution.
+- `Favorable vs sector` means higher FCF yield than the sector-peer median, or
+  lower EV/FCF than the sector-peer median.
 - If peer coverage is too sparse to represent the sector defensibly, use
   `data not available`; never substitute PE_TTM for an EV metric.
 - Balance-sheet gate remains exact: current ratio >= 2 **and**
   long-term debt <= net current assets.
+- Disclose the full peer ticker set used for every sector-relative valuation decision, in
+  the report — not just the resulting median.
 
 ### Quality derivation rules
 
@@ -557,8 +561,10 @@ and valid peers in the same Webull peer set and rank descending. Pass
 only if the candidate is unambiguously in the top 30%; sparse peer
 coverage means `data not available`.
 
-For Quality’s valuation check, favorable means EV/EBIT below sector
-average or FCF yield above sector average.
+For Quality’s valuation check, favorable means EV/EBIT below the sector-peer median
+or FCF yield above the sector-peer median — median, not arithmetic mean, for the same
+outlier-resistance reason given in the Deep Value peer rules above. Disclose the peer
+ticker set used, same as Deep Value.
 
 Piotroski F-score may be derived only when all nine standard components
 can be computed from exact Webull annual statements: positive ROA;
@@ -770,6 +776,12 @@ discovery-based additions, and report where the run stopped.
   criteria**. Finish mandatory existing-list review if possible;
   otherwise stop before discovery. During discovery, complete styles in
   the committed order and stop before starting the next style if needed.
+  A valid reason to stop early is an observed connector error/rate limit, or a call
+  ceiling stated before the run began — never "budget responsibly spent," elapsed time,
+  or general caution with no observed limit behind it. If the selected 9-sector batch
+  itself wasn't fully attempted for Deep Value or Quality Compounder, label that style's
+  result `PARTIAL DISCOVERY` in the report and name exactly which sectors of the batch
+  were not attempted and why — don't imply the batch completed when it didn't.
 - Never promote a partially evaluated ticker and never add a ticker with
   a required `data not available` criterion.
 - Report an `early-exit reason` and concise endpoints used for every
@@ -790,11 +802,17 @@ addition to the existing full discovery funnel:
 - the ISO week number used to select the batch;
 - names of sectors scanned this run;
 - `sectors scanned this run: X / total`;
-- total rotation batch count and expected full-rotation length in weeks.
+- total rotation batch count and expected full-rotation length in weeks;
+- Webull calls attempted and completed for this style, so call savings from progressive
+  retrieval are auditable, not just asserted;
+- the peer ticker set used for every sector-relative valuation decision this run (see the
+  Deep Value peer rules and Quality derivation rules above).
 
 Do not claim historical cumulative coverage unless it can be derived
 reliably from the current unchanged sector universe. Report the
-deterministic current batch and expected rotation length instead.
+deterministic current batch and expected rotation length instead. If the selected batch
+was not fully attempted, mark the style `PARTIAL DISCOVERY` per the call-budget rule above
+rather than reporting the batch as if it completed.
 
 ## Unattended write authority
 
