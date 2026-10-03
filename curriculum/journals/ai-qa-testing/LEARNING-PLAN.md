@@ -7,6 +7,35 @@
 - Complements your agent/prompt work (testing is built-in to reliability)
 - Growing need for specialized AI safety and quality testing expertise
 
+## Current Focus (updated 2026-09-26, from a memory-index + repo gap analysis)
+
+**Where you are:** strong at *steering* Claude Code (~60 skills, hooks, subagents, spec gates,
+model routing, MCP, handoffs) and you've shipped a real finance dashboard. Nearly all of it is
+the Claude Code side — AI used to build things, not yet an LLM feature built into an app.
+
+**The gap that keeps showing up:** skill tests are hand-run agent scenarios, and the notes
+repeatedly say "post-fix scenarios not re-run", "read-based only", "lint only", "isolation
+MIXED". Nobody can yet say *with numbers* whether an edit improved anything.
+
+**Order (do one at a time; skip agent frameworks, fine-tuning, and vector-DB depth for now —
+nothing in current work needs them):**
+
+1. **Evals** — the High Priority list below, aimed at the skill catalog.
+   - [ ] Write a small fixed scenario set with expected outcomes; run before and after a change
+   - [ ] Score automatically (rule checks) or with an LLM judge
+   - [ ] Concepts: held-out cases, judge bias, run-to-run variance, regression suites
+   - **First rep:** pick ONE skill (candidate: `test-case-discovery`, just changed), write 5
+     scenarios with expected results, score before/after an edit. Per the learning-gate setup,
+     *you* write the scenarios; Claude only critiques them. Scenarios can be lifted from that
+     skill's existing interaction-test notes.
+2. **Building an LLM feature with the Claude API** — tool use, structured output, prompt
+   caching, token/cost tracking.
+   - [ ] First project: a categorizer or explainer inside the finance dashboard (fits the
+     free-first rule; teaches the cost side directly)
+   - Feeds Project 3 (`../project-3-plan.md`), which reuses these patterns
+3. **Retrieval & context engineering** — RAG vs long context, keeping context small.
+   - [ ] Note the link to session-handoff / context-watch work: same problem from the other side
+
 ## What to Learn
 
 ### High Priority (Start here)

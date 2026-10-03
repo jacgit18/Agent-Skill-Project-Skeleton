@@ -2,7 +2,7 @@
 
 An exploration of AI testing fundamentals as an alternative career path, with focus on practical patterns and tools.
 
-**Status:** Learning/exploration phase. This directory documents foundational patterns and includes proof-of-concept implementations.
+**Status:** Learning/exploration phase. Current focus (2026-09-26): evals on the skill catalog, then Claude-API feature building, then retrieval/context engineering — see `LEARNING-PLAN.md` "Current Focus". This directory documents foundational patterns and includes proof-of-concept implementations.
 
 ## Contents
 
