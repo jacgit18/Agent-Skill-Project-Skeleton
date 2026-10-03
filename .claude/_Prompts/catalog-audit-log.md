@@ -5,6 +5,71 @@ reads this first so it never re-flags something already resolved. Newest entry o
 
 ---
 
+## 2026-09-28 — Weekly Catalog Drift Audit (scheduled cloud routine)
+
+Run against `main` at `7ccab97` (since the 2026-09-21 run at `6e68b90`: 3 rounds of edits to
+`Finance/watchlist-screen-sync`'s discovery mode — PRs #61/#62/#64 — plus PR #63 relocating the
+imported `investor-skills` pack out of `.claude/skills/` into `Other/`). That entry read first;
+nothing in it re-flagged below.
+
+**Step 1 — stale markers:** CLEAN. No open `Memory: pending` (or similarly unresolved) marker
+in `SKILL-BACKLOG.md`. The only matching text is unrelated prose — same three hits as the last
+two runs (a source-note math caveat, `codebase-file-orientation`'s own `TODO(author)` template
+mechanic, `catalog-drift-audit`'s own description quoting the phrase) plus the "Loose threads"
+deliberately-open future-candidate items.
+
+**Step 2 — catalog-doc sync:** CLEAN. All 79 skill directories under `.claude/skills/` (every
+group, `Architecture/Data/` included) have a `README.md` row, cross-checked both ways — no skill
+on disk missing a row, no README row pointing at a nonexistent directory. The `investor-skills`
+relocation (PR #63) left no dangling references — it was never in `.claude/skills/`, `README.md`,
+or `SKILL-BACKLOG.md` to begin with, and `.claude/rules/repo-map.md` already documents its new
+home under `Other/investor-skills/`.
+
+**Step 3 — dead-reference check:** CLEAN. All six fixed cross-cutting names (`ambiguity-gate`,
+`learning-gate`, `problem-solving-gates`, `problem-journal`, `skill-interaction-testing`,
+`catalog-drift-audit`) resolve to real, existing directories.
+
+**Step 4 — untested-pair backfill:** not run live (unattended, no multi-agent verification here).
+Three items to hand a human — two carried over, one new:
+- **Still open (carried from 2026-09-09 / 2026-09-21):** `Skill Development/incremental-build-pacing`
+  and `Architecture/tech-decision-walkthrough` still have no recorded isolation screen or
+  `skill-interaction-testing` run, per their own `SKILL-BACKLOG.md` bookkeeping-status notes.
+- **Still open (carried from 2026-09-21):** `Finance/equity-trade-decision`'s reward:risk-ratio
+  addition (commit `4c94dea`, 2026-09-15) still has no `SKILL-BACKLOG.md` entry and no recorded
+  `skill-interaction-testing` run.
+- **New:** `Finance/watchlist-screen-sync` picked up three more commits since the last audit
+  (`a16c386`/2026-09-21, `7197498`/2026-09-21, `a98ca53`/2026-09-22 — rotating-sector discovery,
+  retrieval fallbacks, median-not-mean peer valuation + stricter stop-discipline reporting), none
+  with a `SKILL-BACKLOG.md` entry or a recorded interaction test, continuing the same
+  outside-the-normal-workflow pattern already flagged for `equity-trade-decision`. The first of
+  the three (`a16c386`) also rewrote the skill's frontmatter `description` itself — not just body
+  content — shrinking it from ~1020 to ~700 characters ("Reformatted after a ChatGPT round-trip
+  and restored the description's triggers and sibling carve-outs," per its own commit message).
+  Worth a human's read-through to confirm every sibling carve-out that mattered (e.g. the
+  Screen-Passed/Rejected general-screen framing, the AI-Day-Trade manual-only distinction) is
+  still actually present rather than merely "restored" by intent, before treating the new
+  description as equivalent to the old one for collision purposes.
+
+**Step 4 bonus finding (convention drift, not one of the five steps but surfaced during the
+above):** the same `a16c386`/`a98ca53` rewrite reintroduced first-name references to the user
+("Joshua") throughout `watchlist-screen-sync`'s body (17+ occurrences) — the skill's own original
+2026-09-13 build note recorded this exact pattern being fixed once already ("named the user by
+first name in frontmatter where every sibling says 'the user'; both fixed"). Every other skill in
+the catalog says "the user." Not auto-fixed here: correcting it cleanly touches dozens of lines of
+live procedural content (pronoun/possessive agreement throughout), which is a rewrite, not a
+one-line reconciliation — out of scope for this skill's own "not a rewrite pass" boundary.
+Flagged for a human decision on wording.
+
+**Step 5 — starvation-by-neglect:** CLEAN. Every one of the 79 skill directories is named by at
+least one sibling's `SKILL.md` (checked programmatically, word-boundary matched).
+
+**Applied:** nothing — every mechanical check (Steps 1, 2, 3, 5) came back clean, no fixes needed
+this run.
+**Flagged (judgment calls, not fixed):** the three Step 4 items plus the convention-drift bonus
+finding above.
+
+---
+
 ## 2026-09-21 — Weekly Catalog Drift Audit (scheduled cloud routine, first live run)
 
 Run against `main` at `6e68b90` (post the large `Finance/` build-out through `portfolio-dashboard-calculator`,
